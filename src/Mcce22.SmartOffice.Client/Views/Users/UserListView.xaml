@@ -19,7 +19,7 @@
             Margin="5"
             HorizontalAlignment="Left"
             Orientation="Horizontal">
-            <Button
+            <!--<Button
                 Command="{Binding AddCommand}"
                 Foreground="Green"
                 Style="{StaticResource ToolbarButtonStyle}">
@@ -36,7 +36,7 @@
                 Foreground="Red"
                 Style="{StaticResource ToolbarButtonStyle}">
                 <iconPacks:FontAwesome Kind="TrashSolid" />
-            </Button>
+            </Button>-->
             <Button Command="{Binding ReloadCommand}" Style="{StaticResource ToolbarButtonStyle}">
                 <iconPacks:FontAwesome Kind="SyncSolid" />
             </Button>
@@ -54,6 +54,8 @@
                 <DataGridTextColumn Binding="{Binding LastName}" Header="LastName" />
                 <DataGridTextColumn Binding="{Binding UserName}" Header="UserName" />
                 <DataGridTextColumn Binding="{Binding Email}" Header="Email" />
+                <DataGridTextColumn Binding="{Binding IsEnabled, Converter={StaticResource BooleanToYesNoConverter}}" Header="Enabled" />
+                <DataGridTextColumn Binding="{Binding IsAdmin, Converter={StaticResource BooleanToYesNoConverter}}" Header="Admin" />                
             </DataGrid.Columns>
         </DataGrid>
         <mah:ProgressRing Grid.RowSpan="2" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />

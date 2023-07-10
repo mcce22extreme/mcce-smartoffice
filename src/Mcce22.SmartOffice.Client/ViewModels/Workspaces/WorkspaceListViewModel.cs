@@ -13,13 +13,14 @@ namespace Mcce22.SmartOffice.Client.ViewModels
     public partial class WorkspaceListViewModel : ListViewModelBase<WorkspaceModel>
     {
         private readonly IWorkspaceManager _workspaceManager;
+        private readonly IAuthService _authService;
         private readonly Timer _updateTimer;
 
-        public WorkspaceListViewModel(IWorkspaceManager workspaceManager, IDialogService dialogService)
+        public WorkspaceListViewModel(IWorkspaceManager workspaceManager, IDialogService dialogService, IAuthService authService)
             : base(dialogService)
         {
             _workspaceManager = workspaceManager;
-
+            _authService = authService;
             _updateTimer = new Timer();
             _updateTimer.Interval = 5000;
             _updateTimer.Elapsed += OnTimerElapsed;
@@ -28,7 +29,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         private void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            if (!IsBusy)
+            if (!IsBusy && _authService.LoggedIn)
             {
                 Application.Current.Dispatcher.Invoke(async () =>
                 {

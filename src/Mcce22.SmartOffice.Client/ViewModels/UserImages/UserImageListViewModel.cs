@@ -16,7 +16,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         [ObservableProperty]
         private List<UserModel> _users;
-                
+
         private UserModel _selectedUser;
         public UserModel SelectedUser
         {
@@ -49,10 +49,20 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         protected override async Task<UserImageModel[]> OnReload()
         {
-            var users = await _userManager.GetList();
+            var selectedUser = SelectedUser;
+
+            var users = await _userManager.GetList();           
 
             Users = new List<UserModel>(users);
-            SelectedUser = Users.FirstOrDefault();
+
+            if(selectedUser != null)
+            {
+                SelectedUser = Users.FirstOrDefault(x => x.Id == selectedUser.Id) ?? Users.FirstOrDefault();
+            }
+            else
+            {
+                SelectedUser = Users.FirstOrDefault();
+            }
 
             var userImages = new List<UserImageModel>();
 

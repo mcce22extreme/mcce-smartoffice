@@ -1,0 +1,58 @@
+version: "3.9"
+services:
+    apigateway:
+        image: domih/mcce-smart-office-apigateway:latest
+        ports:
+        - "80:80"
+        environment:
+            SMARTOFFICE_BASEADDRESS: http://apigateway:80
+            SMARTOFFICE_USERIMAGESERVICE: http://userimages:80
+            SMARTOFFICE_WORKSPACESERVICE: http://workspaces:80
+            SMARTOFFICE_WORKSPACECONFIGURATIONSERVICE: http://workspaceconfigurations:80
+            SMARTOFFICE_BOOKINGSERVICE: http://bookings:80
+            SMARTOFFICE_WORKSPACEDATAENTRYSERVICE: http://workspacedataentries:80
+        networks:
+        - smartoffice        
+    userimages:
+        image: domih/mcce-smart-office-userimage-api:latest                
+        environment:
+            SMARTOFFICE_BASEADDRESS: http://userimages:80
+            SMARTOFFICE_STORAGECONFIG__TYPE: FileSystem
+            SMARTOFFICE_STORAGECONFIG__PATH: /app/storage/userimages
+        networks:
+        - smartoffice
+    workspaces:
+        image: domih/mcce-smart-office-workspace-api:latest                
+        environment:
+            SMARTOFFICE_BASEADDRESS: http://workspaces:80
+            SMARTOFFICE_DBCONFIG__TYPE: SQLite
+            SMARTOFFICE_DBCONFIG__CONNECTIONSTRING: Data Source=/app/workspaces.db
+        networks:
+        - smartoffice 
+    workspaceconfigurations:
+        image: domih/mcce-smart-office-workspaceconfiguration-api:latest                
+        environment:
+            SMARTOFFICE_BASEADDRESS: http://workspaceconfigurations:80
+            SMARTOFFICE_DBCONFIG__TYPE: SQLite
+            SMARTOFFICE_DBCONFIG__CONNECTIONSTRING: Data Source=/app/workspaceconfigurations.db
+        networks:
+        - smartoffice
+    bookings:
+        image: domih/mcce-smart-office-booking-api:latest                
+        environment:
+            SMARTOFFICE_BASEADDRESS: http://bookings:80
+            SMARTOFFICE_DBCONFIG__TYPE: SQLite
+            SMARTOFFICE_DBCONFIG__CONNECTIONSTRING: Data Source=/app/bookings.db
+        networks:
+        - smartoffice
+    workspacedataentries:
+        image: domih/mcce-smart-office-workspacedataentry-api:latest                
+        environment:
+            SMARTOFFICE_BASEADDRESS: http://workspacedataentries:80
+            SMARTOFFICE_DBCONFIG__TYPE: SQLite
+            SMARTOFFICE_DBCONFIG__CONNECTIONSTRING: Data Source=/app/workspacedataentries.db
+        networks:
+        - smartoffice  
+networks:
+  smartoffice:
+    driver: bridge

@@ -14,7 +14,7 @@ trim_trailing_whitespace = true
 
 # Xml project files
 [*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,projitems,shproj}]
-indent_size = 2
+indent_size = 4
 
 # Xml config files
 [*.{props,targets,ruleset,config,nuspec,resx,vsixmanifest,vsct}]
@@ -200,3 +200,6 @@ dotnet_diagnostic.CS1591.severity = none
 dotnet_diagnostic.SA1310.severity = silent
 dotnet_diagnostic.SA1201.severity = silent
 dotnet_diagnostic.S3925.severity = silent
+dotnet_diagnostic.SA1602.severity = silent
+dotnet_diagnostic.SA1649.severity = silent
+dotnet_diagnostic.SA1402.severity = silent

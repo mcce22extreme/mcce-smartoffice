@@ -9,13 +9,14 @@ namespace Mcce22.SmartOffice.Client.Managers
 {
     public abstract class ManagerBase<T> where T : IModel
     {
-        protected static HttpClient HttpClient = new HttpClient();
+        protected HttpClient HttpClient { get; }
 
         protected string BaseUrl { get; }
 
-        public ManagerBase(string baseUrl)
+        public ManagerBase(string baseUrl, HttpClient httpClient)
         {
             BaseUrl = baseUrl;
+            HttpClient = httpClient;
         }
 
         public async Task<T[]> GetList()
@@ -49,7 +50,7 @@ namespace Mcce22.SmartOffice.Client.Managers
 
         public async Task Delete(string id)
         {
-            await EnsureSuccessStatusCode(await HttpClient.DeleteAsync($"{BaseUrl}/{id}"));
+            await EnsureSuccessStatusCode(await HttpClient.DeleteAsync($"{BaseUrl}{id}"));
         }
 
         private async Task EnsureSuccessStatusCode(HttpResponseMessage response)

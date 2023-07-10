@@ -226,7 +226,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                 {
                     var model = new WorkspaceDataModel
                     {
-                        WorkspaceId = workspace.Id,
+                        WorkspaceNumber = workspace.WorkspaceNumber,
                         Timestamp = new DateTime(dateTimeNow.Year,dateTimeNow.Month,dateTimeNow.Day, i - 1, 0, 0),
                         Temperature = Random.Next(16, 30),
                         Humidity = Random.Next(10, 70),
