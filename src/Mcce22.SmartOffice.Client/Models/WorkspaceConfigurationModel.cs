@@ -6,13 +6,9 @@
 
         public long DeskHeight { get; set; }
 
-        public string SlideshowResourceKey { get; set; }
-
         public string WorkspaceId { get; set; }
 
         public string UserId { get; set; }
-
-        public string RoomNumber { get; set; }
 
         public string WorkspaceNumber { get; set; }
 

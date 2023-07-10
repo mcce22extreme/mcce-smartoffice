@@ -18,10 +18,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         private readonly string _userId;
 
         [ObservableProperty]
-        private long _deskHeight;
-
-        [ObservableProperty]
-        private string _slideshowResourceKey;
+        private long _deskHeight = 70;
 
         [ObservableProperty]
         private ObservableCollection<WorkspaceModel> _workspaces = new ObservableCollection<WorkspaceModel>();
@@ -34,7 +31,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         [ObservableProperty]
         private UserModel _selectedUser;
-        
+
         public string UserWorkspaceId { get; }
 
         public WorkspaceConfigurationDetailViewModel(
@@ -89,13 +86,17 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             }
         }
 
+        protected override bool CanSave()
+        {
+            return !IsBusy && SelectedWorkspace != null && SelectedUser != null;
+        }
+
         protected override async Task OnSave()
         {
             await _userWorkspaceManager.Save(new WorkspaceConfigurationModel
             {
                 Id = UserWorkspaceId,
                 DeskHeight = DeskHeight,
-                SlideshowResourceKey = SlideshowResourceKey,
                 WorkspaceId = SelectedWorkspace.Id,
                 UserId = SelectedUser.Id
             });

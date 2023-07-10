@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Certificates\**" />
+    <EmbeddedResource Remove="Certificates\**" />
+    <None Remove="Certificates\**" />
+    <Page Remove="Certificates\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Images\background.png" />
     <None Remove="Images\desk.png" />
     <None Remove="Images\desk_legs.png" />
@@ -47,20 +54,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Certificates\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Certificates\AmazonRootCA1.pem">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Certificates\certificate.pem.crt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Certificates\private.pem.key">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

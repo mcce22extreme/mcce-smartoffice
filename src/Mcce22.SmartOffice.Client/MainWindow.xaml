@@ -232,6 +232,11 @@
                             IsVisible="{Binding Login.IsAdmin}"
                             Label="Seed Data"
                             Tag="{Binding SeedData}" />
+                        <mah:HamburgerMenuIconItem
+                            Icon="{iconPacks:Material Kind=Cogs}"
+                            IsVisible="{Binding Login.IsAdmin}"
+                            Label="Configuration"
+                            Tag="{Binding Config}" />
                     </mah:HamburgerMenuItemCollection>
                 </mah:HamburgerMenu.ItemsSource>
                 <mah:HamburgerMenu.OptionsItemsSource>
