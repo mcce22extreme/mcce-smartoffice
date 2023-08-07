@@ -13,7 +13,7 @@
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.104.1" />
 
     <PackageReference Include="AWSSDK.S3" Version="3.7.106" />
-    <PackageReference Include="AWSSDK.SimpleSystemsManagement" Version="3.7.104.49" />
+    <PackageReference Include="AWSSDK.SimpleSystemsManagement" Version="3.7.200.10" />
 
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.3.0.71466" PrivateAssets="all" Condition="$(MSBuildProjectExtension) == '.csproj'" />
