@@ -10,18 +10,18 @@ namespace Mcce22.SmartOffice.Client.Managers
 
     public class ProcessBookingManager : IProcessBookingManager
     {
-        private static readonly HttpClient HttpClient = new();
-
         private readonly string _baseUrl;
+        private readonly HttpClient _httpClient;
 
-        public ProcessBookingManager(string baseUrl)
+        public ProcessBookingManager(IAppConfig appConfig, HttpClient httpClient)
         {
-            _baseUrl = $"{baseUrl}/notify/";
+            _baseUrl = $"{appConfig.BaseAddress}/notify/";
+            _httpClient = httpClient;
         }
 
         public async Task ProcessBookings()
         {
-            await HttpClient.PostAsync($"{_baseUrl}", new StringContent(string.Empty));
+            await _httpClient.PostAsync($"{_baseUrl}", new StringContent(string.Empty));
         }
     }
 }

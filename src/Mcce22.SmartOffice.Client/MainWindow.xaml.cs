@@ -81,7 +81,8 @@ namespace Mcce22.SmartOffice.Client
         {
             HamburgerMenuControl.SelectedItem = null;
             HamburgerMenuControl.SelectedOptionsItem = null;
-            ((MainViewModel)DataContext).Login.LoginVisible = true;
+
+            ((MainViewModel)DataContext).Login.Logout();
         }
     }
 }

@@ -20,6 +20,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         public SeedDataViewModel SeedData { get; }
         public CreateBookingViewModel CreateBooking { get; }
         public WorkspaceDataListViewModel WorkspaceDataList { get; }
+        public ConfigViewModel Config { get; }
 
         public MainViewModel(
             INavigationService navigationService,
@@ -32,7 +33,8 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             UserImageListViewModel slideshowItemList,
             SeedDataViewModel seedData,
             CreateBookingViewModel createBooking,
-            WorkspaceDataListViewModel workspaceDataList)
+            WorkspaceDataListViewModel workspaceDataList,
+            ConfigViewModel config)
         {
             Login = login;
             Dashboard = dashboard;
@@ -44,7 +46,9 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             SeedData = seedData;
             CreateBooking = createBooking;
             WorkspaceDataList = workspaceDataList;
+            Config = config;
             Login.LoginChanged += OnLoginChanged;
+
             navigationService.NavigationRequested += OnNavigationRequested;
         }
 
@@ -60,6 +64,9 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         {
             switch (e.Type)
             {
+                case NavigationType.Dashboard:
+                    SelectedIndex = 0;
+                    break;
                 case NavigationType.CreateBooking:
                     SelectedIndex = 1;
                     break;
@@ -83,6 +90,9 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                     break;
                 case NavigationType.SeedData:
                     SelectedIndex = 9;
+                    break;
+                case NavigationType.Config:
+                    SelectedIndex = 10;
                     break;
             }
         }

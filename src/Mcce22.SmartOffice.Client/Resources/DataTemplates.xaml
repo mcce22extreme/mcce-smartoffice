@@ -69,4 +69,7 @@
     <DataTemplate DataType="{x:Type vm:WorkspaceDataListViewModel}">
         <v:WorkspaceDataListView />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:ConfigViewModel}">
+        <v:ConfigView />
+    </DataTemplate>
 </ResourceDictionary>

@@ -29,7 +29,13 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         {
         }
 
-        protected bool CanSave()
+        protected override void UpdateCommandStates()
+        {
+            SaveCommand.NotifyCanExecuteChanged();
+            CancelCommand.NotifyCanExecuteChanged();
+        }
+
+        protected virtual bool CanSave()
         {
             return !IsBusy;
         }
