@@ -29,14 +29,12 @@ User-dependent settings are activated by means of facial recognition or control 
 
 The "Smart Office" application is implemented as a native cloud solution using a microservice architecture in \ac{aws} and mainly consists of the following services and components:
 
-* **User Management:** Microservice for managing user information
+* **User Image Management:** Microservice for managing user information
 * **Workspace Management:** Microservice for managing workspace information
+* **Workspace Configuration Management:** Microservice for managing workspace configurations
 * **Booking Management:** Microservice for managing workspace reservations
-* **Booking Notification:** Microservice that sends notifications to users
 * **IoT Sensor Data Processing:** Microservice that processes the recorded sensor data from the IoT devices
-* **IoT Device Controlling:** Microservice for controlling IoT devices
 * **IoT Device:** IoT Device with sensors for controlling a workstation and collecting data
-
 
 The graphic below shows the different application parts of the Smart Office environment:
 
@@ -44,7 +42,7 @@ The graphic below shows the different application parts of the Smart Office envi
   <img src="images/smart_office_microservices.png" height="400">
 </p>
 
-By using the microservice design pattern, the services of the "Smart Office" can be divided into small independent units, which contributes to better scalability as well as flexibility in the implementation of each individual service. In combination with Infrastructure as Code , this approach also helps to ensure that the individual services can be provided independently of one another. Each of the services is implemented in AWS as a standalone Lambda function. Data storage is in a relational database, assets such as user images for display in a workstation's digital picture frame are stored in AWS S3. Communication with the "Smart Office" microservices is done through a REST interface and an upstream Amazon API gateway.
+By using the microservice design pattern, the services of the "Smart Office" can be divided into small independent units, which contributes to better scalability as well as flexibility in the implementation of each individual service. In combination with Infrastructure as Code , this approach also helps to ensure that the individual services can be provided independently of one another. Each of the Smart Office Api Services runs in its own docker container and the coresponding data is stored in a relational database. Communication with the "Smart Office" microservices is done through a REST interface and bundled through a central API gateway.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -60,9 +58,8 @@ By using the microservice design pattern, the services of the "Smart Office" can
 - [Visual Studio](https://visualstudio.microsoft.com/de/vs/community/)
 - [Net Core](https://dotnet.microsoft.com/)
 - [Windows Presentation Foundation](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/overview/)
-- [AWS IoT Core](https://aws.amazon.com/de/iot-core/)
 - [MahApps.Metro](https://mahapps.com/)
-- [Castle Windsor](http://www.castleproject.org/)
+- [Mosquitto](https://https://mosquitto.org/)
 - [MQTTnet](https://github.com/dotnet/MQTTnet) 
 - [Raspberry PI](https://www.raspberrypi.com/)
 - [Terraform](https://www.terraform.io/)
@@ -71,44 +68,11 @@ By using the microservice design pattern, the services of the "Smart Office" can
 
 ## Getting started <a name="gettingstarted"></a>
 
-The "Smart Office" AWS environment can be deployed using Terraform.
+### Smart Office Microservices
+Since the Smart Office microservices have been defined as independent Docker containers, they can be operated in any Docker engine. The solution contains a docker compose file that can help to orchestrate the microservices. In addition, the docker compose file shows which environment variables must be provided for each microservice.
 
-Terraform variables:
+The microservices can be deployed to a local Docker Engine with the following command:
 
- The following parameters must be passed as part of the Terraform plan or apply command:
-
-- aws_access_key_id: The AWS access key.
-- aws_secret_access_key: The AWS secret. 
-- aws_session_token: The AWS session token.
-- mcce22_tf_state_bucket: The AWS S3 bucket to store terraform state.
-- mcce22_smpt_host: The smtp host that is used to send emails.
-- mcce22_smpt_port: The smtp port that is used to send emails.
-- mcce22_smpt_username: The username that is used to authenticate on the smtp server.
-- mcce22_smpt_password: The password that is used to authenticate on the smtp server.
-- mcce22_smpt_sendername: The sender name that is used to send emails.
-- mcce22_iotdata_endpointaddress: The address of AWS IoT Core data endpoint.
-- mcce22_iam_role: The AWS IAM role that should be used for lambda execution.
-
-Terraform init:
-
-The `terraform init` command initializes the working directory and downloads providers and modules defined in the terraform project.
-
-```bash
-terraform init
 ```
-
-Terraform plan:
-
-The `terraform plan` command is used to create an execution plan for applying or modifying infrastructure resources. It is used to preview the changes that Terraform will make to the target infrastructure without actually applying those changes.
-
-```bash
-terraform plan -auto-approve -input=false -var "aws_access_key_id=AWS_ACCESS_KEY" -var "aws_secret_access_key=AWS_SECRET_ACCESS_KEY" -var "aws_session_token=AWS_SESSION_TOKEN" -var "mcce22_tf_state_bucket= TF_BUCKET_NAME" -var "mcce22_smpt_host=SMTP_HOST" -var "mcce22_smpt_port=SMTP_PORT" -var "mcce22_smpt_username=SMTP_USERNAME" -var "mcce22_smpt_password=SMTP_PASSOWORD" -var "mcce22_smpt_sendername=SMTP_SENDERNAME" -var "mcce22_iotdata_endpointaddress:AWS_IOTDATA_ENDPOINTADDRESS" -var "mcce22_iam_role=AWS_IAM_ROLE"
-```
-
-Terraform apply:
-
-The `terraform apply` command is used in to apply the planned changes to the target infrastructure. It executes the actions defined in the execution plan generated by terraform plan.
-
-```bash
-terraform apply -auto-approve -input=false -var "aws_access_key_id=AWS_ACCESS_KEY" -var "aws_secret_access_key=AWS_SECRET_ACCESS_KEY" -var "aws_session_token=AWS_SESSION_TOKEN" -var "mcce22_tf_state_bucket= TF_BUCKET_NAME" -var "mcce22_smpt_host=SMTP_HOST" -var "mcce22_smpt_port=SMTP_PORT" -var "mcce22_smpt_username=SMTP_USERNAME" -var "mcce22_smpt_password=SMTP_PASSOWORD" -var "mcce22_smpt_sendername=SMTP_SENDERNAME" -var "mcce22_iotdata_endpointaddress:AWS_IOTDATA_ENDPOINTADDRESS" -var "mcce22_iam_role=AWS_IAM_ROLE"
+docker compose up -d
 ```

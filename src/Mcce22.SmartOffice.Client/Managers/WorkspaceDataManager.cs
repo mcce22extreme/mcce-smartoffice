@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
 using Mcce22.SmartOffice.Client.Models;
 using Newtonsoft.Json;
 
@@ -15,8 +16,8 @@ namespace Mcce22.SmartOffice.Client.Managers
 
     public class WorkspaceDataManager : ManagerBase<WorkspaceDataModel>, IWorkspaceDataManager
     {
-        public WorkspaceDataManager(string baseUrl)
-            : base($"{baseUrl}/workspacedata/")
+        public WorkspaceDataManager(IAppConfig appConfig, HttpClient httpClient)
+            : base($"{appConfig.BaseAddress}/workspacedata/", httpClient)
         {
         }
 

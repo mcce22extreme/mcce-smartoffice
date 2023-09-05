@@ -2,11 +2,16 @@
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Mcce22.SmartOffice.Client.Managers;
+using Mcce22.SmartOffice.Client.Services;
 
 namespace Mcce22.SmartOffice.Client.ViewModels
 {
     public partial class LoginViewModel : ObservableObject
     {
+        private readonly IAuthService _authService;
+        private readonly IAccountManager _accountManager;
+        private readonly IDialogService _dialogService;
         [ObservableProperty]
         private bool _loginVisible = true;
 
@@ -18,24 +23,44 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         [ObservableProperty]
         private bool _isAdmin;
-        
-        public ICommand LoginAsAdminCommand { get; }
 
-        public ICommand LoginAsUserCommand { get; }
+        public ICommand LoginCommand { get; }
 
         public event EventHandler LoginChanged;
 
-        public LoginViewModel()
+        public LoginViewModel(IAuthService authService, IAccountManager accountManager, IDialogService dialogService)
         {
-            LoginAsAdminCommand = new RelayCommand(() => Login(true));
-            LoginAsUserCommand = new RelayCommand(() => Login(false));
+            _authService = authService;
+            _accountManager = accountManager;
+            _dialogService = dialogService;
+
+            LoginCommand = new RelayCommand(Login);
         }
 
-        public void Login(bool asAdmin)
+        public async void Login()
         {
-            IsAdmin = asAdmin;
-            LoginChanged?.Invoke(this, EventArgs.Empty);
-            LoginVisible = false;           
+            try
+            {
+                if (await _authService.Login())
+                {
+                    var accountInfo = await _accountManager.GetAccountInfo();
+
+                    IsAdmin = accountInfo.IsAdmin;
+                    LoginChanged?.Invoke(this, EventArgs.Empty);
+                    LoginVisible = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                await _dialogService.ShowDialog(new ErrorViewModel(ex, _dialogService));
+            }
+        }
+
+        public async void Logout()
+        {
+            await _authService.Logout();
+
+            LoginVisible = true;
         }
     }
 }

@@ -1,9 +1,0 @@
-{
-    "configuration": "Release",
-    "profile": "default",
-    "region": "us-east-1",
-    "s3-bucket": "mcce22-smart-office-cf-dev",
-    "stack-name": "mcce22-smart-office-dev",
-    "template": "serverless.template.yaml",
-    "parameters": "UserImageBucketParameter=mcce22-smart-office-images-dev;"
-}

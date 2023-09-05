@@ -30,6 +30,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         private readonly IWorkspaceManager _workspaceManager;
         private readonly IDialogService _dialogService;
+        private readonly IAuthService _authService;
         private readonly IWorkspaceDataManager _workspaceDataManager;
         private readonly Timer _updateTimer;
         private readonly ObservableCollection<ObservableValue> _weiValues;
@@ -164,12 +165,13 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         public WorkspaceDataListViewModel(
                 IWorkspaceDataManager workspaceDataManager,
                 IWorkspaceManager workspaceManager,
-                IDialogService dialogService)
+                IDialogService dialogService,
+                IAuthService authService)
         {
             _workspaceDataManager = workspaceDataManager;
             _workspaceManager = workspaceManager;
             _dialogService = dialogService;
-
+            _authService = authService;
             _weiValues = new ObservableCollection<ObservableValue>();
             _temperatureValues = new ObservableCollection<ObservableValue>();
             _humidityValues = new ObservableCollection<ObservableValue>();
@@ -306,7 +308,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         private void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            if (!IsBusy)
+            if (!IsBusy && _authService.LoggedIn)
             {
                 Application.Current.Dispatcher.BeginInvoke(new Action(() => UpdateWorkspaceDataEntries(SelectedWorkspace)));
             }

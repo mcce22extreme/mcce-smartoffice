@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Mcce.SmartOffice.WorkspaceDataEntries": {
+        "commandName": "Project",
+        "environmentVariables": {
+            "SMARTOFFICE_BASEADDRESS": "http://localhost:5005",
+            "SMARTOFFICE_DBCONFIG__TYPE": "SQLite",
+            "SMARTOFFICE_DBCONFIG__CONNECTIONSTRING": "Data Source=C:\\Temp\\SmartOfficeStorage\\workspacedataentries.db"
+        }
+    }
+  }
+}
