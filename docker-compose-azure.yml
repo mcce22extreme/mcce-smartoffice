@@ -26,33 +26,44 @@ services:
         environment:
             SMARTOFFICE_BASEADDRESS: http://workspaces:80
             SMARTOFFICE_DBCONFIG__TYPE: SQLite
-            SMARTOFFICE_DBCONFIG__CONNECTIONSTRING: Data Source=/app/storage/workspaces.db
+            SMARTOFFICE_DBCONFIG__CONNECTIONSTRING: Data Source=/app/storage/workspaces/workspaces.db
         networks:
-        - smartoffice
+        - smartoffice 
+        volumes:
+        - smartofficestorage:/app/storage 
     workspaceconfigurations:
         image: domih/mcce-smart-office-workspaceconfiguration-api:latest                
         environment:
             SMARTOFFICE_BASEADDRESS: http://workspaceconfigurations:80
             SMARTOFFICE_DBCONFIG__TYPE: SQLite
-            SMARTOFFICE_DBCONFIG__CONNECTIONSTRING: Data Source=/app/storage/workspaceconfigurations.db
+            SMARTOFFICE_DBCONFIG__CONNECTIONSTRING: Data Source=/app/storage/workspaceconfigurations/workspaceconfigurations.db
         networks:
         - smartoffice
+        volumes:
+        - smartofficestorage:/app/storage
     bookings:
         image: domih/mcce-smart-office-booking-api:latest                
         environment:
             SMARTOFFICE_BASEADDRESS: http://bookings:80
             SMARTOFFICE_DBCONFIG__TYPE: SQLite
-            SMARTOFFICE_DBCONFIG__CONNECTIONSTRING: Data Source=/app/storage/bookings.db
+            SMARTOFFICE_DBCONFIG__CONNECTIONSTRING: Data Source=/app/storage/bookings/bookings.db
         networks:
         - smartoffice
+        volumes:
+        - smartofficestorage:/app/storage 
     workspacedataentries:
         image: domih/mcce-smart-office-workspacedataentry-api:latest                
         environment:
             SMARTOFFICE_BASEADDRESS: http://workspacedataentries:80
             SMARTOFFICE_DBCONFIG__TYPE: SQLite
-            SMARTOFFICE_DBCONFIG__CONNECTIONSTRING: Data Source=/app/storage/workspacedataentries.db
+            SMARTOFFICE_DBCONFIG__CONNECTIONSTRING: Data Source=/app/storage/workspacedataentries/workspacedataentries.db
         networks:
         - smartoffice
+        volumes:
+        - smartofficestorage:/app/storage
 networks:
   smartoffice:
     driver: bridge
+volumes:
+    smartofficestorage:
+        external: true
