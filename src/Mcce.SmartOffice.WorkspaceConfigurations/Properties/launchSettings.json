@@ -4,7 +4,6 @@
         "commandName": "Project",
         "environmentVariables": {
             "SMARTOFFICE_BASEADDRESS": "http://localhost:5003",
-            "SMARTOFFICE_DBCONFIG__TYPE": "SQLite",
             "SMARTOFFICE_DBCONFIG__CONNECTIONSTRING": "Data Source=C:\\Temp\\SmartOfficeStorage\\workspaceconfigurations.db"
         }
     }

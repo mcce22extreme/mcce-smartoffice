@@ -5,7 +5,6 @@
         "environmentVariables": {
             "SMARTOFFICE_BASEADDRESS": "http://localhost:5004",
             "SMARTOFFICE_DBCONFIG__CONNECTIONSTRING": "Data Source=C:\\Temp\\SmartOfficeStorage\\bookings.db",
-            "SMARTOFFICE_DBCONFIG__TYPE": "SQLite",
             "SMARTOFFICE_EMAILCONFIG__HOSTAME": "",
             "SMARTOFFICE_EMAILCONFIG__PASSWORD": "",
             "SMARTOFFICE_EMAILCONFIG__PORT": "",
