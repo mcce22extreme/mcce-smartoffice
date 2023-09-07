@@ -8,6 +8,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		docker-compose-azure.yml = docker-compose-azure.yml
+		docker-compose.yml = docker-compose.yml
+		docker_build_images.bat = docker_build_images.bat
+		docker_push_images.bat = docker_push_images.bat
 		README.md = README.md
 		settings.ruleset = settings.ruleset
 	EndProjectSection
@@ -34,7 +38,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcce.SmartOffice.Core", "sr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4232913D-260A-4371-80A9-6161F655DA96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mcce.SmartOffice.Bookings.Tests", "src\Mcce.SmartOffice.Bookings.Tests\Mcce.SmartOffice.Bookings.Tests.csproj", "{63514C3F-F78F-49D9-AE7B-8197BC5577C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcce.SmartOffice.Bookings.Tests", "src\Mcce.SmartOffice.Bookings.Tests\Mcce.SmartOffice.Bookings.Tests.csproj", "{63514C3F-F78F-49D9-AE7B-8197BC5577C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
