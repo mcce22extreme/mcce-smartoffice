@@ -4,7 +4,7 @@
     {
         public string BaseAddress { get; set; }
 
-        public DbConfig DbConfig { get; set; }
+        public string ConnectionString { get; set; }
 
         public MqttConfig MqttConfig { get; set; }
     }

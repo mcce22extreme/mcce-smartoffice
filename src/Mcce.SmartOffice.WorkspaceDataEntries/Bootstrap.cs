@@ -11,7 +11,7 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries
     {
         protected override void OnConfigureBuilder(WebApplicationBuilder builder)
         {
-            builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(AppConfig.DbConfig.ConnectionString));
+            builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(AppConfig.ConnectionString));
 
             builder.Services.AddScoped<IWorkspaceDataEntryManager, WorkspaceDataEntryManager>();
 

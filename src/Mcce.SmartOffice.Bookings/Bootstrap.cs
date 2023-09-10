@@ -11,11 +11,11 @@ namespace Mcce.SmartOffice.Bookings
     {
         protected override void OnConfigureBuilder(WebApplicationBuilder builder)
         {
-            builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(AppConfig.DbConfig.ConnectionString));
+            builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(AppConfig.ConnectionString));
 
             builder.Services.AddScoped<IBookingManager, BookingManager>();
 
-            builder.Services.AddScoped<IEmailService>(s => new EmailService(AppConfig.EmailConfig));
+            builder.Services.AddSingleton<IEmailService>(s => new EmailService(AppConfig.EmailConfig));
         }
 
         protected override async Task OnConfigureApp(WebApplication app)

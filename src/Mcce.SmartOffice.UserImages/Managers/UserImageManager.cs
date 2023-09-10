@@ -9,6 +9,8 @@ namespace Mcce.SmartOffice.UserImages.Managers
     {
         Task<UserImageModel[]> GetUserImages(Func<string, string> urlFunc);
 
+        Task<UserImageModel[]> GetUserImagesByUserName(string userName, Func<string, string> urlFunc);
+
         Task<Stream> GetUserImage(string imageKey);
 
         Task<UserImageModel> StoreUserImage(IFormFile file, Func<string, string> urlFunc);
@@ -31,7 +33,12 @@ namespace Mcce.SmartOffice.UserImages.Managers
         {
             var currentUser = _contextAccessor.GetUserInfo();
 
-            var files = await _storageService.GetFiles(currentUser.UserName);
+            return await GetUserImagesByUserName(currentUser.UserName, urlFunc);
+        }
+
+        public async Task<UserImageModel[]> GetUserImagesByUserName(string userName, Func<string, string> urlFunc)
+        {
+            var files = await _storageService.GetFiles(userName);
 
             return files
                 .Select(x => new UserImageModel
