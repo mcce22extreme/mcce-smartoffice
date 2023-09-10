@@ -1,0 +1,283 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: apigateway-config
+    namespace: default
+    labels:
+        app: apigateway
+data:
+    appsettings.json: |
+        {
+            "BaseAddress":"http://apigateway-clusterip-srv:8080",
+            "Routes": [
+                // User Images
+                {
+                    "DownstreamHostAndPorts": [
+                        {
+                            "Host": "userimage-api-clusterip-srv",
+                            "Port": 80
+                        }
+                    ],
+                    "DownstreamPathTemplate": "/userimage",
+                    "DownstreamScheme": "http",
+                    "SwaggerKey": "userimage",
+                    "UpstreamHttpMethod": [ "POST", "GET" ],
+                    "UpstreamPathTemplate": "/userimage"
+                },
+                {
+                    "DownstreamHostAndPorts": [
+                        {
+                            "Host": "userimage-api-clusterip-srv",
+                            "Port": 80
+                        }
+                    ],
+                    "DownstreamPathTemplate": "/userimage/{everything}",
+                    "DownstreamScheme": "http",
+                    "SwaggerKey": "userimage",
+                    "UpstreamHttpMethod": [ "POST", "GET", "DELETE" ],
+                    "UpstreamPathTemplate": "/userimage/{everything}"
+                },
+                // Workspaces
+                {
+                    "DownstreamHostAndPorts": [
+                        {
+                            "Host": "workspace-api-clusterip-srv",
+                            "Port": 80
+                        }
+                    ],
+                    "DownstreamPathTemplate": "/workspace",
+                    "DownstreamScheme": "http",
+                    "SwaggerKey": "workspace",
+                    "UpstreamHttpMethod": [ "POST", "GET" ],
+                    "UpstreamPathTemplate": "/workspace"
+                },
+                {
+                    "DownstreamHostAndPorts": [
+                        {
+                            "Host": "workspace-api-clusterip-srv",
+                            "Port": 80
+                        }
+                    ],
+                    "DownstreamPathTemplate": "/workspace/{everything}",
+                    "DownstreamScheme": "http",
+                    "SwaggerKey": "workspace",
+                    "UpstreamHttpMethod": [ "POST", "GET", "DELETE" ],
+                    "UpstreamPathTemplate": "/workspace/{everything}"
+                },
+                // Workspace Configurations
+                {
+                    "DownstreamHostAndPorts": [
+                        {
+                            "Host": "workspaceconfiguration-api-clusterip-srv",
+                            "Port": 80
+                        }
+                    ],
+                    "DownstreamPathTemplate": "/workspaceconfiguration",
+                    "DownstreamScheme": "http",
+                    "SwaggerKey": "workspaceconfiguration",
+                    "UpstreamHttpMethod": [ "POST", "GET" ],
+                    "UpstreamPathTemplate": "/workspaceconfiguration"
+                },
+                {
+                    "DownstreamHostAndPorts": [
+                        {
+                            "Host": "workspaceconfiguration-api-clusterip-srv",
+                            "Port": 80
+                        }
+                    ],
+                    "DownstreamPathTemplate": "/workspaceconfiguration/{everything}",
+                    "DownstreamScheme": "http",
+                    "SwaggerKey": "workspaceconfiguration",
+                    "UpstreamHttpMethod": [ "POST", "GET", "DELETE" ],
+                    "UpstreamPathTemplate": "/workspaceconfiguration/{everything}"
+                },
+                // Bookings
+                {
+                    "DownstreamHostAndPorts": [
+                        {
+                            "Host": "booking-api-clusterip-srv",
+                            "Port": 80
+                        }
+                    ],
+                    "DownstreamPathTemplate": "/booking",
+                    "DownstreamScheme": "http",
+                    "SwaggerKey": "booking",
+                    "UpstreamHttpMethod": [ "POST", "GET" ],
+                    "UpstreamPathTemplate": "/booking"
+                },
+                {
+                    "DownstreamHostAndPorts": [
+                        {
+                            "Host": "booking-api-clusterip-srv",
+                            "Port": 80
+                        }
+                    ],
+                    "DownstreamPathTemplate": "/booking/{everything}",
+                    "DownstreamScheme": "http",
+                    "SwaggerKey": "booking",
+                    "UpstreamHttpMethod": [ "POST", "PUT", "GET", "DELETE" ],
+                    "UpstreamPathTemplate": "/booking/{everything}"
+                },
+                // Workspace Data Entries
+                {
+                    "DownstreamHostAndPorts": [
+                        {
+                            "Host": "workspacedataentry-api-clusterip-srv",
+                            "Port": 80
+                        }
+                    ],
+                    "DownstreamPathTemplate": "/workspacedataentry",
+                    "DownstreamScheme": "http",
+                    "SwaggerKey": "workspacedataentry",
+                    "UpstreamHttpMethod": [ "POST", "GET" ],
+                    "UpstreamPathTemplate": "/workspacedataentry"
+                },
+                {
+                    "DownstreamHostAndPorts": [
+                        {
+                            "Host": "workspacedataentry-api-clusterip-srv",
+                            "Port": 80
+                        }
+                    ],
+                    "DownstreamPathTemplate": "/workspacedataentry/{everything}",
+                    "DownstreamScheme": "http",
+                    "SwaggerKey": "workspacedataentry",
+                    "UpstreamHttpMethod": [ "POST", "GET", "DELETE" ],
+                    "UpstreamPathTemplate": "/workspacedataentry/{everything}"
+                }
+            ],
+            "Serilog": {
+                "MinimumLevel": {
+                    "Default": "Debug",
+                    "Override": {
+                        "Microsoft": "Error",
+                        "Ocelot": "Error",
+                        "System": "Error"
+                    }
+                },
+                "WriteTo": [
+                    {
+                        "Name": "Console",
+                        "Args": {
+                            "OutputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
+                        }
+                    }
+                ]
+            },
+            "SwaggerEndPoints": [
+                {
+                    "Config": [
+                        {
+                            "Name": "User Image API",
+                            "Url": "http://userimage-api-clusterip-srv:80/swagger/v1/swagger.json",
+                            "Version": "v1"
+                        }
+                    ],
+                    "Key": "userimage"
+                },
+                {
+                    "Config": [
+                        {
+                            "Name": "Workspace API",
+                            "Url": "http://workspace-api-clusterip-srv:80/swagger/v1/swagger.json",
+                            "Version": "v1"
+                        }
+                    ],
+                    "Key": "workspace"
+                },
+                {
+                    "Config": [
+                        {
+                            "Name": "Workspace Configuration API",
+                            "Url": "http://workspaceconfiguration-api-clusterip-srv:80/swagger/v1/swagger.json",
+                            "Version": "v1"
+                        }
+                    ],
+                    "Key": "workspaceconfiguration"
+                },
+                {
+                    "Config": [
+                        {
+                            "Name": "Booking API",
+                            "Url": "http://booking-api-clusterip-srv:80/swagger/v1/swagger.json",
+                            "Version": "v1"
+                        }
+                    ],
+                    "Key": "booking"
+                },
+                {
+                    "Config": [
+                        {
+                            "Name": "Workspace Data API",
+                            "Url": "http://workspacedataentry-api-clusterip-srv:80/swagger/v1/swagger.json",
+                            "Version": "v1"
+                        }
+                    ],
+                    "Key": "workspacedataentry"
+                }
+            ]
+        }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: apigateway-depl
+    namespace: default
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: apigateway
+    template:
+        metadata:
+            labels:
+                app: apigateway
+        spec:
+            containers:
+                - name: apigateway
+                  image: domih/mcce-smart-office-apigateway
+                  imagePullPolicy: Always
+                  resources:
+                      requests:
+                          memory: "256Mi"
+                          cpu: "250m"
+                      limits:
+                          memory: "512Mi"
+                          cpu: "1000m"
+                  volumeMounts:
+                      - name: apigateway-config
+                        mountPath: /app/appsettings.json
+                        subPath: appsettings.json
+            volumes:
+                - name: apigateway-config
+                  configMap:
+                      name: apigateway-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: apigateway-clusterip-srv
+    namespace: default
+spec:
+    selector:
+        app: apigateway
+    ports:
+        - name: http
+          port: 80
+          targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: apigateway-lb-srv
+    namespace: default
+    annotations:
+        service.beta.kubernetes.io/azure-dns-label-name: smartoffice-mcce22extreme
+spec:
+    type: LoadBalancer
+    selector:
+        app: apigateway
+    ports:
+        - name: http
+          port: 80
+          targetPort: 8080
