@@ -1,15 +1,12 @@
 {
-    "profiles": {
-        "Mcce.SmartOffice.ApiGateway": {
-            "commandName": "Project",
-            "environmentVariables": {
-                "SMARTOFFICE_BASEADDRESS": "http://localhost:5000",
-                "SMARTOFFICE_USERIMAGESERVICE": "http://localhost:5001",
-                "SMARTOFFICE_WORKSPACESERVICE": "http://localhost:5002",
-                "SMARTOFFICE_WORKSPACECONFIGURATIONSERVICE": "http://localhost:5003",
-                "SMARTOFFICE_BOOKINGSERVICE": "http://localhost:5004",
-                "SMARTOFFICE_WORKSPACEDATAENTRYSERVICE": "http://localhost:5005"
-            }
-        }
+  "profiles": {
+    "Mcce.SmartOffice.ApiGateway": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:49340;http://localhost:49341"
     }
+  }
 }

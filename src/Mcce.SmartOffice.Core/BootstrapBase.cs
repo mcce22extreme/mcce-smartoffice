@@ -31,9 +31,8 @@ namespace Mcce.SmartOffice.Core
         {
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                //.AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("SMARTOFFICE_")
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true, reloadOnChange: true)
                 .Build();
 
             AppConfig = Configuration.Get<T>();
@@ -92,7 +91,9 @@ namespace Mcce.SmartOffice.Core
 
             builder.Services.AddSingleton<IAppInfo>(appInfo);
 
-            builder.Services.AddScoped<IValidationProvider, ValidationProvider>();
+            builder.Services.AddSingleton(AppConfig);
+
+            builder.Services.AddSingleton<IValidationProvider, ValidationProvider>();
 
             builder.Services.RegisterAllTypes<IValidator>(new[] { Assembly });
 
@@ -100,7 +101,7 @@ namespace Mcce.SmartOffice.Core
 
             if (AppConfig.MqttConfig != null)
             {
-                builder.Services.AddScoped<IMessageService>(s => new MessageService(AppConfig.MqttConfig));
+                builder.Services.AddSingleton<IMessageService>(s => new MessageService(AppConfig.MqttConfig));
 
                 builder.Services.AddHostedService<MessageHandlerService>();
 

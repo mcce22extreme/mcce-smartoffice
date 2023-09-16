@@ -2,6 +2,7 @@
 using MQTTnet;
 using MQTTnet.Client;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Serilog;
 
 namespace Mcce.SmartOffice.Core.Services
@@ -17,6 +18,8 @@ namespace Mcce.SmartOffice.Core.Services
 
     public class MessageService : IMessageService
     {
+        private static readonly string _sender = Guid.NewGuid().ToString();
+
         private static readonly MqttFactory Factory = new MqttFactory();
 
         private readonly IMqttClient _mqttClient;
@@ -33,9 +36,12 @@ namespace Mcce.SmartOffice.Core.Services
         {
             if (await Connect())
             {
+                var jObject = JObject.FromObject(payload);
+                jObject["Sender"] = _sender;
+
                 var msg = new MqttApplicationMessageBuilder()
                     .WithTopic(topic)
-                    .WithPayload(JsonConvert.SerializeObject(payload))
+                    .WithPayload(JsonConvert.SerializeObject(jObject))
                     .Build();
 
                 await _mqttClient.PublishAsync(msg, CancellationToken.None);
@@ -70,9 +76,9 @@ namespace Mcce.SmartOffice.Core.Services
         {
             var payload = args.ApplicationMessage.ConvertPayloadToString();
 
-            if (_handlers.ContainsKey(args.ClientId))
+            if (_handlers.ContainsKey(args.ApplicationMessage.Topic))
             {
-                foreach (var handler in _handlers[args.ClientId])
+                foreach (var handler in _handlers[args.ApplicationMessage.Topic])
                 {
                     await handler.Handle(args.ClientId, payload);
                 }

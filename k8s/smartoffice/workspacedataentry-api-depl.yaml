@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: workspacedataentry-api-config
+  namespace: default
+  labels:
+    app: workspacedataentry-api
+data:
+  appsettings.json: |
+    {
+        "BaseAddress": "http://workspacedataentry-api-clusterip-srv:8080",
+        "ConnectionString" :"Data Source=/app/storage/workspacedataentries.db",
+        "MqttConfig": {
+            "HostName": "mosquitto-clusterip-srv",
+            "Password": "mcce22-smart-office",
+            "Port": 1883,
+            "UserName": "iot"
+        },
+        "Serilog": {
+            "MinimumLevel": {
+                "Default": "Debug",
+                "Override": {
+                    "Microsoft": "Debug",
+                    "System": "Debug"
+                }
+            },
+            "WriteTo": [
+                {
+                    "Args": {
+                        "OutputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
+                    },
+                    "Name": "Console"
+                }
+            ]
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workspacedataentry-api-depl
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: workspacedataentry-api
+  template:
+    metadata:
+      labels:
+        app: workspacedataentry-api
+    spec:
+      containers:
+        - name: workspacedataentry-api
+          image: domih/mcce-smart-office-workspacedataentry-api:latest
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "1000m"
+          volumeMounts:
+            - name: workspacedataentry-api-config
+              mountPath: /app/appsettings.json
+              subPath: appsettings.json
+      volumes:
+        - name: workspacedataentry-api-config
+          configMap:
+            name: workspacedataentry-api-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: workspacedataentry-api-clusterip-srv
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: workspacedataentry-api
+  ports:
+    - name: workspacedataentry-api
+      protocol: TCP
+      port: 80
+      targetPort: 8080

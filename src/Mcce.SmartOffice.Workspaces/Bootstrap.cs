@@ -10,7 +10,7 @@ namespace Mcce.SmartOffice.Workspaces
     {
         protected override void OnConfigureBuilder(WebApplicationBuilder builder)
         {
-            builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(AppConfig.DbConfig.ConnectionString));
+            builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(AppConfig.ConnectionString));
 
             builder.Services.AddScoped<IWorkspaceManager, WorkspaceManager>();
         }

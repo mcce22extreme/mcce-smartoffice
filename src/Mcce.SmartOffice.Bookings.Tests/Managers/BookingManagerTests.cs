@@ -2,6 +2,7 @@
 using Mcce.SmartOffice.Bookings.Entities;
 using Mcce.SmartOffice.Bookings.Managers;
 using Mcce.SmartOffice.Bookings.Services;
+using Mcce.SmartOffice.Core.Services;
 using Microsoft.AspNetCore.Http;
 
 namespace Mcce.SmartOffice.Bookings.Tests.Managers
@@ -47,7 +48,7 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
             await dbContext.SaveChangesAsync();
 
             // Act
-            var manager = new BookingManager(dbContext, Mapper, A.Fake<IEmailService>(), A.Fake<IHttpContextAccessor>());
+            var manager = new BookingManager(dbContext, Mapper, A.Fake<IEmailService>(), A.Fake<IHttpContextAccessor>(), A.Fake<IMessageService>());
             var otherUsers = await manager.GetBookings();
 
             // Assert

@@ -8,12 +8,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		docker-compose-azure.yml = docker-compose-azure.yml
-		docker-compose.yml = docker-compose.yml
 		docker_build_images.bat = docker_build_images.bat
 		docker_push_images.bat = docker_push_images.bat
 		README.md = README.md
-		settings.ruleset = settings.ruleset
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{9D747313-CB04-4C7F-95BE-4083BE7A893A}"
