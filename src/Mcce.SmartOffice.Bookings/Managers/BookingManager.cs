@@ -103,13 +103,9 @@ namespace Mcce.SmartOffice.Bookings.Managers
             booking.UserName = currentUser.UserName;
             booking.ActivationCode = GenerateActivationCode();
 
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
-
             await _dbContext.Bookings.AddAsync(booking);
 
             await _dbContext.SaveChangesAsync();
-
-            await tx.CommitAsync();
 
             Log.Debug($"Created booking '{booking.Id}' for workspace '{booking.WorkspaceNumber}' and user '{booking.UserName}' with activation code '{booking.ActivationCode}'.");
 
@@ -132,15 +128,14 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
         public async Task DeleteBooking(int bookingId)
         {
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
+            var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.Id == bookingId);
 
-            await _dbContext.Bookings
-                .Where(x => x.Id == bookingId)
-                .ExecuteDeleteAsync();
+            if(booking != null)
+            {
+                _dbContext.Bookings.Remove(booking);
 
-            await _dbContext.SaveChangesAsync();
-
-            await tx.CommitAsync();
+                await _dbContext.SaveChangesAsync();
+            }
         }
 
         private async Task<bool> CheckAvailability(string workspaceNumber, DateTime startDateTime, DateTime endDateTime)
@@ -182,13 +177,9 @@ namespace Mcce.SmartOffice.Bookings.Managers
                 throw new NotFoundException($"Could not find booking for activation code '{activationCode}'.");
             }
 
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
-
             booking.Activated = true;
 
             await _dbContext.SaveChangesAsync();
-
-            await tx.CommitAsync();
 
             await _messageService.Publish(MessageTopics.TOPIC_BOOKING_ACTIVATED, new
             {

@@ -16,6 +16,9 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<WorkspaceConfiguration>()
+                .HasPartitionKey(x => x.WorkspaceNumber)
+                .HasNoDiscriminator()
+                .ToContainer(nameof(WorkspaceConfigurations))
                 .HasIndex(x => new
                 {
                     x.WorkspaceNumber,

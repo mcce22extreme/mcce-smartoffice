@@ -76,13 +76,9 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
                 UserName = currentUser.UserName,
             });
 
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
-
             await _dbContext.WorkspaceConfigurations.AddAsync(configuration);
 
             await _dbContext.SaveChangesAsync();
-
-            await tx.CommitAsync();
 
             return await GetWorkspaceConfiguration(model.WorkspaceNumber);
         }
@@ -101,11 +97,7 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
 
             _mapper.Map(model, configuration);
 
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
-
             await _dbContext.SaveChangesAsync();
-
-            await tx.CommitAsync();
 
             return await GetWorkspaceConfiguration(model.WorkspaceNumber);
         }
@@ -114,13 +106,14 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
         {
             var currentUser = _contextAccessor.GetUserInfo();
 
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
+            var configuration = await _dbContext.WorkspaceConfigurations.FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber &&  x.UserName == currentUser.UserName);
 
-            await _dbContext.WorkspaceConfigurations
-                .Where(x => x.UserName == currentUser.UserName && x.WorkspaceNumber == workspaceNumber)
-                .ExecuteDeleteAsync();
+            if(configuration != null)
+            {
+                _dbContext.WorkspaceConfigurations.Remove(configuration);
 
-            await tx.CommitAsync();
+                await _dbContext.SaveChangesAsync();
+            }
         }
     }
 }

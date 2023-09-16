@@ -49,20 +49,20 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
 
             // Act
             var manager = new BookingManager(dbContext, Mapper, A.Fake<IEmailService>(), A.Fake<IHttpContextAccessor>(), A.Fake<IMessageService>());
-            var otherUsers = await manager.GetBookings();
+            var otherBookings = await manager.GetBookings();
 
             // Assert
-            foreach (var expectedUser in expectedBookings)
+            foreach (var expectedBooking in expectedBookings)
             {
-                var otherUser = otherUsers.FirstOrDefault(x => x.Id == expectedUser.Id);
+                var otherBooking = otherBookings.FirstOrDefault(x => x.Id == expectedBooking.Id);
 
-                Assert.IsNotNull(otherUser);
-                Assert.That(otherUser.StartDateTime, Is.EqualTo(expectedUser.StartDateTime));
-                Assert.That(otherUser.EndDateTime, Is.EqualTo(expectedUser.EndDateTime));
-                Assert.That(otherUser.WorkspaceNumber, Is.EqualTo(expectedUser.WorkspaceNumber));
-                Assert.That(otherUser.UserName, Is.EqualTo(expectedUser.UserName));
-                Assert.That(otherUser.Activated, Is.False);
-                Assert.That(otherUser.InvitationSent, Is.False);
+                Assert.IsNotNull(otherBooking);
+                Assert.That(otherBooking.StartDateTime, Is.EqualTo(expectedBooking.StartDateTime));
+                Assert.That(otherBooking.EndDateTime, Is.EqualTo(expectedBooking.EndDateTime));
+                Assert.That(otherBooking.WorkspaceNumber, Is.EqualTo(expectedBooking.WorkspaceNumber));
+                Assert.That(otherBooking.UserName, Is.EqualTo(expectedBooking.UserName));
+                Assert.That(otherBooking.Activated, Is.False);
+                Assert.That(otherBooking.InvitationSent, Is.False);
             }
         }
     }

@@ -12,5 +12,13 @@ namespace Mcce.SmartOffice.Bookings
             : base(options, contextAccessor)
         {
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Booking>()
+                .HasPartitionKey(x => x.WorkspaceNumber)
+                .HasNoDiscriminator()
+                .ToContainer(nameof(Bookings));
+        }
     }
 }

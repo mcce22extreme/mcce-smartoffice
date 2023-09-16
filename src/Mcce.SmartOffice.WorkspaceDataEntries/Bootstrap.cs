@@ -11,11 +11,11 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries
     {
         protected override void OnConfigureBuilder(WebApplicationBuilder builder)
         {
-            builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(AppConfig.ConnectionString));
+            builder.Services.AddDbContext<AppDbContext>(opt => opt.UseCosmos(AppConfig.DbConfig.ConnectionString, AppConfig.DbConfig.DatabaseName));
 
             builder.Services.AddScoped<IWorkspaceDataEntryManager, WorkspaceDataEntryManager>();
 
-            builder.Services.AddScoped<IWeiGenerator, WeiGenerator>();
+            builder.Services.AddSingleton<IWeiGenerator, WeiGenerator>();
         }
 
         protected override async Task OnConfigureApp(WebApplication app)
