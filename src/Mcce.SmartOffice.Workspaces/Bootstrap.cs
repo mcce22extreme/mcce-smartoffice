@@ -1,4 +1,5 @@
-﻿using Mcce.SmartOffice.Core;
+﻿using Azure.Core;
+using Mcce.SmartOffice.Core;
 using Mcce.SmartOffice.Core.Configs;
 using Mcce.SmartOffice.Core.Extensions;
 using Mcce.SmartOffice.Workspaces.Managers;

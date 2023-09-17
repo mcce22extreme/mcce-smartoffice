@@ -3,9 +3,9 @@
     "Mcce.SmartOffice.Workspaces": {
       "commandName": "Project",
       "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
+        "environmentVariables": {
+            "ASPNETCORE_ENVIRONMENT": "Development"
+        },
       "applicationUrl": "https://localhost:53003;http://localhost:53004"
     }
   }

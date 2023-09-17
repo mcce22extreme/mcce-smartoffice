@@ -8,15 +8,15 @@ namespace Mcce.SmartOffice.UserImages.Handlers
 {
     public class BookingActivatedHandler : IMessageHandler
     {
-        private readonly IUserImageManager _userImageManager;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IMessageService _messageService;
         private readonly AppConfig _appConfig;
 
         public string[] SupportedTopics => new[] { MessageTopics.TOPIC_BOOKING_ACTIVATED };
 
-        public BookingActivatedHandler(IUserImageManager userImageManager, IMessageService messageService, AppConfig appConfig)
+        public BookingActivatedHandler(IServiceScopeFactory serviceScopeFactory, IMessageService messageService, AppConfig appConfig)
         {
-            _userImageManager = userImageManager;
+            _serviceScopeFactory = serviceScopeFactory;
             _messageService = messageService;
             _appConfig = appConfig;
         }
@@ -25,7 +25,10 @@ namespace Mcce.SmartOffice.UserImages.Handlers
         {
             var bookingInfo = JsonConvert.DeserializeObject<BookingInfo>(payload);
 
-            var userImages = await _userImageManager.GetUserImagesByUserName(bookingInfo.UserName, x =>
+            var scope = _serviceScopeFactory.CreateScope();
+            var userImageManager = scope.ServiceProvider.GetService<IUserImageManager>();
+
+            var userImages = await userImageManager.GetUserImagesByUserName(bookingInfo.UserName, x =>
             {
                 return $"{_appConfig.FrontendUrl}/{x}";
             });
