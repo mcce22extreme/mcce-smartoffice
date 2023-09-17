@@ -1,4 +1,5 @@
-﻿using Mcce.SmartOffice.Core;
+﻿using Azure.Core;
+using Mcce.SmartOffice.Core;
 using Mcce.SmartOffice.Core.Configs;
 using Mcce.SmartOffice.Core.Extensions;
 using Mcce.SmartOffice.Workspaces.Managers;
@@ -10,7 +11,7 @@ namespace Mcce.SmartOffice.Workspaces
     {
         protected override void OnConfigureBuilder(WebApplicationBuilder builder)
         {
-            builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(AppConfig.ConnectionString));
+            builder.Services.AddDbContext<AppDbContext>(opt => opt.UseCosmos(AppConfig.DbConfig.ConnectionString, AppConfig.DbConfig.DatabaseName));
 
             builder.Services.AddScoped<IWorkspaceManager, WorkspaceManager>();
         }

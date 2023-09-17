@@ -8,20 +8,14 @@ metadata:
 data:
   appsettings.json: |
     {
+        "AppConfigUrl": "https://cfg-smartoffice-001.azconfig.io",
         "BaseAddress": "http://workspaceconfiguration-api-clusterip-srv:8080",
-        "ConnectionString" :"Data Source=/app/storage/workspaceconfigurations.db",
-        "MqttConfig": {
-            "HostName": "mosquitto-clusterip-srv",
-            "Password": "mcce22-smart-office",
-            "Port": 1883,
-            "UserName": "iot"
-        },
         "Serilog": {
             "MinimumLevel": {
                 "Default": "Debug",
                 "Override": {
-                    "Microsoft": "Debug",
-                    "System": "Debug"
+                    "Microsoft": "Error",
+                    "System": "Error"
                 }
             },
             "WriteTo": [

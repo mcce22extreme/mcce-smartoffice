@@ -8,27 +8,26 @@ metadata:
 data:
   appsettings.json: |
     {
+      "AppConfigUrl": "https://cfg-smartoffice-001.azconfig.io",
       "BaseAddress": "http://workspace-api-clusterip-srv:8080",
-      "ConnectionString" :"Data Source=/app/storage/workspaces.db",
       "Serilog": {
           "MinimumLevel": {
               "Default": "Debug",
               "Override": {
-                  "Microsoft": "Debug",
-                  "System": "Debug"
+                  "Microsoft": "Error",
+                  "System": "Error"
               }
           },
           "WriteTo": [
               {
                   "Args": {
-                      "OutputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
+                      "OutputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}"
                   },
                   "Name": "Console"
               }
           ]
       }
     }
-
 ---
 apiVersion: apps/v1
 kind: Deployment

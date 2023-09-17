@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
+using Azure.Identity;
 using FluentValidation;
 using Mcce.SmartOffice.Core.Attributes;
 using Mcce.SmartOffice.Core.Configs;
-using Mcce.SmartOffice.Core.Enums;
 using Mcce.SmartOffice.Core.Extensions;
 using Mcce.SmartOffice.Core.Handlers;
 using Mcce.SmartOffice.Core.Providers;
@@ -29,12 +29,27 @@ namespace Mcce.SmartOffice.Core
 
         public BootstrapBase()
         {
-            Configuration = new ConfigurationBuilder()
+            var builder = new ConfigurationBuilder()
                 .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true, reloadOnChange: true)
-                .Build();
+                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true, reloadOnChange: true);
 
+            var cfg = builder.Build();
+            var appConfig = cfg.Get<AppConfig>();
+
+            if (appConfig.AppConfigUrl.HasValue())
+            {
+                builder.AddAzureAppConfiguration(opt =>
+                {
+                    opt.Connect(new Uri(appConfig.AppConfigUrl), new DefaultAzureCredential());
+                    opt.ConfigureKeyVault(kvopt =>
+                    {
+                        kvopt.SetCredential(new DefaultAzureCredential());
+                    });
+                });
+            }
+
+            Configuration = builder.Build();
             AppConfig = Configuration.Get<T>();
         }
 

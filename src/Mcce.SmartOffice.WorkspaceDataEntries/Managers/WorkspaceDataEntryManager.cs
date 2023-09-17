@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Mcce.SmartOffice.Core.Extensions;
+using Mcce.SmartOffice.WorkspaceDataEntries.Entities;
 using Mcce.SmartOffice.WorkspaceDataEntries.Generators;
 using Mcce.SmartOffice.WorkspaceDataEntries.Models;
 using Microsoft.EntityFrameworkCore;
@@ -44,13 +45,13 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
             var workspaceData = await entryQuery.ToListAsync();
 
             return workspaceData
-                .Select(_mapper.Map<Models.WorkspaceDataEntryModel>)
+                .Select(_mapper.Map<WorkspaceDataEntryModel>)
                 .ToArray();
         }
 
         public async Task<Models.WorkspaceDataEntryModel> CreateWorkspaceDataEntry(SaveWorkspaceDataEntryModel model)
         {
-            var entry = _mapper.Map<Entities.WorkspaceDataEntry>(model);
+            var entry = _mapper.Map<WorkspaceDataEntry>(model);
 
             entry.WorkspaceNumber = model.WorkspaceNumber;
             entry.Wei = _weiGenerator.GenerateWei(entry.Temperature, entry.Humidity, entry.Co2Level);
@@ -60,36 +61,30 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
                 entry.Timestamp = DateTime.UtcNow;
             }
 
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
-
             await _dbContext.Entries.AddAsync(entry);
 
             await _dbContext.SaveChangesAsync();
 
-            await tx.CommitAsync();
-
-            return _mapper.Map<Models.WorkspaceDataEntryModel>(entry);
+            return _mapper.Map<WorkspaceDataEntryModel>(entry);
         }
 
         public async Task DeleteWorkspaceDataEntry(int entryId)
         {
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
+            var entry = await _dbContext.Entries.FirstOrDefaultAsync(x => x.Id == entryId);
 
-            await _dbContext.Entries
-                .Where(x => x.Id == entryId)
-                .ExecuteDeleteAsync();
+            if(entry != null)
+            {
+                _dbContext.Entries.Remove(entry);
 
-            await tx.CommitAsync();
+                await _dbContext.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteAllEntries()
         {
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
+            await _dbContext.Database.EnsureDeletedAsync();
 
-            await _dbContext.Entries
-                .ExecuteDeleteAsync();
-
-            await tx.CommitAsync();
+            await _dbContext.Database.EnsureCreatedAsync();
         }
     }
 }

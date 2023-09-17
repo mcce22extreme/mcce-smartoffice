@@ -8,21 +8,15 @@ metadata:
 data:
   appsettings.json: |
     {
+      "AppConfigUrl": "https://cfg-smartoffice-001.azconfig.io",
       "BaseAddress": "http://userimage-api-clusterip-srv:8080",
-      "FrontendUrl": "http://smartoffice-mcce22extreme.westeurope.cloudapp.azure.com/userimage",
-      "StoragePath": "/app/storage",
-      "MqttConfig": {
-          "HostName": "mosquitto-clusterip-srv",
-          "Password": "mcce22-smart-office",
-          "Port": 1883,
-          "UserName": "iot"
-      },    
+      "StoragePath": "/app/storage",        
       "Serilog": {
           "MinimumLevel": {
               "Default": "Debug",
               "Override": {
-                  "Microsoft": "Debug",
-                  "System": "Debug"
+                  "Microsoft": "Error",
+                  "System": "Error"
               }
           },
           "WriteTo": [

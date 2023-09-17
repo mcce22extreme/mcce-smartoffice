@@ -7,14 +7,14 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations
 {
     public class BookingActivatedHandler : IMessageHandler
     {
-        private readonly IWorkspaceConfigurationManager _workspaceConfigurationManager;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IMessageService _messageService;
 
         public string[] SupportedTopics => new[] { MessageTopics.TOPIC_BOOKING_ACTIVATED };
 
-        public BookingActivatedHandler(IWorkspaceConfigurationManager workspaceConfigurationManager, IMessageService messageService)
+        public BookingActivatedHandler(IServiceScopeFactory serviceScopeFactory, IMessageService messageService)
         {
-            _workspaceConfigurationManager = workspaceConfigurationManager;
+            _serviceScopeFactory = serviceScopeFactory;
             _messageService = messageService;
         }
 
@@ -22,7 +22,10 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations
         {
             var bookingInfo = JsonConvert.DeserializeObject<BookingInfo>(payload);
 
-            var config = await _workspaceConfigurationManager.GetWorkspaceConfigurationByUserName(bookingInfo.WorkspaceNumber, bookingInfo.UserName);
+            var scope = _serviceScopeFactory.CreateScope();
+            var workspaceConfigurationManager = scope.ServiceProvider.GetService<IWorkspaceConfigurationManager>();
+
+            var config = await workspaceConfigurationManager.GetWorkspaceConfigurationByUserName(bookingInfo.WorkspaceNumber, bookingInfo.UserName);
 
             if(config != null)
             {

@@ -12,5 +12,13 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries
             : base(options, contextAccessor)
         {
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<WorkspaceDataEntry>()
+                .HasPartitionKey(x => x.WorkspaceNumber)
+                .HasNoDiscriminator()
+                .ToContainer(nameof(Entries));
+        }
     }
 }

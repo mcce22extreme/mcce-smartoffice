@@ -55,13 +55,9 @@ namespace Mcce.SmartOffice.Workspaces.Managers
         {
             var workspace = _mapper.Map<Workspace>(model);
 
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
-
             await _dbContext.Workspaces.AddAsync(workspace);
 
             await _dbContext.SaveChangesAsync();
-
-            await tx.CommitAsync();
 
             return await GetWorkspace(workspace.WorkspaceNumber);
         }
@@ -78,24 +74,21 @@ namespace Mcce.SmartOffice.Workspaces.Managers
 
             _mapper.Map(model, workspace);
 
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
-
             await _dbContext.SaveChangesAsync();
-
-            await tx.CommitAsync();
 
             return await GetWorkspace(workspaceNumber);
         }
 
         public async Task DeleteWorkspace(string workspaceNumber)
         {
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
+            var workspace = await _dbContext.Workspaces.FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber);
 
-            await _dbContext.Workspaces
-                .Where(x => x.WorkspaceNumber == workspaceNumber)
-                .ExecuteDeleteAsync();
+            if(workspace != null)
+            {
+                _dbContext.Workspaces.Remove(workspace);
 
-            await tx.CommitAsync();
+                await _dbContext.SaveChangesAsync();
+            }
         }
     }
 }

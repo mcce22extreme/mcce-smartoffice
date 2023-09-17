@@ -8,21 +8,8 @@ metadata:
 data:
   appsettings.json: |
     {
+        "AppConfigUrl": "https://cfg-smartoffice-001.azconfig.io",
         "BaseAddress": "http://booking-api-clusterip-srv:8080",
-        "ConnectionString": "Data Source=/app/storage/bookings.db",
-        "EmailConfig": {
-            "HostName": "",
-            "Password": "",
-            "Port": 443,
-            "SenderName": "",
-            "UserName": ""
-        },
-        "MqttConfig": {
-            "HostName": "mosquitto-clusterip-srv",
-            "Password": "mcce22-smart-office",
-            "Port": 1883,
-            "UserName": "iot"
-        },
         "Serilog": {
             "MinimumLevel": {
                 "Default": "Debug",
