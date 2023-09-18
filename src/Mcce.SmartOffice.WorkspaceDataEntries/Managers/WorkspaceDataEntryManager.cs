@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Mcce.SmartOffice.Core.Constants;
+using Mcce.SmartOffice.Core.Services;
 using Mcce.SmartOffice.WorkspaceDataEntries.Entities;
 using Mcce.SmartOffice.WorkspaceDataEntries.Generators;
 using Mcce.SmartOffice.WorkspaceDataEntries.Models;
@@ -20,12 +22,14 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IWeiGenerator _weiGenerator;
+        private readonly IMessageService _messageService;
 
-        public WorkspaceDataEntryManager(AppDbContext dbContext, IMapper mapper, IWeiGenerator weiGenerator)
+        public WorkspaceDataEntryManager(AppDbContext dbContext, IMapper mapper, IWeiGenerator weiGenerator, IMessageService messageService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _weiGenerator = weiGenerator;
+            _messageService = messageService;
         }
 
         public async Task<WorkspaceDataEntryModel[]> GetWorkspaceDataEntries(string workspaceNumber, DateTime? startDate, DateTime? endDate)
@@ -58,6 +62,12 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
             await _dbContext.WorkspaceDataEntries.AddAsync(entry);
 
             await _dbContext.SaveChangesAsync();
+
+            await _messageService.Publish(MessageTopics.TOPIC_WEI_UPDATED, new
+            {
+                entry.WorkspaceNumber,
+                entry.Wei
+            });
 
             return _mapper.Map<WorkspaceDataEntryModel>(entry);
         }
