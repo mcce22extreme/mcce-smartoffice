@@ -58,10 +58,6 @@
                     Binding="{Binding WorkspaceNumber}"
                     Header="Workspace" />
                 <DataGridTextColumn
-                    Width="150"
-                    Binding="{Binding RoomNumber}"
-                    Header="Room" />
-                <DataGridTextColumn
                     Width="250"
                     Binding="{Binding FullUserName}"
                     Header="User" />

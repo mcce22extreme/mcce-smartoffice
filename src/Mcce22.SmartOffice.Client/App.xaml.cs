@@ -1,8 +1,15 @@
 ﻿using System;
+using System.IO;
+using System.Net.Http;
+using System.Reflection;
 using System.Windows;
+using CefSharp;
+using CefSharp.Handler;
+using CefSharp.Wpf;
 using Mcce22.SmartOffice.Client.Managers;
 using Mcce22.SmartOffice.Client.Services;
 using Mcce22.SmartOffice.Client.ViewModels;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mcce22.SmartOffice.Client
@@ -14,11 +21,27 @@ namespace Mcce22.SmartOffice.Client
     {
         private ServiceProvider _serviceProvider;
 
-        //private readonly WindsorContainer _container = new();
+        private readonly IConfiguration _configuration;
+        private readonly IAppConfig _appConfig;
+
+        public App()
+        {
+            _configuration = new ConfigurationBuilder()
+                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true, reloadOnChange: true)
+                .Build();
+
+            _appConfig = _configuration.Get<AppConfig>();
+        }
 
         private void OnStartUp(object sender, StartupEventArgs e)
         {
+            InitCefSharp();
+
             var services = new ServiceCollection();
+
+            services.AddSingleton<IAppConfig>(s => _appConfig);
 
             services.AddSingleton<IDialogService, DialogService>();
             services.AddSingleton<INavigationService, NavigationService>();
@@ -36,19 +59,48 @@ namespace Mcce22.SmartOffice.Client
             services.AddSingleton<SeedDataViewModel>();
             services.AddSingleton<CreateBookingViewModel>();
             services.AddSingleton<WorkspaceDataListViewModel>();
+            services.AddSingleton<ConfigViewModel>();
 
-            services.AddSingleton<IUserManager, UserManager>(s => new UserManager(AppSettings.Current.BaseAddressUsers));
-            services.AddSingleton<IWorkspaceManager, WorkspaceManager>(s => new WorkspaceManager(AppSettings.Current.BaseAddressWorkspaces));
-            services.AddSingleton<IBookingManager, BookingManager>(s => new BookingManager(AppSettings.Current.BaseAddressBookings));
-            services.AddSingleton<IWorkspaceConfigurationManager, WorkspaceConfigurationManager>(s => new WorkspaceConfigurationManager(AppSettings.Current.BaseAddressWorkspaces));
-            services.AddSingleton<IUserImageManager, UserImageManager>(s => new UserImageManager(AppSettings.Current.BaseAddressUsers));
-            services.AddSingleton<IWorkspaceDataManager, WorkspaceDataManager>(s => new WorkspaceDataManager(AppSettings.Current.BaseAddressWorkspaces));
-            services.AddSingleton<IProcessBookingManager, ProcessBookingManager>(s => new ProcessBookingManager(AppSettings.Current.BaseAddressNotifications));
+            services.AddSingleton<IUserManager, UserManager>();
+            services.AddSingleton<IWorkspaceManager, WorkspaceManager>();
+            services.AddSingleton<IBookingManager, BookingManager>();
+            services.AddSingleton<IWorkspaceConfigurationManager, WorkspaceConfigurationManager>();
+            services.AddSingleton<IUserImageManager, UserImageManager>();
+            services.AddSingleton<IWorkspaceDataManager, WorkspaceDataManager>();
+            services.AddSingleton<IProcessBookingManager, ProcessBookingManager>();
+            services.AddSingleton<IAccountManager, AccountManager>();
+            services.AddSingleton<IConfigManager, ConfigManager>();
+
+            services.AddSingleton<HttpClient>();
+
+            services.AddSingleton<IAuthService, AuthService>();
 
             _serviceProvider = services.BuildServiceProvider();
 
             MainWindow = _serviceProvider.GetService<MainWindow>();
             MainWindow.Show();
+        }
+
+        private void InitCefSharp()
+        {
+            const bool multiThreadedMessageLoop = true;
+
+            IBrowserProcessHandler browserProcessHandler;
+
+            if (multiThreadedMessageLoop)
+            {
+                browserProcessHandler = new BrowserProcessHandler();
+            }
+
+            
+
+            var settings = new CefSettings();
+            settings.MultiThreadedMessageLoop = multiThreadedMessageLoop;
+            settings.ExternalMessagePump = !multiThreadedMessageLoop;
+            settings.RootCachePath = Path.GetFullPath("cache");
+            settings.CachePath = Path.GetFullPath("cache\\global");
+
+            var result = Cef.Initialize(settings, true, browserProcessHandler);
         }
     }
 }

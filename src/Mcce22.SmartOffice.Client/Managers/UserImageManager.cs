@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Windows.Controls.Ribbon;
 using HeyRed.Mime;
 using Mcce22.SmartOffice.Client.Models;
 using Newtonsoft.Json;
@@ -19,20 +21,20 @@ namespace Mcce22.SmartOffice.Client.Managers
 
     public class UserImageManager : IUserImageManager
     {
-        private static readonly HttpClient HttpClient = new HttpClient();
-
         private readonly string _baseUrl;
+        private readonly HttpClient _httpClient;
 
-        public UserImageManager(string baseUrl)
+        public UserImageManager(IAppConfig appConfig, HttpClient httpClient)
 
         {
-            _baseUrl = $"{baseUrl}/userimage/";
+            _baseUrl = $"{appConfig.BaseAddress}/userimage";
+            _httpClient = httpClient;
         }
 
         public async Task<UserImageModel[]> GetList(string userId)
         {
             var url = $"{_baseUrl}/{userId}";
-            var json = await HttpClient.GetStringAsync(url);
+            var json = await _httpClient.GetStringAsync(url);
 
             var entries = JsonConvert.DeserializeObject<UserImageModel[]>(json);
 
@@ -43,7 +45,7 @@ namespace Mcce22.SmartOffice.Client.Managers
         {
             var url = $"{_baseUrl}/{userImageId}";
 
-            await HttpClient.DeleteAsync(url);
+            await _httpClient.DeleteAsync(url);
         }
 
         public async Task Save(string userId, string filePath)
@@ -55,17 +57,17 @@ namespace Mcce22.SmartOffice.Client.Managers
                     new StreamContent(stream)
                     {
                         Headers =
-                {
-                    ContentLength = stream.Length,
-                    ContentType = new MediaTypeHeaderValue(MimeTypesMap.GetMimeType(filePath))
-                }
+                        {
+                            ContentLength = stream.Length,
+                            ContentType = new MediaTypeHeaderValue(MimeTypesMap.GetMimeType(filePath))
+                        }
                     },
                     "File",
                     Path.GetFileName(filePath)
                 }
             };
 
-            await HttpClient.PostAsync($"{_baseUrl}/{userId}", content);
+            await _httpClient.PostAsync($"{_baseUrl}/{userId}", content);
         }
     }
 }

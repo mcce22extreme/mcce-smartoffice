@@ -2,6 +2,7 @@
 {
     public enum NavigationType
     {
+        Dashboard,
         CreateBooking,
         UserConfigs,
         SlideshowItems,
@@ -9,6 +10,7 @@
         Workspaces,
         Bookings,
         WorkspaceData,
-        SeedData
+        SeedData,
+        Config
     }
 }
