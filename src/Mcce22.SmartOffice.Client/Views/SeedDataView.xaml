@@ -44,7 +44,6 @@
             Margin="0,0,0,30"
             HorizontalAlignment="Center"
             IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}">
-            <mah:ToggleSwitch Content="Seed users" IsOn="{Binding ActivateUserSeed}" />
             <mah:ToggleSwitch Content="Seed user images" IsOn="{Binding ActivateUserImageSeed}" />
             <mah:ToggleSwitch Content="Seed workspaces" IsOn="{Binding ActivateWorkspaceSeed}" />
             <mah:ToggleSwitch Content="Seed workspace configurations" IsOn="{Binding ActivateWorkspaceConfigSeed}" />

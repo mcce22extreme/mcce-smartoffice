@@ -14,14 +14,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
         <StackPanel
             Grid.Row="0"
-            Grid.ColumnSpan="3"
             Margin="5"
             HorizontalAlignment="Left"
             Orientation="Horizontal">
@@ -41,30 +35,8 @@
                 <iconPacks:FontAwesome Kind="SyncSolid" />
             </Button>
         </StackPanel>
-        <DataGrid
-            Grid.Row="1"
-            Grid.Column="0"
-            AutoGenerateColumns="False"
-            Background="Transparent"
-            IsReadOnly="True"
-            ItemsSource="{Binding Users}"
-            SelectedItem="{Binding SelectedUser}"
-            SelectionMode="Single">
-            <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding FirstName}" Header="Firstname" />
-                <DataGridTextColumn Binding="{Binding LastName}" Header="LastName" />
-                <DataGridTextColumn Binding="{Binding UserName}" Header="UserName" />
-            </DataGrid.Columns>
-        </DataGrid>
-        <GridSplitter
-            Grid.RowSpan="2"
-            Grid.Column="1"
-            Width="5"
-            VerticalAlignment="Stretch"
-            Background="#444" />
         <ListView
             Grid.Row="1"
-            Grid.Column="2"
             ItemsSource="{Binding Items}"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             SelectedItem="{Binding SelectedItem}"
@@ -93,9 +65,6 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <mah:ProgressRing
-            Grid.RowSpan="2"
-            Grid.ColumnSpan="3"
-            Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <mah:ProgressRing Grid.RowSpan="2" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
     </Grid>
 </UserControl>

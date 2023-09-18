@@ -95,7 +95,7 @@
                         Text="Configurations" />
                 </Grid>
             </Button>
-            <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static enum:NavigationType.SlideshowItems}">
+            <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static enum:NavigationType.UserImages}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition />
@@ -117,7 +117,7 @@
                         HorizontalAlignment="Right"
                         VerticalAlignment="Bottom"
                         FontSize="16"
-                        Text="Slideshow Items" />
+                        Text="User Images" />
                 </Grid>
             </Button>
         </StackPanel>
@@ -184,39 +184,6 @@
                         Text="Bookings" />
                 </Grid>
             </Button>
-            <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static enum:NavigationType.Users}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <iconPacks:PackIconFontAwesome
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Width="32"
-                        Height="32"
-                        Kind="UsersSolid" />
-                    <TextBlock
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Bottom"
-                        FontSize="16"
-                        Text="Users" />
-                </Grid>
-            </Button>
-
-        </StackPanel>
-        <StackPanel
-            Grid.Row="5"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            Orientation="Horizontal"
-            Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static enum:NavigationType.WorkspaceData}">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -242,6 +209,13 @@
                         Text="Analytics" />
                 </Grid>
             </Button>
+        </StackPanel>
+        <StackPanel
+            Grid.Row="5"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static enum:NavigationType.SeedData}">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -265,31 +239,6 @@
                         VerticalAlignment="Bottom"
                         FontSize="16"
                         Text="Seed Data" />
-                </Grid>
-            </Button>
-            <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static enum:NavigationType.Config}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <iconPacks:PackIconMaterial
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Width="32"
-                        Height="32"
-                        Kind="Cogs" />
-                    <TextBlock
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Bottom"
-                        FontSize="16"
-                        Text="Configuration" />
                 </Grid>
             </Button>
         </StackPanel>

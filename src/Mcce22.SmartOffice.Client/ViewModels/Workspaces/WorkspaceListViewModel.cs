@@ -77,7 +77,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         protected override async Task OnDelete()
         {
-            await _workspaceManager.Delete(SelectedItem.Id);
+            await _workspaceManager.Delete(SelectedItem.WorkspaceNumber);
         }
 
         protected override async Task<WorkspaceModel[]> OnReload()

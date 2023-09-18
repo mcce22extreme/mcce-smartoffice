@@ -6,6 +6,8 @@ namespace Mcce22.SmartOffice.Client.Models
     {
         public string Id { get; set; }
 
+        public string EntryId { get; set; }
+
         public string WorkspaceId { get; set; }
 
         public string WorkspaceNumber { get; set; }

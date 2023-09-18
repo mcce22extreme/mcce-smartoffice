@@ -27,16 +27,10 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Controllers
             return await _configurationManager.GetWorkspaceConfiguration(workspaceNumber);
         }
 
-        [HttpPost]
-        public async Task<WorkspaceConfigurationModel> CreateWorkspaceConfiguration([FromBody] SaveWorkspaceConfigurationModel model)
+        [HttpPost("{workspaceNumber}")]
+        public async Task<WorkspaceConfigurationModel> SaveWorkspaceConfiguration(string workspaceNumber, [FromBody] SaveWorkspaceConfigurationModel model)
         {
-            return await _configurationManager.CreateWorkspaceConfiguration(model);
-        }
-
-        [HttpPut]
-        public async Task<WorkspaceConfigurationModel> UpdateWorkspaceConfiguration([FromBody] SaveWorkspaceConfigurationModel model)
-        {
-            return await _configurationManager.UpdateWorkspaceConfiguration(model);
+            return await _configurationManager.SaveWorkspaceConfiguration(workspaceNumber, model);
         }
 
         [HttpDelete("{workspaceNumber}")]

@@ -8,6 +8,10 @@ namespace Mcce.SmartOffice.Bookings.Models
 
         public DateTime EndDateTime { get; set; }
 
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
         public string UserName { get; set; }
 
         public string WorkspaceNumber { get; set; }

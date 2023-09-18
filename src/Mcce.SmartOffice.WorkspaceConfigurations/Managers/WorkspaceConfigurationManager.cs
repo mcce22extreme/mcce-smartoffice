@@ -15,9 +15,7 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
 
         Task<WorkspaceConfigurationModel> GetWorkspaceConfigurationByUserName(string workspaceNumber, string userName);
 
-        Task<WorkspaceConfigurationModel> CreateWorkspaceConfiguration(SaveWorkspaceConfigurationModel model);
-
-        Task<WorkspaceConfigurationModel> UpdateWorkspaceConfiguration(SaveWorkspaceConfigurationModel model);
+        Task<WorkspaceConfigurationModel> SaveWorkspaceConfiguration(string workspaceNumber, SaveWorkspaceConfigurationModel model);
 
         Task DeleteWorkspaceConfiguration(string workspaceNumber);
     }
@@ -67,39 +65,28 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
                 : _mapper.Map<WorkspaceConfigurationModel>(configuration);
         }
 
-        public async Task<WorkspaceConfigurationModel> CreateWorkspaceConfiguration(SaveWorkspaceConfigurationModel model)
+        public async Task<WorkspaceConfigurationModel> SaveWorkspaceConfiguration(string workspaceNumber, SaveWorkspaceConfigurationModel model)
         {
             var currentUser = _contextAccessor.GetUserInfo();
 
-            var configuration = _mapper.Map(model, new WorkspaceConfiguration
+            var configuration = await _dbContext.WorkspaceConfigurations.FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber);
+
+            if(configuration == null)
             {
-                UserName = currentUser.UserName,
-            });
+                configuration = new WorkspaceConfiguration
+                {
+                    WorkspaceNumber = workspaceNumber,
+                    UserName = currentUser.UserName,
+                };
 
-            await _dbContext.WorkspaceConfigurations.AddAsync(configuration);
-
-            await _dbContext.SaveChangesAsync();
-
-            return await GetWorkspaceConfiguration(model.WorkspaceNumber);
-        }
-
-        public async Task<WorkspaceConfigurationModel> UpdateWorkspaceConfiguration(SaveWorkspaceConfigurationModel model)
-        {
-            var currentUser = _contextAccessor.GetUserInfo();
-
-            var configuration = await _dbContext.WorkspaceConfigurations
-                .FirstOrDefaultAsync(x => x.UserName == currentUser.UserName && x.WorkspaceNumber == model.WorkspaceNumber);
-
-            if (configuration == null)
-            {
-                throw new NotFoundException($"Could not find configuration for user '{currentUser.UserName}' and workspace '{model.WorkspaceNumber}'!");
+                await _dbContext.WorkspaceConfigurations.AddAsync(configuration);
             }
 
             _mapper.Map(model, configuration);
 
             await _dbContext.SaveChangesAsync();
 
-            return await GetWorkspaceConfiguration(model.WorkspaceNumber);
+            return await GetWorkspaceConfiguration(workspaceNumber);
         }
 
         public async Task DeleteWorkspaceConfiguration(string workspaceNumber)
@@ -108,7 +95,7 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
 
             var configuration = await _dbContext.WorkspaceConfigurations.FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber &&  x.UserName == currentUser.UserName);
 
-            if(configuration != null)
+            if (configuration != null)
             {
                 _dbContext.WorkspaceConfigurations.Remove(configuration);
 

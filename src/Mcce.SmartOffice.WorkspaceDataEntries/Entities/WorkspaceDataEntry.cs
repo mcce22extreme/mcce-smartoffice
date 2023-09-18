@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Mcce.SmartOffice.Core.Entities;
 
 namespace Mcce.SmartOffice.WorkspaceDataEntries.Entities
 {
-    public class WorkspaceDataEntry : EntityBase
+    public class WorkspaceDataEntry
     {
+        [Key]
+        public string EntryId { get; set; }
+
         [Required]
         public string WorkspaceNumber { get; set; }
 

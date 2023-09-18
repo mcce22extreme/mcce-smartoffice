@@ -41,7 +41,7 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Handlers
 
             using var tx = await dbContext.Database.BeginTransactionAsync();
 
-            await dbContext.Entries.AddAsync(entry);
+            await dbContext.WorkspaceDataEntries.AddAsync(entry);
 
             await dbContext.SaveChangesAsync();
 

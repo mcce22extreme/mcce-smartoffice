@@ -18,12 +18,6 @@
             Grid.Row="0"
             Margin="5"
             Orientation="Horizontal">
-            <!--<Button
-                Command="{Binding EditCommand}"
-                Foreground="Orange"
-                Style="{StaticResource ToolbarButtonStyle}">
-                <iconPacks:FontAwesome Kind="EditSolid" />
-            </Button>-->
             <Button
                 Command="{Binding DeleteCommand}"
                 Foreground="Red"
@@ -32,12 +26,6 @@
             </Button>
             <Button Command="{Binding ReloadCommand}" Style="{StaticResource ToolbarButtonStyle}">
                 <iconPacks:FontAwesome Kind="SyncSolid" />
-            </Button>
-            <Button
-                Command="{Binding ProcessBookingsCommand}"
-                Style="{StaticResource ToolbarButtonStyle}"
-                Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <iconPacks:FontAwesome Kind="CogsSolid" />
             </Button>
         </StackPanel>
         <DataGrid
@@ -50,6 +38,14 @@
             SelectionMode="Single">
             <DataGrid.Columns>
                 <DataGridTextColumn
+                    Width="200"
+                    Binding="{Binding WorkspaceNumber}"
+                    Header="Workspace" />
+                <DataGridTextColumn
+                    Width="200"
+                    Binding="{Binding FullUserName}"
+                    Header="User" />
+                <DataGridTextColumn
                     Width="150"
                     Binding="{Binding StartDateTime}"
                     Header="Start" />
@@ -57,18 +53,6 @@
                     Width="150"
                     Binding="{Binding EndDateTime}"
                     Header="End" />
-                <DataGridTextColumn
-                    Width="150"
-                    Binding="{Binding WorkspaceNumber}"
-                    Header="Workspace" />
-                <DataGridTextColumn
-                    Width="150"
-                    Binding="{Binding RoomNumber}"
-                    Header="Room" />
-                <DataGridTextColumn
-                    Width="250"
-                    Binding="{Binding FullUserName}"
-                    Header="User" />
                 <DataGridTextColumn
                     Width="150"
                     Binding="{Binding Activated, Converter={StaticResource BooleanToYesNoConverter}}"

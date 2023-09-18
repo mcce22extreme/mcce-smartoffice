@@ -24,12 +24,6 @@
     <DataTemplate DataType="{x:Type vm:LoginViewModel}">
         <v:LoginView />
     </DataTemplate>
-    <DataTemplate DataType="{x:Type vm:UserListViewModel}">
-        <v:UserListView />
-    </DataTemplate>
-    <DataTemplate DataType="{x:Type vm:UserDetailViewModel}">
-        <v:UserDetailView />
-    </DataTemplate>
     <DataTemplate DataType="{x:Type vm:WorkspaceListViewModel}">
         <v:WorkspaceListView />
     </DataTemplate>

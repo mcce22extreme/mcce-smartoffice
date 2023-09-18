@@ -54,8 +54,6 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
         public async Task<BookingModel[]> GetBookings()
         {
-            var currentUser = _contextAccessor.GetUserInfo();
-
             var bookingsQuery = _dbContext.Bookings
                 .OrderBy(x => x.StartDateTime)
                 .AsQueryable();
@@ -100,6 +98,8 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
             var booking = _mapper.Map<Booking>(model);
 
+            booking.FirstName = currentUser.FirstName;
+            booking.LastName = currentUser.LastName;
             booking.UserName = currentUser.UserName;
             booking.ActivationCode = GenerateActivationCode();
 

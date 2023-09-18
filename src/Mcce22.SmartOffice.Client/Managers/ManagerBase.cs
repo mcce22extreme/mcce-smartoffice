@@ -28,7 +28,7 @@ namespace Mcce22.SmartOffice.Client.Managers
             return entries;
         }
 
-        public async Task<T> Save(T model)
+        public virtual async Task<T> Save(T model)
         {
             if (string.IsNullOrEmpty(model.Id))
             {
@@ -48,12 +48,12 @@ namespace Mcce22.SmartOffice.Client.Managers
             }
         }
 
-        public async Task Delete(string id)
+        public async Task Delete(string identifier)
         {
-            await EnsureSuccessStatusCode(await HttpClient.DeleteAsync($"{BaseUrl}{id}"));
+            await EnsureSuccessStatusCode(await HttpClient.DeleteAsync($"{BaseUrl}/{identifier}"));
         }
 
-        private async Task EnsureSuccessStatusCode(HttpResponseMessage response)
+        protected async Task EnsureSuccessStatusCode(HttpResponseMessage response)
         {
             if (!response.IsSuccessStatusCode)
             {

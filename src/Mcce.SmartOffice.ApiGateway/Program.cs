@@ -1,6 +1,4 @@
 using System.Reflection;
-using Mcce.SmartOffice.ApiGateway.Constants;
-using Mcce.SmartOffice.ApiGateway.Extensions;
 using Mcce.SmartOffice.Core;
 using Newtonsoft.Json;
 using Ocelot.DependencyInjection;

@@ -17,50 +17,85 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Margin="10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="20" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="20" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="20" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="20" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="20" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Text="User" />
-            <ComboBox
-                x:Name="CBUsers"
-                Grid.Row="1"
+            <Border
                 Grid.ColumnSpan="2"
-                ItemsSource="{Binding Users}"
-                SelectedItem="{Binding SelectedUser}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding FullName}" />
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-            <TextBlock Grid.Row="2" Text="File" />
-            <TextBox
-                Grid.Row="3"
-                Grid.Column="0"
-                IsReadOnly="True"
-                Text="{Binding FilePath}" />
-            <Button
-                Grid.Row="3"
-                Grid.Column="1"
-                Margin="5,0,0,0"
-                Command="{Binding SelectFileCommand}">
-                <iconPacks:FontAwesome Kind="ImageSolid" />
-            </Button>
+                Margin="20"
+                BorderThickness="1"
+                CornerRadius="5">
+                <Border.BorderBrush>
+                    <VisualBrush>
+                        <VisualBrush.Visual>
+                            <Rectangle
+                                Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                                Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"
+                                Stroke="Gray"
+                                StrokeDashArray="4 2"
+                                StrokeThickness="2" />
+                        </VisualBrush.Visual>
+                    </VisualBrush>
+                </Border.BorderBrush>
+                <Grid
+                    AllowDrop="True"
+                    Background="Transparent"
+                    DragDrop.DragOver="OnDragOver"
+                    DragOver="OnDragOver"
+                    Drop="OnFileDrop">
+                    <Grid Visibility="{Binding HasFile, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <iconPacks:PackIconMaterial
+                            Grid.Row="0"
+                            Width="40"
+                            Height="40"
+                            Margin="10"
+                            HorizontalAlignment="Center"
+                            Kind="CloudUploadOutline" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Margin="10"
+                            HorizontalAlignment="Center"
+                            FontSize="20"
+                            Text="Drag&amp;Drop file here" />
+                        <TextBlock
+                            Grid.Row="2"
+                            Margin="10"
+                            HorizontalAlignment="Center"
+                            FontSize="20"
+                            Text="or" />
+                        <Button
+                            Grid.Row="3"
+                            Width="150"
+                            Margin="10"
+                            Command="{Binding SelectFileCommand}"
+                            Content="Browse Files" />
+                    </Grid>
+                    <Grid Visibility="{Binding HasFile, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Image
+                            Grid.Row="0"
+                            Width="180"
+                            Margin="0,20,0,10"
+                            Source="{Binding FilePath}"
+                            Stretch="Uniform" />
+                        <Button
+                            Grid.Row="1"
+                            Width="150"
+                            Margin="10"
+                            Command="{Binding SelectFileCommand}"
+                            Content="Browse Files" />
+                    </Grid>
+                </Grid>
+            </Border>
         </Grid>
-        <mah:ProgressRing Grid.RowSpan="2" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
         <StackPanel
             Grid.Row="1"
             Margin="5"
