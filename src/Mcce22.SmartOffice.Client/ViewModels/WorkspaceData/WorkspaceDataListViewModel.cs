@@ -10,7 +10,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
-using LiveChartsCore.Kernel;
 using LiveChartsCore.Kernel.Sketches;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
@@ -31,7 +30,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         private readonly IWorkspaceManager _workspaceManager;
         private readonly IDialogService _dialogService;
         private readonly IAuthService _authService;
-        private readonly IWorkspaceDataManager _workspaceDataManager;
+        private readonly IWorkspaceDataEntryManager _workspaceDataManager;
         private readonly Timer _updateTimer;
         private readonly ObservableCollection<ObservableValue> _weiValues;
         private readonly ObservableCollection<ObservableValue> _temperatureValues;
@@ -163,7 +162,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         public SolidColorPaint LedgendBackgroundPaint { get; set; } = new SolidColorPaint(new SKColor(240, 240, 240));
 
         public WorkspaceDataListViewModel(
-                IWorkspaceDataManager workspaceDataManager,
+                IWorkspaceDataEntryManager workspaceDataManager,
                 IWorkspaceManager workspaceManager,
                 IDialogService dialogService,
                 IAuthService authService)
@@ -272,22 +271,22 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             {
                 IsBusy = true;
 
+                _weiValues.Clear();
+                _temperatureValues.Clear();
+                _humidityValues.Clear();
+                _co2LevelValues.Clear();
+
                 if (workspace == null)
                 {
                     WorkspaceDataEntries = new List<WorkspaceDataModel>();
-
-                    _weiValues.Clear();
-                    _temperatureValues.Clear();
-                    _humidityValues.Clear();
-                    _co2LevelValues.Clear();
                 }
                 else
                 {
-                    var workspaceDataEntries = await _workspaceDataManager.GetList(workspace.Id);
+                    var workspaceDataEntries = await _workspaceDataManager.GetList(workspace.WorkspaceNumber);
 
                     foreach (var entry in workspaceDataEntries)
                     {
-                        if (!WorkspaceDataEntries.Any(x => x.Id == entry.Id))
+                        if (!WorkspaceDataEntries.Any(x => x.EntryId == entry.EntryId))
                         {
                             _weiValues.Add(new ObservableValue(entry.Wei));
                             _temperatureValues.Add(new ObservableValue(entry.Temperature));
@@ -323,13 +322,13 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                 {
                     IsBusy = true;
 
-                    var confirmDelete = new ConfirmDeleteViewModel("Delete all entries?", "Do you really want to delete all entries?", _dialogService);
+                    var confirmDelete = new ConfirmDeleteViewModel("Delete all data entries of workspace?", "Do you really want to delete all data entries of the selected workspace?", _dialogService);
 
                     await _dialogService.ShowDialog(confirmDelete);
 
                     if (confirmDelete.Confirmed)
                     {
-                        await _workspaceDataManager.DeleteAll();
+                        await _workspaceDataManager.Delete(SelectedWorkspace.WorkspaceNumber);
                     }
                 }
                 finally

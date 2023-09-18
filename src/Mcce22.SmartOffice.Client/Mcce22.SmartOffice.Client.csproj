@@ -85,9 +85,6 @@
     <None Update="SampleImages\Tulips.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SeedData\users.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="SeedData\workspaces.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

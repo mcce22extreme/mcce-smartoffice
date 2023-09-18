@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Buffers;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -10,12 +11,10 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 {
     public partial class WorkspaceConfigurationDetailViewModel : DialogViewModelBase
     {
-        private readonly IWorkspaceConfigurationManager _userWorkspaceManager;
+        private readonly IWorkspaceConfigurationManager _workspaceConfigurationManager;
         private readonly IWorkspaceManager _workspaceManager;
-        private readonly IUserManager _userManager;
 
-        private readonly string _workspaceId;
-        private readonly string _userId;
+        private readonly string _workspaceNumber;
 
         [ObservableProperty]
         private long _deskHeight = 70;
@@ -24,45 +23,31 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         private ObservableCollection<WorkspaceModel> _workspaces = new ObservableCollection<WorkspaceModel>();
 
         [ObservableProperty]
-        private ObservableCollection<UserModel> _users = new ObservableCollection<UserModel>();
-
-        [ObservableProperty]
         private WorkspaceModel _selectedWorkspace;
 
-        [ObservableProperty]
-        private UserModel _selectedUser;
-
-        public string UserWorkspaceId { get; }
-
         public WorkspaceConfigurationDetailViewModel(
-            IWorkspaceConfigurationManager userWorkspaceManager,
+            IWorkspaceConfigurationManager workspaceConfigurationManager,
             IWorkspaceManager workspaceManager,
-            IUserManager userManager,
             IDialogService dialogService)
             : base(dialogService)
         {
             Title = "Create workspace configuration";
 
-            _userWorkspaceManager = userWorkspaceManager;
+            _workspaceConfigurationManager = workspaceConfigurationManager;
             _workspaceManager = workspaceManager;
-            _userManager = userManager;
         }
 
         public WorkspaceConfigurationDetailViewModel(
             WorkspaceConfigurationModel model,
-            IWorkspaceConfigurationManager userWorkspaceManager,
+            IWorkspaceConfigurationManager workspaceConfigurationManager,
             IWorkspaceManager workspaceManager,
-            IUserManager userManager,
             IDialogService dialogService)
-            : this(userWorkspaceManager, workspaceManager, userManager, dialogService)
+            : this(workspaceConfigurationManager, workspaceManager, dialogService)
         {
+            _workspaceNumber = model.WorkspaceNumber;
+
             Title = "Edit workspace configuration";
-
-            UserWorkspaceId = model.Id;
-            DeskHeight = model.DeskHeight;
-
-            _workspaceId = model.WorkspaceId;
-            _userId = model.UserId;
+            DeskHeight = model.DeskHeight;            
         }
 
         public override async void Load()
@@ -72,13 +57,12 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                 IsBusy = true;
 
                 var workspaces = await _workspaceManager.GetList();
-                var users = await _userManager.GetList();
+                var configurations = await _workspaceConfigurationManager.GetList();
+                var lookup = configurations.ToLookup(x => x.WorkspaceNumber);
 
-                Workspaces = new ObservableCollection<WorkspaceModel>(workspaces);
-                Users = new ObservableCollection<UserModel>(users);
+                Workspaces = new ObservableCollection<WorkspaceModel>(workspaces.Where(x => !lookup.Contains(x.WorkspaceNumber)));
 
-                SelectedWorkspace = string.IsNullOrEmpty(_workspaceId) ? null : workspaces.FirstOrDefault(x => x.Id == _workspaceId);
-                SelectedUser = string.IsNullOrEmpty(_userId) ? null : users.FirstOrDefault(x => x.Id == _userId);
+                SelectedWorkspace =  string.IsNullOrEmpty(_workspaceNumber) ? null : workspaces.FirstOrDefault(x => x.WorkspaceNumber == _workspaceNumber);
             }
             finally
             {
@@ -88,17 +72,15 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         protected override bool CanSave()
         {
-            return !IsBusy && SelectedWorkspace != null && SelectedUser != null;
+            return !IsBusy && SelectedWorkspace != null;
         }
 
         protected override async Task OnSave()
         {
-            await _userWorkspaceManager.Save(new WorkspaceConfigurationModel
+            await _workspaceConfigurationManager.Save(new WorkspaceConfigurationModel
             {
-                Id = UserWorkspaceId,
                 DeskHeight = DeskHeight,
-                WorkspaceId = SelectedWorkspace.Id,
-                UserId = SelectedUser.Id
+                WorkspaceNumber = SelectedWorkspace.WorkspaceNumber
             });
         }
     }

@@ -41,9 +41,9 @@
         </StackPanel>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="250" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="3*" />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <ctrl:PanAndZoomCanvas
                 x:Name="WorkspaceCanvas"
@@ -75,14 +75,10 @@
                 SelectionMode="Single">
                 <DataGrid.Columns>
                     <DataGridTextColumn
-                        Width="150"
+                        Width="180"
                         Binding="{Binding WorkspaceNumber}"
                         Header="Number"
                         SortDirection="Ascending" />
-                    <DataGridTextColumn
-                        Width="150"
-                        Binding="{Binding RoomNumber}"
-                        Header="Room" />
                     <DataGridTextColumn
                         Width="50"
                         Binding="{Binding Wei}"

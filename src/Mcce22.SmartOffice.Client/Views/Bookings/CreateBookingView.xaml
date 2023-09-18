@@ -25,17 +25,18 @@
             Grid.Column="0"
             Panel.ZIndex="99"
             Background="#252525">
-            <GroupBox
-                Height="210"
-                Margin="10"
-                Header="Step 1: Check availability">
+            <GroupBox Margin="10" Header="Create Booking">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="25" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="25" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="25" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Text="Start Date" />
                     <mah:DateTimePicker
@@ -48,41 +49,9 @@
                         VerticalAlignment="Center"
                         IsClockVisible="False"
                         SelectedDateTime="{Binding EndDateTime}" />
-                    <Button
-                        Grid.Row="4"
-                        Margin="10,20,10,0"
-                        Command="{Binding UpdateAvailabilityCommand}"
-                        Content="Update Availability" />
-                </Grid>
-            </GroupBox>
-            <GroupBox
-                Height="210"
-                Margin="10"
-                Header="Step 2: Create booking">
-                <Grid Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="25" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="25" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="User" />
+                    <TextBlock Grid.Row="4" Text="Workspace" />
                     <ComboBox
-                        Grid.Row="1"
-                        ItemsSource="{Binding Users}"
-                        SelectedItem="{Binding SelectedUser}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding FullName}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    <TextBlock Grid.Row="2" Text="Workspace" />
-                    <ComboBox
-                        Grid.Row="3"
+                        Grid.Row="5"
                         ItemsSource="{Binding Workspaces}"
                         SelectedItem="{Binding SelectedWorkspace}">
                         <ComboBox.ItemTemplate>
@@ -92,7 +61,12 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <Button
-                        Grid.Row="4"
+                        Grid.Row="6"
+                        Margin="10,20,10,0"
+                        Command="{Binding UpdateAvailabilityCommand}"
+                        Content="Update Availability" />
+                    <Button
+                        Grid.Row="7"
                         Margin="10,20,10,0"
                         Background="{StaticResource DefaultButtonBrush}"
                         Command="{Binding CreateBookingCommand}"
@@ -143,6 +117,14 @@
                 SelectionMode="Single">
                 <DataGrid.Columns>
                     <DataGridTextColumn
+                        Width="200"
+                        Binding="{Binding WorkspaceNumber}"
+                        Header="Workspace" />
+                    <DataGridTextColumn
+                        Width="200"
+                        Binding="{Binding FullUserName}"
+                        Header="User" />
+                    <DataGridTextColumn
                         Width="150"
                         Binding="{Binding StartDateTime}"
                         Header="Start" />
@@ -150,10 +132,6 @@
                         Width="150"
                         Binding="{Binding EndDateTime}"
                         Header="End" />
-                    <DataGridTextColumn
-                        Width="200"
-                        Binding="{Binding FullUserName}"
-                        Header="User" />
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

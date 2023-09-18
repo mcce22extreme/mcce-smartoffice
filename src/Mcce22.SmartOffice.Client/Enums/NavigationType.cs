@@ -5,12 +5,10 @@
         Dashboard,
         CreateBooking,
         UserConfigs,
-        SlideshowItems,
-        Users,
+        UserImages,
         Workspaces,
         Bookings,
         WorkspaceData,
         SeedData,
-        Config
     }
 }

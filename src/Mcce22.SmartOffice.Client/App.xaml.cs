@@ -51,7 +51,6 @@ namespace Mcce22.SmartOffice.Client
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<LoginViewModel>();
             services.AddSingleton<DashboardViewModel>();
-            services.AddSingleton<UserListViewModel>();
             services.AddSingleton<WorkspaceListViewModel>();
             services.AddSingleton<BookingListViewModel>();
             services.AddSingleton<WorkspaceConfigurationListViewModel>();
@@ -61,13 +60,11 @@ namespace Mcce22.SmartOffice.Client
             services.AddSingleton<WorkspaceDataListViewModel>();
             services.AddSingleton<ConfigViewModel>();
 
-            services.AddSingleton<IUserManager, UserManager>();
             services.AddSingleton<IWorkspaceManager, WorkspaceManager>();
             services.AddSingleton<IBookingManager, BookingManager>();
             services.AddSingleton<IWorkspaceConfigurationManager, WorkspaceConfigurationManager>();
             services.AddSingleton<IUserImageManager, UserImageManager>();
-            services.AddSingleton<IWorkspaceDataManager, WorkspaceDataManager>();
-            services.AddSingleton<IProcessBookingManager, ProcessBookingManager>();
+            services.AddSingleton<IWorkspaceDataEntryManager, WorkspaceDataEntryManager>();
             services.AddSingleton<IAccountManager, AccountManager>();
             services.AddSingleton<IConfigManager, ConfigManager>();
 

@@ -13,7 +13,6 @@ namespace Mcce22.SmartOffice.Client.ViewModels
     {
         private readonly IWorkspaceManager _workspaceManager;
         private readonly IBookingManager _bookingManager;
-        private readonly IUserManager _userManager;
 
         private List<BookingModel> _allBookings = new List<BookingModel>();
 
@@ -22,12 +21,6 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         [ObservableProperty]
         private DateTime _endDateTime;
-
-        [ObservableProperty]
-        private List<UserModel> _users;
-
-        [ObservableProperty]
-        private UserModel _selectedUser;
 
         [ObservableProperty]
         private List<WorkspaceModel> _workspaces;
@@ -53,11 +46,10 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         public event EventHandler WorkspaceAvailabilityUpdated;
 
-        public CreateBookingViewModel(IWorkspaceManager workspaceManager, IBookingManager bookingManager, IUserManager userManager)
+        public CreateBookingViewModel(IWorkspaceManager workspaceManager, IBookingManager bookingManager)
         {
             _workspaceManager = workspaceManager;
             _bookingManager = bookingManager;
-            _userManager = userManager;
 
             var dateTimeNow = DateTime.Now;
             StartDateTime = new DateTime(dateTimeNow.Year, dateTimeNow.Month, dateTimeNow.Day, 6, 0, 0);
@@ -79,12 +71,8 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                 IsBusy = true;
 
                 var workspaces = await _workspaceManager.GetList();
-                var users = await _userManager.GetList();
 
                 Workspaces = new List<WorkspaceModel>(workspaces);
-                Users = new List<UserModel>(users);
-
-                SelectedUser = Users.FirstOrDefault();
 
                 UpdateAvailability();
             }
@@ -113,7 +101,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                 foreach (var workspace in Workspaces)
                 {
                     workspace.IsAvailable = !_allBookings.Any(x =>
-                        x.WorkspaceId == workspace.Id &&
+                        x.WorkspaceNumber == workspace.WorkspaceNumber &&
                         x.StartDateTime.Date == StartDateTime.Date &&
                         ((x.StartDateTime.TimeOfDay == StartDateTime.TimeOfDay && x.EndDateTime.TimeOfDay == EndDateTime.TimeOfDay) ||
                         (x.StartDateTime.TimeOfDay <= StartDateTime.TimeOfDay && x.EndDateTime.TimeOfDay > StartDateTime.TimeOfDay) ||
@@ -130,7 +118,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         private bool CanCreateBooking()
         {
-            return !IsBusy && SelectedUser != null && SelectedWorkspace?.IsAvailable == true;
+            return !IsBusy && SelectedWorkspace?.IsAvailable == true;
         }
 
         [RelayCommand(CanExecute = nameof(CanCreateBooking))]
@@ -144,8 +132,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                 {
                     StartDateTime = StartDateTime,
                     EndDateTime = EndDateTime,
-                    WorkspaceId = SelectedWorkspace.Id,
-                    UserId = SelectedUser.Id
+                    WorkspaceNumber = SelectedWorkspace.WorkspaceNumber
                 });
             }
             finally
@@ -168,7 +155,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                 }
                 else
                 {
-                    Bookings = _allBookings.Where(x => x.WorkspaceId == SelectedWorkspace.Id).ToList();
+                    Bookings = _allBookings.Where(x => x.WorkspaceNumber == SelectedWorkspace.WorkspaceNumber).ToList();
                 }
             }
             finally

@@ -16,7 +16,7 @@ namespace Mcce22.SmartOffice.Client.Managers
     public class WorkspaceManager : ManagerBase<WorkspaceModel>, IWorkspaceManager
     {
         public WorkspaceManager(IAppConfig appConfig, HttpClient httpClient)
-            : base($"{appConfig.BaseAddress}/workspace/", httpClient)
+            : base($"{appConfig.BaseAddress}/workspace", httpClient)
         {
         }
     }

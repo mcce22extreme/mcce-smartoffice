@@ -16,7 +16,7 @@ namespace Mcce22.SmartOffice.Client.Managers
     public class BookingManager : ManagerBase<BookingModel>, IBookingManager
     {
         public BookingManager(IAppConfig appConfig, HttpClient httpClient)
-            : base($"{appConfig.BaseAddress}/booking/", httpClient)
+            : base($"{appConfig.BaseAddress}/booking", httpClient)
         {
         }
     }

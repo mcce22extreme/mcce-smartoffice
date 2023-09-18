@@ -13,7 +13,6 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         public LoginViewModel Login { get; }
         public DashboardViewModel Dashboard { get; }
         public WorkspaceConfigurationListViewModel UserWorkspaceList { get; }
-        public UserListViewModel UserList { get; }        
         public WorkspaceListViewModel WorkspaceList { get; }
         public BookingListViewModel BookingList { get; }
         public UserImageListViewModel SlideshowItemList { get; }
@@ -27,7 +26,6 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             LoginViewModel login,
             DashboardViewModel dashboard,
             WorkspaceConfigurationListViewModel userWorkspaceList,
-            UserListViewModel userList,            
             WorkspaceListViewModel workspaceList,
             BookingListViewModel bookingList,
             UserImageListViewModel slideshowItemList,
@@ -39,7 +37,6 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             Login = login;
             Dashboard = dashboard;
             UserWorkspaceList = userWorkspaceList;
-            UserList = userList;            
             WorkspaceList = workspaceList;
             BookingList = bookingList;
             SlideshowItemList = slideshowItemList;
@@ -73,7 +70,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                 case NavigationType.UserConfigs:
                     SelectedIndex = 2;
                     break;
-                case NavigationType.SlideshowItems:
+                case NavigationType.UserImages:
                     SelectedIndex = 3;
                     break;
                 case NavigationType.Workspaces:
@@ -82,17 +79,11 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                 case NavigationType.Bookings:
                     SelectedIndex = 6;
                     break;
-                case NavigationType.Users:
+                case NavigationType.WorkspaceData:
                     SelectedIndex = 7;
                     break;
-                case NavigationType.WorkspaceData:
-                    SelectedIndex = 8;
-                    break;
                 case NavigationType.SeedData:
-                    SelectedIndex = 9;
-                    break;
-                case NavigationType.Config:
-                    SelectedIndex = 10;
+                    SelectedIndex = 8;
                     break;
             }
         }

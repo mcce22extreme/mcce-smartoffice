@@ -51,16 +51,12 @@
             <DataGrid.Columns>
                 <DataGridTextColumn
                     Width="150"
-                    Binding="{Binding DeskHeight, StringFormat={} {0} cm}"
-                    Header="Desk Height" />
-                <DataGridTextColumn
-                    Width="150"
                     Binding="{Binding WorkspaceNumber}"
                     Header="Workspace" />
                 <DataGridTextColumn
-                    Width="250"
-                    Binding="{Binding FullUserName}"
-                    Header="User" />
+                    Width="150"
+                    Binding="{Binding DeskHeight, StringFormat={} {0} cm}"
+                    Header="Desk Height" />
             </DataGrid.Columns>
         </DataGrid>
         <mah:ProgressRing Grid.RowSpan="2" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />

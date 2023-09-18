@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -15,11 +14,10 @@ namespace Mcce22.SmartOffice.Client.ViewModels
     {
         private static readonly Random Random = new Random();
 
-        private readonly IUserManager _userManager;
         private readonly IWorkspaceManager _workspaceManager;
         private readonly IUserImageManager _userImageManager;
         private readonly IBookingManager _bookingManager;
-        private readonly IWorkspaceDataManager _workspaceDataManager;
+        private readonly IWorkspaceDataEntryManager _workspaceDataManager;
         private readonly IDialogService _dialogService;
 
         [ObservableProperty]
@@ -47,14 +45,12 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         private bool _activateWorkspaceDataSeed = false;
 
         public SeedDataViewModel(
-            IUserManager userManager,
             IWorkspaceManager workspaceManager,
             IUserImageManager userImageManager,
             IBookingManager bookingManager,
-            IWorkspaceDataManager workspaceDataManager,
+            IWorkspaceDataEntryManager workspaceDataManager,
             IDialogService dialogService)
         {
-            _userManager = userManager;
             _workspaceManager = workspaceManager;
             _userImageManager = userImageManager;
             _bookingManager = bookingManager;
@@ -94,33 +90,18 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                         await DeleteUserImages();
                     }
 
-                    Progress = 10;
-                    if (ActivateUserSeed)
-                    {
-                        ProgressText = "Delete users...";
-                        await DeleteUsers();
-                    }
-
-
                     Progress = 20;
-                    if (ActivateWorkspaceSeed)
-                    {
-                        ProgressText = "Delete workspaces...";
-                        await DeleteWorkspaces();
-                    }
-
-                    Progress = 30;
                     if (ActivateWorkspaceDataSeed)
                     {
                         ProgressText = "Delete workspace data...";
                         await DeleteWorkspaceData();
-                    }
+                    }                    
 
-                    Progress = 40;
-                    if (ActivateUserSeed)
+                    Progress = 30;
+                    if (ActivateWorkspaceSeed)
                     {
-                        ProgressText = "Seed users...";
-                        await SeedUsers();
+                        ProgressText = "Delete workspaces...";
+                        await DeleteWorkspaces();
                     }
 
                     Progress = 50;
@@ -131,17 +112,17 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                     }
 
                     Progress = 60;
-                    if (ActivateWorkspaceSeed)
-                    {
-                        ProgressText = "Seed workspaces...";
-                        await SeedWorkspaces();
-                    }
-
-                    Progress = 70;
                     if (ActivateWorkspaceDataSeed)
                     {
                         ProgressText = "Seed workspace data...";
                         await SeedWorkspaceData();
+                    }
+
+                    Progress = 70;
+                    if (ActivateWorkspaceSeed)
+                    {
+                        ProgressText = "Seed workspaces...";
+                        await SeedWorkspaces();
                     }
 
                     Progress = 100;
@@ -152,24 +133,6 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             {
                 IsBusy = false;
             }
-        }
-
-        private async Task SeedUsers()
-        {
-            var json = File.ReadAllText("seeddata\\users.json");
-            var users = JsonConvert.DeserializeObject<UserModel[]>(json);
-
-            StepProgress = 0;
-            var count = 0;
-            foreach (var user in users)
-            {
-                await _userManager.Save(user);
-
-                count++;
-                StepProgress = count * 100 / users.Length;
-            }
-
-            StepProgress = 100;
         }
 
         private async Task SeedWorkspaces()
@@ -191,16 +154,13 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         private async Task SeedUserImages()
         {
-            var users = await _userManager.GetList();
-            var user = users.FirstOrDefault();
-
             var filePaths = Directory.GetFiles("sampleimages");
 
             StepProgress = 0;
             var count = 0;
             foreach (var filePath in filePaths)
             {
-                await _userImageManager.Save(user.Id, filePath);
+                await _userImageManager.Save(filePath);
 
                 count++;
                 StepProgress = count * 100 / filePaths.Length;
@@ -242,24 +202,6 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             StepProgress = 100;
         }
 
-        private async Task DeleteUsers()
-        {
-            var users = await _userManager.GetList();
-
-            StepProgress = 0;
-            var count = 0;
-
-            foreach (var user in users)
-            {
-                await _userManager.Delete(user.Id);
-
-                count++;
-                StepProgress = count * 100 / users.Length;
-            }
-
-            StepProgress = 100;
-        }
-
         private async Task DeleteWorkspaces()
         {
             var workspaces = await _workspaceManager.GetList();
@@ -269,7 +211,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
             foreach (var workspace in workspaces)
             {
-                await _workspaceManager.Delete(workspace.Id);
+                await _workspaceManager.Delete(workspace.WorkspaceNumber);
 
                 count++;
                 StepProgress = count * 100 / workspaces.Length;
@@ -280,17 +222,16 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         private async Task DeleteUserImages()
         {
-            var users = await _userManager.GetList();
-
             StepProgress = 0;
             var count = 0;
 
-            foreach (var user in users)
-            {
-                await _userImageManager.Delete(user.Id);
+            var userImages = await _userImageManager.GetList();
 
+            foreach (var userImage in userImages)
+            {
+                await _userImageManager.Delete(Path.GetFileName(userImage.Url));
                 count++;
-                StepProgress = count * 100 / users.Length;
+                StepProgress = count * 100 / userImages.Length;
             }
 
             StepProgress = 100;
@@ -299,8 +240,16 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         private async Task DeleteWorkspaceData()
         {
             StepProgress = 0;
+            var count = 0;
 
-            await _workspaceDataManager.DeleteAll();
+            var workspaces = await _workspaceManager.GetList();
+
+            foreach (var workspace in workspaces)
+            {
+                await _workspaceDataManager.Delete(workspace.WorkspaceNumber);
+                count++;
+                StepProgress = count * 100 / workspaces.Length;
+            }
 
             StepProgress = 100;
         }
