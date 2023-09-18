@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Mcce.SmartOffice.Core.Extensions;
 using Mcce.SmartOffice.WorkspaceDataEntries.Entities;
 using Mcce.SmartOffice.WorkspaceDataEntries.Generators;
 using Mcce.SmartOffice.WorkspaceDataEntries.Models;
@@ -9,13 +8,11 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
 {
     public interface IWorkspaceDataEntryManager
     {
-        Task<WorkspaceDataEntryModel[]> GetWorkspaceDataEntries(WorkspaceDataEntryQuery query);
+        Task<WorkspaceDataEntryModel[]> GetWorkspaceDataEntries(string workspaceNumber, DateTime? startDate, DateTime? endDate);
 
-        Task<WorkspaceDataEntryModel> CreateWorkspaceDataEntry(SaveWorkspaceDataEntryModel model);
+        Task<WorkspaceDataEntryModel> CreateWorkspaceDataEntry(string workspaceNumber, SaveWorkspaceDataEntryModel model);
 
-        Task DeleteWorkspaceDataEntry(int entryId);
-
-        Task DeleteAllEntries();
+        Task DeleteWorkspaceDataEntries(string workspaceNumber);
     }
 
     public class WorkspaceDataEntryManager : IWorkspaceDataEntryManager
@@ -31,16 +28,12 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
             _weiGenerator = weiGenerator;
         }
 
-        public async Task<WorkspaceDataEntryModel[]> GetWorkspaceDataEntries(WorkspaceDataEntryQuery query)
+        public async Task<WorkspaceDataEntryModel[]> GetWorkspaceDataEntries(string workspaceNumber, DateTime? startDate, DateTime? endDate)
         {
-            var entryQuery = _dbContext.Entries
+            var entryQuery = _dbContext.WorkspaceDataEntries
+                .Where(x => x.WorkspaceNumber ==  workspaceNumber)
                 .OrderByDescending(x => x.Timestamp)
                 .AsQueryable();
-
-            if (query.WorkspaceNumber.HasValue())
-            {
-                entryQuery = entryQuery.Where(x => x.WorkspaceNumber == query.WorkspaceNumber);
-            }
 
             var workspaceData = await entryQuery.ToListAsync();
 
@@ -49,11 +42,12 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
                 .ToArray();
         }
 
-        public async Task<Models.WorkspaceDataEntryModel> CreateWorkspaceDataEntry(SaveWorkspaceDataEntryModel model)
+        public async Task<WorkspaceDataEntryModel> CreateWorkspaceDataEntry(string workspaceNumber, SaveWorkspaceDataEntryModel model)
         {
             var entry = _mapper.Map<WorkspaceDataEntry>(model);
 
-            entry.WorkspaceNumber = model.WorkspaceNumber;
+            entry.EntryId = Guid.NewGuid().ToString();
+            entry.WorkspaceNumber = workspaceNumber;
             entry.Wei = _weiGenerator.GenerateWei(entry.Temperature, entry.Humidity, entry.Co2Level);
 
             if (!model.Timestamp.HasValue)
@@ -61,30 +55,23 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
                 entry.Timestamp = DateTime.UtcNow;
             }
 
-            await _dbContext.Entries.AddAsync(entry);
+            await _dbContext.WorkspaceDataEntries.AddAsync(entry);
 
             await _dbContext.SaveChangesAsync();
 
             return _mapper.Map<WorkspaceDataEntryModel>(entry);
         }
 
-        public async Task DeleteWorkspaceDataEntry(int entryId)
+        public async Task DeleteWorkspaceDataEntries(string workspaceNumber)
         {
-            var entry = await _dbContext.Entries.FirstOrDefaultAsync(x => x.Id == entryId);
+            var entry = await _dbContext.WorkspaceDataEntries.FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber);
 
-            if(entry != null)
+            if (entry != null)
             {
-                _dbContext.Entries.Remove(entry);
+                _dbContext.WorkspaceDataEntries.Remove(entry);
 
                 await _dbContext.SaveChangesAsync();
             }
-        }
-
-        public async Task DeleteAllEntries()
-        {
-            await _dbContext.Database.EnsureDeletedAsync();
-
-            await _dbContext.Database.EnsureCreatedAsync();
         }
     }
 }

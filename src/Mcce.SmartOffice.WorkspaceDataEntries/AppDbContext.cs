@@ -6,7 +6,7 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries
 {
     public class AppDbContext : AppDbContextBase
     {
-        public DbSet<WorkspaceDataEntry> Entries { get; set; }
+        public DbSet<WorkspaceDataEntry> WorkspaceDataEntries { get; set; }
 
         public AppDbContext(DbContextOptions options, IHttpContextAccessor contextAccessor)
             : base(options, contextAccessor)
@@ -16,9 +16,12 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<WorkspaceDataEntry>()
-                .HasPartitionKey(x => x.WorkspaceNumber)
+                .HasPartitionKey(x => x.EntryId)
                 .HasNoDiscriminator()
-                .ToContainer(nameof(Entries));
+                .ToContainer(nameof(WorkspaceDataEntries));
+
+            modelBuilder.Entity<WorkspaceDataEntry>()
+                .HasIndex(x => x.WorkspaceNumber);
         }
     }
 }
