@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CefSharp.Wpf.NETCore" Version="115.3.130" />
+    <PackageReference Include="CefSharp.Wpf.NETCore" Version="116.0.230" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="IdentityModel.OidcClient" Version="5.2.1" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-beta.801" />
