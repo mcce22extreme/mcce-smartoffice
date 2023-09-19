@@ -4,6 +4,8 @@
     {
         private const string TOPIC_PREFIX = "mcce-smartoffice/";
 
+        public const string TOPIC_WEI_UPDATED = TOPIC_PREFIX + "wei";
+
         public static string TOPIC_DATAINGRESS { get; } = TOPIC_PREFIX + "dataingress";
 
         public static string TOPIC_BOOKING_ACTIVATED { get; } = TOPIC_PREFIX + "booking/activated";

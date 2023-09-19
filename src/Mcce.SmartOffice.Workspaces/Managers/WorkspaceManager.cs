@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Mcce.SmartOffice.Core.Enums;
 using Mcce.SmartOffice.Core.Exceptions;
 using Mcce.SmartOffice.Workspaces.Entities;
 using Mcce.SmartOffice.Workspaces.Models;
@@ -15,6 +16,8 @@ namespace Mcce.SmartOffice.Workspaces.Managers
         Task<WorkspaceModel> CreateWorkspace(SaveWorkspaceModel model);
 
         Task<WorkspaceModel> UpdateWorkspace(string workspaceNumber, SaveWorkspaceModel model);
+
+        Task<WorkspaceModel> UpdateWorkspaceWei(string workspaceNumber, int wei);
 
         Task DeleteWorkspace(string workspaceNumber);
     }
@@ -64,8 +67,7 @@ namespace Mcce.SmartOffice.Workspaces.Managers
 
         public async Task<WorkspaceModel> UpdateWorkspace(string workspaceNumber, SaveWorkspaceModel model)
         {
-            var workspace = await _dbContext.Workspaces
-                .FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber);
+            var workspace = await _dbContext.Workspaces.FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber);
 
             if (workspace == null)
             {
@@ -83,12 +85,28 @@ namespace Mcce.SmartOffice.Workspaces.Managers
         {
             var workspace = await _dbContext.Workspaces.FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber);
 
-            if(workspace != null)
+            if (workspace != null)
             {
                 _dbContext.Workspaces.Remove(workspace);
 
                 await _dbContext.SaveChangesAsync();
             }
+        }
+
+        public async Task<WorkspaceModel> UpdateWorkspaceWei(string workspaceNumber, int wei)
+        {
+            var workspace = await _dbContext.Workspaces.FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber);
+
+            if (workspace == null)
+            {
+                throw new NotFoundException($"Could not find workspace '{workspaceNumber}'!");
+            }
+
+            workspace.Wei = wei;
+
+            await _dbContext.SaveChangesAsync(auditInfoUpdateMode: AuditInfoUpdateMode.Suppress);
+
+            return await GetWorkspace(workspaceNumber);
         }
     }
 }
