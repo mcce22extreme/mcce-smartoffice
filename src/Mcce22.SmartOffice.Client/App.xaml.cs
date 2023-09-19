@@ -41,7 +41,7 @@ namespace Mcce22.SmartOffice.Client
 
             var services = new ServiceCollection();
 
-            services.AddSingleton<IAppConfig>(s => _appConfig);
+            services.AddSingleton(s => _appConfig);
 
             services.AddSingleton<IDialogService, DialogService>();
             services.AddSingleton<INavigationService, NavigationService>();

@@ -110,18 +110,18 @@ namespace Mcce.SmartOffice.Bookings.Managers
             Log.Debug($"Created booking '{booking.Id}' for workspace '{booking.WorkspaceNumber}' and user '{booking.UserName}' with activation code '{booking.ActivationCode}'.");
 
             // send confirmation email
-            //await _emailService.SendMail(
-            //    new BookingConfirmationModel
-            //    {
-            //        FirstName = currentUser.FirstName,
-            //        LastName = currentUser.LastName,
-            //        UserName = currentUser.UserName,
-            //        Email = currentUser.Email,
-            //        StartDateTime = booking.StartDateTime,
-            //        EndDateTime = booking.EndDateTime,
-            //        ActivationCode = booking.ActivationCode,
-            //        WorkspaceNumber = model.WorkspaceNumber,
-            //    }, activationLink);
+            await _emailService.SendMail(
+                new BookingConfirmationModel
+                {
+                    FirstName = currentUser.FirstName,
+                    LastName = currentUser.LastName,
+                    UserName = currentUser.UserName,
+                    Email = currentUser.Email,
+                    StartDateTime = booking.StartDateTime,
+                    EndDateTime = booking.EndDateTime,
+                    ActivationCode = booking.ActivationCode,
+                    WorkspaceNumber = model.WorkspaceNumber,
+                }, activationLink);
 
             return await GetBooking(booking.Id);
         }

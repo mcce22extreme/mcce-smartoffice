@@ -67,9 +67,12 @@ namespace Mcce.SmartOffice.Core.Services
 
         public async Task Unsubscribe(string topic)
         {
-            await _mqttClient.UnsubscribeAsync(topic);
+            if (await Connect())
+            {
+                await _mqttClient.UnsubscribeAsync(topic);
 
-            _handlers.Remove(topic);
+                _handlers.Remove(topic);
+            }
         }
 
         private async Task OnMqttMessageReceived(MqttApplicationMessageReceivedEventArgs args)
@@ -80,7 +83,7 @@ namespace Mcce.SmartOffice.Core.Services
             {
                 foreach (var handler in _handlers[args.ApplicationMessage.Topic])
                 {
-                    await handler.Handle(args.ClientId, payload);
+                    await handler.Handle(args.ApplicationMessage.Topic, payload);
                 }
             }
         }

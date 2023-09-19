@@ -271,14 +271,14 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             {
                 IsBusy = true;
 
-                _weiValues.Clear();
-                _temperatureValues.Clear();
-                _humidityValues.Clear();
-                _co2LevelValues.Clear();
-
                 if (workspace == null)
                 {
                     WorkspaceDataEntries = new List<WorkspaceDataModel>();
+
+                    _weiValues.Clear();
+                    _temperatureValues.Clear();
+                    _humidityValues.Clear();
+                    _co2LevelValues.Clear();
                 }
                 else
                 {
@@ -304,10 +304,11 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             }
         }
 
-
         private void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            if (!IsBusy && _authService.LoggedIn)
+            //if (!IsBusy && _authService.LoggedIn)
+
+            if (!IsBusy)
             {
                 Application.Current.Dispatcher.BeginInvoke(new Action(() => UpdateWorkspaceDataEntries(SelectedWorkspace)));
             }
@@ -329,6 +330,13 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                     if (confirmDelete.Confirmed)
                     {
                         await _workspaceDataManager.Delete(SelectedWorkspace.WorkspaceNumber);
+
+                        _weiValues.Clear();
+                        _temperatureValues.Clear();
+                        _humidityValues.Clear();
+                        _co2LevelValues.Clear();
+
+                        UpdateWorkspaceDataEntries(SelectedWorkspace);
                     }
                 }
                 finally

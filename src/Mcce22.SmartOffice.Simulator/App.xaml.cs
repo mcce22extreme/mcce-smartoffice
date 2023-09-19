@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Net.Http;
 using System.Reflection;
 using System.Windows;
-using Castle.MicroKernel.Registration;
-using Castle.Windsor;
-using Mcce22.SmartOffice.Simulator.Services;
+using Mcce.SmartOffice.Core.Services;
+using Mcce22.SmartOffice.Simulator.Managers;
 using Mcce22.SmartOffice.Simulator.ViewModels;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Mcce22.SmartOffice.Simulator
 {
@@ -15,26 +16,33 @@ namespace Mcce22.SmartOffice.Simulator
     /// </summary>
     public partial class App : Application
     {
-        private void OnStartup(object sender, StartupEventArgs e)
+        private readonly IConfiguration _configuration;
+        private readonly AppConfig _appConfig;
+
+        public App()
         {
-            var appSettings = new ConfigurationBuilder()
+            _configuration = new ConfigurationBuilder()
                 .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true, reloadOnChange: true)
-                .Build()
-                .Get<AppSettings>();
+                .Build();
 
-            var container = new WindsorContainer();
-            container.Register(Component.For<AppSettings>().Instance(appSettings));
-            container.Register(Component.For<MainViewModel>());
-            container.Register(Component.For<MainWindow>());
-            container.Register(Component.For<IMqttService>()
-                .ImplementedBy<MqttService>()
-                .LifestyleSingleton());
+            _appConfig = _configuration.Get<AppConfig>();
+        }
 
-            container.Install();
+        private void OnStartup(object sender, StartupEventArgs e)
+        {
+            var services = new ServiceCollection();
 
-            MainWindow = container.Resolve<MainWindow>();
+            services.AddSingleton<MainViewModel>();
+            services.AddSingleton<MainWindow>();
+            services.AddSingleton<IMessageService>(s => new MessageService(_appConfig.MqttConfig));
+            services.AddSingleton<HttpClient>();
+            services.AddSingleton<IWorkspaceManager>(s => new WorkspaceManager(_appConfig.BaseAddress, s.GetRequiredService<HttpClient>()));
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            MainWindow = serviceProvider.GetService<MainWindow>();
             MainWindow.Show();
         }
     }

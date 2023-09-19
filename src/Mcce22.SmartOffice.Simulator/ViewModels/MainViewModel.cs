@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -10,14 +9,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Mcce.SmartOffice.Core.Constants;
+using Mcce.SmartOffice.Core.Services;
+using Mcce22.SmartOffice.Simulator.Managers;
 using Mcce22.SmartOffice.Simulator.Messages;
-using Mcce22.SmartOffice.Simulator.Services;
 using Newtonsoft.Json;
 
 namespace Mcce22.SmartOffice.Simulator.ViewModels
 {
-    public partial class MainViewModel : ObservableObject
+    public partial class MainViewModel : ObservableObject, IMessageHandler
     {
+        private const string TOPIC_DATA_INGRESS = "mcce22-smart-office/dataingress";
         private const double DEFAULT_DESK_CANVAS_TOP = 0;
         private const double MAX_DESK_HEIGHT = 120;
         private const double MIN_DESK_HEIGHT = 70;
@@ -26,15 +28,14 @@ namespace Mcce22.SmartOffice.Simulator.ViewModels
         private const double DEFAULT_IMAGEFRAME_CANVAS_TOP = 336;
         private const double DEFAULT_WIFI_CANVAS_TOP = 315;
 
-        private static HttpClient _httpClient = new HttpClient();
-
-        private readonly IMqttService _mqttService;
-        private readonly AppSettings _appSettings;
         private readonly Timer _delayTimer;
         private readonly Timer _imageTimer;
+        private readonly IWorkspaceManager _workspaceManager;
+        private readonly IMessageService _messageService;
 
         private List<string> _imageUrls = new List<string>();
         private int _currentImageIndex;
+        private bool _updateSendInProgress;
 
         [ObservableProperty]
         private string _workspaceNumber;
@@ -72,18 +73,57 @@ namespace Mcce22.SmartOffice.Simulator.ViewModels
         [ObservableProperty]
         private string[] _workspaces;
 
-        [ObservableProperty]
         private string _selectedWorkspace;
+        public string SelectedWorkspace
+        {
+            get { return _selectedWorkspace; }
+            set
+            {
+                var oldTopics = SupportedTopics.ToArray();
+
+                if (SetProperty(ref _selectedWorkspace, value))
+                {
+                    UpdateSubscriptions(SupportedTopics, oldTopics);
+                }
+            }
+        }
+
+        private async void UpdateSubscriptions(string[] newTopics, string[] oldTopics)
+        {
+            foreach (var topics in oldTopics)
+            {
+                await _messageService.Unsubscribe(topics);
+            }
+
+            foreach (var topics in newTopics)
+            {
+                await _messageService.Subscribe(topics, this);
+            }
+        }
 
         [ObservableProperty]
         private ImageSource _imageSource;
 
-        public MainViewModel(IMqttService mqttService, AppSettings appSettings)
+        public string TopicWorkspaceActivatedUserImages
         {
-            _mqttService = mqttService;
-            _appSettings = appSettings;
+            get { return string.Format(MessageTopics.TOPIC_WORKSPACE_ACTIVATE_USERIMAGES, SelectedWorkspace); }
+        }
 
-            _workspaceNumber = _appSettings.WorkspaceNumber;
+        public string TopicWorkspaceActivatedWorkspaceConfiguration
+        {
+            get { return string.Format(MessageTopics.TOPIC_WORKSPACE_ACTIVATE_WORKSPACECONFIGURATION, SelectedWorkspace); }
+        }
+
+        public string[] SupportedTopics => new[]
+        {
+            TopicWorkspaceActivatedUserImages,
+            TopicWorkspaceActivatedWorkspaceConfiguration
+        };
+
+        public MainViewModel(IWorkspaceManager workspaceManager, IMessageService messageService)
+        {
+            _workspaceManager = workspaceManager;
+            _messageService = messageService;
 
             _delayTimer = new Timer();
             _delayTimer.Interval = 5000;
@@ -100,15 +140,12 @@ namespace Mcce22.SmartOffice.Simulator.ViewModels
 
         private async void LoadWorkspaces()
         {
-            var json = await _httpClient.GetStringAsync($"{_appSettings.BaseAddress}/workspace/");
-
-            var workspaces = JsonConvert.DeserializeObject<WorkspaceModel[]>(json);
+            var workspaces = await _workspaceManager.GetWorkspaces();
 
             Workspaces = workspaces.Select(x => x.WorkspaceNumber).ToArray();
+
             SelectedWorkspace = Workspaces.FirstOrDefault();
         }
-
-        private bool _updateSendInProgress;
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
@@ -141,7 +178,13 @@ namespace Mcce22.SmartOffice.Simulator.ViewModels
                         Co2Level = Co2Level,
                     };
 
-                    await _mqttService.PublishMessage(msg);
+                    await _messageService.Publish(TOPIC_DATA_INGRESS, new
+                    {
+                        WorkspaceNumber = SelectedWorkspace,
+                        Temperature,
+                        Humidity,
+                        Co2Level,
+                    });
 
                     MessageLog += $"[OUT] {JsonConvert.SerializeObject(msg)}" + Environment.NewLine;
                 }
@@ -188,40 +231,46 @@ namespace Mcce22.SmartOffice.Simulator.ViewModels
             }
         }
 
-        public async Task Connect()
+        public Task Handle(string topic, string payload)
         {
-            await _mqttService.Connect();
+            var info = JsonConvert.DeserializeObject<WorkspaceActivateMessage>(payload);
 
-            _mqttService.MessageReceived += OnMessageReceived;
-        }
-
-        private void OnMessageReceived(object sender, MessageReceivedArgs e)
-        {
-            if (e.Message.WorkspaceNumber == SelectedWorkspace)
+            if (topic == TopicWorkspaceActivatedUserImages)
             {
-                if (e.Message.DeskHeight > MAX_DESK_HEIGHT)
+                _imageUrls.Clear();
+                _imageUrls.AddRange(info.UserImages);
+
+                UpdateImageSource();
+
+                _imageTimer.Start();
+            }
+
+            if (topic == TopicWorkspaceActivatedWorkspaceConfiguration)
+            {
+                if (info.DeskHeight > MAX_DESK_HEIGHT)
                 {
                     DeskHeight = MAX_DESK_HEIGHT;
                 }
-                else if (e.Message.DeskHeight < MIN_DESK_HEIGHT)
+                else if (info.DeskHeight < MIN_DESK_HEIGHT)
                 {
                     DeskHeight = MIN_DESK_HEIGHT;
                 }
                 else
                 {
-                    DeskHeight = e.Message.DeskHeight;
+                    DeskHeight = info.DeskHeight;
                 }
 
-                _imageUrls.Clear();
-                _imageUrls.AddRange(e.Message.UserImageUrls);
-
-                MessageLog += $"[IN ] {JsonConvert.SerializeObject(e.Message)}" + Environment.NewLine;
-
-                UpdateImageSource();
                 UpdateDeskParams(DeskHeight);
-
-                _imageTimer.Start();
             }
+
+            return Task.CompletedTask;
+        }
+
+        private class WorkspaceActivateMessage
+        {
+            public int DeskHeight { get; set; }
+
+            public string[] UserImages { get; set; }
         }
 
         private void UpdateDeskParams(double deskHeight)

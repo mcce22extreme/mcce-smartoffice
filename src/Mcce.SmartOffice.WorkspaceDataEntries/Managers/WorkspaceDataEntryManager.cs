@@ -74,14 +74,16 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
 
         public async Task DeleteWorkspaceDataEntries(string workspaceNumber)
         {
-            var entry = await _dbContext.WorkspaceDataEntries.FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber);
+            var entries = await _dbContext.WorkspaceDataEntries
+                .Where(x => x.WorkspaceNumber == workspaceNumber)
+                .ToListAsync();
 
-            if (entry != null)
+            foreach (var entry in entries)
             {
                 _dbContext.WorkspaceDataEntries.Remove(entry);
-
-                await _dbContext.SaveChangesAsync();
             }
+
+            await _dbContext.SaveChangesAsync();
         }
     }
 }
