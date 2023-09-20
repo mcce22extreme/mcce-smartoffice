@@ -3,7 +3,6 @@ using Mcce.SmartOffice.Core.Configs;
 using Mcce.SmartOffice.Core.Extensions;
 using Mcce.SmartOffice.WorkspaceDataEntries.Generators;
 using Mcce.SmartOffice.WorkspaceDataEntries.Managers;
-using Microsoft.EntityFrameworkCore;
 
 namespace Mcce.SmartOffice.WorkspaceDataEntries
 {
@@ -11,7 +10,7 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries
     {
         protected override void OnConfigureBuilder(WebApplicationBuilder builder)
         {
-            builder.Services.AddDbContext<AppDbContext>(opt => opt.UseCosmos(AppConfig.DbConfig.ConnectionString, AppConfig.DbConfig.DatabaseName));
+            builder.Services.AddDbContext<AppDbContext>(AppConfig.DbConfig);
 
             builder.Services.AddScoped<IWorkspaceDataEntryManager, WorkspaceDataEntryManager>();
 

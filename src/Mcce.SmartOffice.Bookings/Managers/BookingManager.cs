@@ -84,12 +84,7 @@ namespace Mcce.SmartOffice.Bookings.Managers
                 throw new ValidationException("End date of booking must not be before start date of booking!");
             }
 
-            if (model.StartDateTime.Date != model.EndDateTime.Date)
-            {
-                throw new ValidationException("Stard date and end date must not span multiple days!");
-            }
-
-            var collision = await CheckAvailability(model.WorkspaceNumber, model.StartDateTime, model.EndDateTime);
+            var collision = await HasCollision(model.WorkspaceNumber, model.StartDateTime, model.EndDateTime);
 
             if (collision)
             {
@@ -130,7 +125,7 @@ namespace Mcce.SmartOffice.Bookings.Managers
         {
             var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.Id == bookingId);
 
-            if(booking != null)
+            if (booking != null)
             {
                 _dbContext.Bookings.Remove(booking);
 
@@ -138,15 +133,14 @@ namespace Mcce.SmartOffice.Bookings.Managers
             }
         }
 
-        private async Task<bool> CheckAvailability(string workspaceNumber, DateTime startDateTime, DateTime endDateTime)
+        private async Task<bool> HasCollision(string workspaceNumber, DateTime startDateTime, DateTime endDateTime)
         {
-            var bookings = await _dbContext.Bookings
-                .Where(x => x.WorkspaceNumber == workspaceNumber &&
-                            ((x.StartDateTime >= startDateTime || x.EndDateTime <= endDateTime) ||
-                             (x.StartDateTime <= startDateTime && x.EndDateTime >= endDateTime)))
-                .ToListAsync();
+            var bookings = await _dbContext.Bookings.ToListAsync();
 
-            return bookings.Any();
+            var hasCollision = await _dbContext.Bookings
+                .AnyAsync(x => x.WorkspaceNumber == workspaceNumber && startDateTime < x.EndDateTime && endDateTime > x.StartDateTime);
+
+            return hasCollision;
         }
 
         private string GenerateActivationCode()
@@ -185,7 +179,8 @@ namespace Mcce.SmartOffice.Bookings.Managers
             {
                 booking.UserName,
                 booking.WorkspaceNumber,
-            }); ;
+            });
+            ;
         }
     }
 }
