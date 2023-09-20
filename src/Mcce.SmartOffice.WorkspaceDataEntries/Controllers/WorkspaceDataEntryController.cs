@@ -1,5 +1,7 @@
-﻿using Mcce.SmartOffice.WorkspaceDataEntries.Managers;
+﻿using Mcce.SmartOffice.Core.Constants;
+using Mcce.SmartOffice.WorkspaceDataEntries.Managers;
 using Mcce.SmartOffice.WorkspaceDataEntries.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mcce.SmartOffice.WorkspaceDataEntries.Controllers
@@ -22,12 +24,14 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Controllers
         }
 
         [HttpPost("{workspaceNumber}")]
+        [Authorize(AuthConstants.APP_ROLE_ADMINS)]
         public async Task<WorkspaceDataEntryModel> CreateWorkspaceDataEntry(string workspaceNumber, [FromBody] SaveWorkspaceDataEntryModel model)
         {
             return await _dataEntryManager.CreateWorkspaceDataEntry(workspaceNumber, model);
         }
 
         [HttpDelete("{workspaceNumber}")]
+        [Authorize(AuthConstants.APP_ROLE_ADMINS)]
         public async Task DeleteWorkspaceDataEntry(string workspaceNumber)
         {
             await _dataEntryManager.DeleteWorkspaceDataEntries(workspaceNumber);

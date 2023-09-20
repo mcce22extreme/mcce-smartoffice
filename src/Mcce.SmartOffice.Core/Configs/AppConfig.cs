@@ -8,6 +8,8 @@ namespace Mcce.SmartOffice.Core.Configs
 
         public string AppConfigUrl { get; set; }
 
+        public AuthConfig AuthConfig { get; set; }
+
         public DbConfig DbConfig { get; set; }
 
         public MqttConfig MqttConfig { get; set; }
