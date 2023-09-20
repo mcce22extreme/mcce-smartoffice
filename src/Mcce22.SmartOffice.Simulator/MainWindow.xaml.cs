@@ -19,8 +19,6 @@ namespace Mcce22.SmartOffice.Simulator
             DataContext = viewModel;
 
             viewModel.PropertyChanged += OnPropertyChanged;
-
-            Loaded += OnLoaded;
         }
 
         // Can execute
@@ -101,11 +99,6 @@ namespace Mcce22.SmartOffice.Simulator
                     WifiSign.BeginAnimation(Canvas.TopProperty, wifiAnimation);
                 }));
             }
-        }
-
-        private async void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            await ((MainViewModel)DataContext).Connect();
         }
 
         private void OnTextChanged(object sender, TextChangedEventArgs e)

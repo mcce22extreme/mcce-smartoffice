@@ -35,17 +35,11 @@ namespace Mcce.SmartOffice.UserImages.Handlers
 
             if (userImages.Length > 0)
             {
-                //await _messageService.Publish("workspace/activate/userimages", new
-                //{
-                //    bookingInfo.UserName,
-                //    bookingInfo.WorkspaceNumber,
-                //    UserImages = userImages,
-                //});
                 await _messageService.Publish(string.Format(MessageTopics.TOPIC_WORKSPACE_ACTIVATE_USERIMAGES, bookingInfo.WorkspaceNumber), new
                 {
                     bookingInfo.UserName,
                     bookingInfo.WorkspaceNumber,
-                    UserImages = userImages,
+                    UserImages = userImages.Select(x => x.Url).ToArray(),
                 });
             }
         }

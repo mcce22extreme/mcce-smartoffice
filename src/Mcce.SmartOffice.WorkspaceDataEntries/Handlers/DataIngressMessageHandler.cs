@@ -1,6 +1,6 @@
 ﻿using Mcce.SmartOffice.Core.Services;
-using Mcce.SmartOffice.WorkspaceDataEntries.Entities;
 using Mcce.SmartOffice.WorkspaceDataEntries.Generators;
+using Mcce.SmartOffice.WorkspaceDataEntries.Managers;
 using Mcce.SmartOffice.WorkspaceDataEntries.Models;
 using Newtonsoft.Json;
 
@@ -26,26 +26,16 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Handlers
             var model = JsonConvert.DeserializeObject<SaveWorkspaceDataEntryModel>(payload);
 
             var scope = _serviceScopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var dataEntryManager = scope.ServiceProvider.GetRequiredService<IWorkspaceDataEntryManager>();
 
-            var entry = new WorkspaceDataEntry
+            await dataEntryManager.CreateWorkspaceDataEntry(model.WorkspaceNumber, new SaveWorkspaceDataEntryModel
             {
                 Timestamp = DateTime.UtcNow,
                 WorkspaceNumber = model.WorkspaceNumber,
                 Temperature = model.Temperature,
                 Humidity = model.Humidity,
                 Co2Level = model.Co2Level,
-            };
-
-            entry.Wei = _weiGenerator.GenerateWei(entry.Temperature, entry.Humidity, entry.Co2Level);
-
-            using var tx = await dbContext.Database.BeginTransactionAsync();
-
-            await dbContext.WorkspaceDataEntries.AddAsync(entry);
-
-            await dbContext.SaveChangesAsync();
-
-            await tx.CommitAsync();
+            });
         }
     }
 }

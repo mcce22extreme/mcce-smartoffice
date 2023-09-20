@@ -236,15 +236,15 @@
                             SortDirection="Descending" />
                         <DataGridTextColumn
                             Width="110"
-                            Binding="{Binding Temperature, StringFormat={} {0} °C}"
+                            Binding="{Binding Temperature, StringFormat={} {0:0.0} °C}"
                             Header="Temperature" />
                         <DataGridTextColumn
                             Width="110"
-                            Binding="{Binding Humidity, StringFormat={} {0} %}"
+                            Binding="{Binding Humidity, StringFormat={} {0:0.0} %}"
                             Header="Humidity" />
                         <DataGridTextColumn
                             Width="110"
-                            Binding="{Binding Co2Level, StringFormat={} {0} ppm}"
+                            Binding="{Binding Co2Level, StringFormat={} {0:0.0} ppm}"
                             Header="CO2" />
                         <DataGridTextColumn
                             Width="110"

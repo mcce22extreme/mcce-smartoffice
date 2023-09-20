@@ -1,15 +1,14 @@
-﻿using Mcce.SmartOffice.Core;
-using Mcce.SmartOffice.WorkspaceDataEntries.Entities;
+﻿using Mcce.SmartOffice.WorkspaceDataEntries.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mcce.SmartOffice.WorkspaceDataEntries
 {
-    public class AppDbContext : AppDbContextBase
+    public class AppDbContext : DbContext
     {
         public DbSet<WorkspaceDataEntry> WorkspaceDataEntries { get; set; }
 
-        public AppDbContext(DbContextOptions options, IHttpContextAccessor contextAccessor)
-            : base(options, contextAccessor)
+        public AppDbContext(DbContextOptions options)
+            : base(options)
         {
         }
 

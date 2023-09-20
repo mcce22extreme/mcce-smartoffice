@@ -39,7 +39,7 @@ namespace Mcce.SmartOffice.Bookings.Controllers
             await _bookingManager.DeleteBooking(bookingId);
         }
 
-        [HttpPut("activate")]
+        [HttpGet("activate")]
         public async Task<IActionResult> ActivateBooking([FromQuery] string activationCode)
         {
             await _bookingManager.ActivateBooking(activationCode);
