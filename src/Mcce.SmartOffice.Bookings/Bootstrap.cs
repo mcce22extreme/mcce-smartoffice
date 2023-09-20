@@ -3,7 +3,6 @@ using Mcce.SmartOffice.Bookings.Managers;
 using Mcce.SmartOffice.Bookings.Services;
 using Mcce.SmartOffice.Core;
 using Mcce.SmartOffice.Core.Extensions;
-using Microsoft.EntityFrameworkCore;
 
 namespace Mcce.SmartOffice.Bookings
 {
@@ -11,7 +10,7 @@ namespace Mcce.SmartOffice.Bookings
     {
         protected override void OnConfigureBuilder(WebApplicationBuilder builder)
         {
-            builder.Services.AddDbContext<AppDbContext>(opt => opt.UseCosmos(AppConfig.DbConfig.ConnectionString, AppConfig.DbConfig.DatabaseName));
+            builder.Services.AddDbContext<AppDbContext>(AppConfig.DbConfig);
 
             builder.Services.AddScoped<IBookingManager, BookingManager>();
 

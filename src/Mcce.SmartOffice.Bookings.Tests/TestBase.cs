@@ -10,6 +10,8 @@ namespace Mcce.SmartOffice.Bookings.Tests
     {
         protected static IMapper Mapper { get; }
 
+        protected AppDbContext DbContext { get; private set; }
+
         static TestBase()
         {
             var config = new MapperConfiguration(cfg =>
@@ -21,13 +23,44 @@ namespace Mcce.SmartOffice.Bookings.Tests
             Mapper = config.CreateMapper();
         }
 
-        protected AppDbContext CreateDbContext()
+        public TestBase()
+        {
+            //var dbOptionsBuilder = new DbContextOptionsBuilder();
+
+            //dbOptionsBuilder.UseInMemoryDatabase("smartoffice");
+
+            //DbContext = new AppDbContext(dbOptionsBuilder.Options, A.Fake<IHttpContextAccessor>());
+        }
+
+        //private AppDbContext CreateDbContext()
+        //{
+        //    var dbOptionsBuilder = new DbContextOptionsBuilder();
+
+        //    dbOptionsBuilder.UseInMemoryDatabase("smartoffice");
+
+        //    return new AppDbContext(dbOptionsBuilder.Options, A.Fake<IHttpContextAccessor>());
+        //}
+
+        [SetUp]
+        public void Setup()
         {
             var dbOptionsBuilder = new DbContextOptionsBuilder();
 
             dbOptionsBuilder.UseInMemoryDatabase("smartoffice");
 
-            return new AppDbContext(dbOptionsBuilder.Options, A.Fake<IHttpContextAccessor>());
+            DbContext = new AppDbContext(dbOptionsBuilder.Options, A.Fake<IHttpContextAccessor>());
+        }
+
+        [TearDown]
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
+        {
+            if (DbContext != null)
+            {
+                DbContext.Database.EnsureDeleted();
+                DbContext.Dispose();
+                DbContext = null;
+            }
         }
     }
 }

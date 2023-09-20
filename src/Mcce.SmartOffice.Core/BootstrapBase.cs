@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Azure.Identity;
 using FluentValidation;
 using Mcce.SmartOffice.Core.Attributes;
@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Logging;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -74,8 +73,6 @@ namespace Mcce.SmartOffice.Core
 
         private void ConfigureBuilder(WebApplicationBuilder builder)
         {
-            IdentityModelEventSource.ShowPII = true;
-
             var appInfo = new AppInfo(Assembly.GetName());
 
             Log.Information($"Starting {appInfo.AppName} v{appInfo.AppVersion}...");

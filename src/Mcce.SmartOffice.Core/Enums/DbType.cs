@@ -2,7 +2,7 @@
 {
     public enum DbType
     {
-        SQLite,
-        MSSqlServer
+        SQLite = 0,
+        CosmosDb = 1,
     }
 }
