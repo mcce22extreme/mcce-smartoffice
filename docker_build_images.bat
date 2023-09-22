@@ -9,3 +9,5 @@ docker build -t domih/mcce-smart-office-workspaceconfiguration-api -f .\src\Mcce
 docker build -t domih/mcce-smart-office-booking-api -f .\src\Mcce.SmartOffice.Bookings\Dockerfile .
 
 docker build -t domih/mcce-smart-office-workspacedataentry-api -f .\src\Mcce.SmartOffice.WorkspaceDataEntries\Dockerfile .
+
+docker build -t domih/mcce-smart-office-account-api -f .\src\Mcce.SmartOffice.Accounts\Dockerfile .
