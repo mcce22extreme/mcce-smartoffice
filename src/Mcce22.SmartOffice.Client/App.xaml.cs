@@ -87,9 +87,7 @@ namespace Mcce22.SmartOffice.Client
             if (multiThreadedMessageLoop)
             {
                 browserProcessHandler = new BrowserProcessHandler();
-            }
-
-            
+            }            
 
             var settings = new CefSettings();
             settings.MultiThreadedMessageLoop = multiThreadedMessageLoop;

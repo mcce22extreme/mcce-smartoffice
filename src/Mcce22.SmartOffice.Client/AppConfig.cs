@@ -7,6 +7,8 @@
         string AuthEndpoint { get; }
 
         string ClientSecret { get; }
+
+        string ClientId { get; }
     }
 
     internal class AppConfig : IAppConfig
@@ -16,5 +18,7 @@
         public string AuthEndpoint { get; set; }
 
         public string ClientSecret { get; set; }
+
+        public string ClientId { get; set; }
     }
 }

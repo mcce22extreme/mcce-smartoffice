@@ -41,18 +41,14 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         {
             try
             {
-                IsAdmin = true;
-                LoginVisible = false;
-                LoginChanged?.Invoke(this, EventArgs.Empty);
+                if (await _authService.Login())
+                {
+                    var accountInfo = await _accountManager.GetAccountInfo();
 
-                //if (await _authService.Login())
-                //{
-                //    var accountInfo = await _accountManager.GetAccountInfo();
-
-                //    IsAdmin = accountInfo.IsAdmin;
-                //    LoginChanged?.Invoke(this, EventArgs.Empty);
-                //    LoginVisible = false;
-                //}
+                    IsAdmin = accountInfo.IsAdmin;
+                    LoginChanged?.Invoke(this, EventArgs.Empty);
+                    LoginVisible = false;
+                }
             }
             catch (Exception ex)
             {
