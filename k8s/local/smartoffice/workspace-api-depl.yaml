@@ -1,0 +1,112 @@
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: workspace-api-config
+#   namespace: default
+#   labels:
+#     app: workspace-api
+# data:
+#   appsettings.json: |
+#     {
+#       "AuthConfig":{
+#         "AuthUrl":"http://keycloak-clusterip-srv:8080/realms/smartoffice",
+#         "AuthFrontendUrl":"http://localhost:8080/realms/smartoffice",
+#         "ClientId":"smartoffice"
+#       },
+#       "BaseAddress": "http://workspace-api-clusterip-srv:8080",
+#       "DbConfig":{
+#         "ConnectionString":"DataSource=/app/storage/workspaces.db",
+#         "DatabaseType":"SQLite"
+#       },
+#       "Serilog": {
+#           "MinimumLevel": {
+#               "Default": "Debug",
+#               "Override": {
+#                   "Microsoft": "Error",
+#                   "System": "Error"
+#               }
+#           },
+#           "WriteTo": [
+#               {
+#                   "Args": {
+#                       "OutputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}"
+#                   },
+#                   "Name": "Console"
+#               }
+#           ]
+#       }
+#     }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: workspace-api-pv-claim
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workspace-api-depl
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: workspace-api
+  template:
+    metadata:
+      labels:
+        app: workspace-api
+    spec:
+      containers:
+        - name: workspace-api
+          image: domih/mcce-smart-office-workspace-api:latest
+          imagePullPolicy: Always
+          env:
+            - name: SMARTOFFICE_BASEADDRESS
+              value: http://workspace-api-clusterip-srv:8080
+          envFrom:
+            - configMapRef:
+                name: env-configmap
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "125m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+          volumeMounts:
+            # - name: workspace-api-config
+            #   mountPath: /app/appsettings.json
+            #   subPath: appsettings.json
+            - name: workspace-api-storage
+              mountPath: /app/storage
+              subPath: workspaces
+      volumes:
+        # - name: workspace-api-config
+        #   configMap:
+        #     name: workspace-api-config
+        - name: workspace-api-storage
+          persistentVolumeClaim:
+            claimName: workspace-api-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: workspace-api-clusterip-srv
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: workspace-api
+  ports:
+    - name: workspace-api
+      protocol: TCP
+      port: 80
+      targetPort: 8080

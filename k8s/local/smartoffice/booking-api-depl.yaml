@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: booking-api-depl
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: booking-api
+  template:
+    metadata:
+      labels:
+        app: booking-api
+    spec:
+      containers:
+        - name: booking-api
+          image: domih/mcce-smart-office-booking-api:latest
+          imagePullPolicy: Always
+          env:
+            - name: SMARTOFFICE_BASEADDRESS
+              value: http://booking-api-clusterip-srv:8080
+          envFrom:
+            - configMapRef:
+                name: env-configmap
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "125m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+          volumeMounts:
+            - name: booking-api-config
+              mountPath: /app/appsettings.json
+              subPath: appsettings.json
+      volumes:
+        - name: booking-api-config
+          configMap:
+            name: booking-api-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: booking-api-clusterip-srv
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: booking-api
+  ports:
+    - name: booking-api
+      protocol: TCP
+      port: 80
+      targetPort: 8080

@@ -1,0 +1,92 @@
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: workspaceconfiguration-api-config
+#   namespace: default
+#   labels:
+#     app: workspaceconfiguration-api
+# data:
+#   appsettings.json: |
+#     {
+#         "AuthConfig":{
+#           "AuthUrl":"http://keycloak-clusterip-srv:8080/realms/smartoffice",
+#           "AuthFrontendUrl":"http://localhost:8080/realms/smartoffice",
+#           "ClientId":"smartoffice"
+#         },
+#         "BaseAddress": "http://workspaceconfiguration-api-clusterip-srv:8080",
+#         "DbConfig":{
+#           "ConnectionString":"DataSource=/app/storage/sqlite.db",
+#           "DatabaseType":"SQLite"
+#         },
+#         "MqttConfig": {
+#             "HostName": "mosquitto-clusterip-srv",
+#             "Password": "mcce22-smart-office",
+#             "Port": 1883,
+#             "UserName": "iot"
+#         },
+#         "Serilog": {
+#             "MinimumLevel": {
+#                 "Default": "Debug",
+#                 "Override": {
+#                     "Microsoft": "Error",
+#                     "System": "Error"
+#                 }
+#             },
+#             "WriteTo": [
+#                 {
+#                     "Args": {
+#                         "OutputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
+#                     },
+#                     "Name": "Console"
+#                 }
+#             ]
+#         }
+#     }
+# ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workspaceconfiguration-api-depl
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: workspaceconfiguration-api
+  template:
+    metadata:
+      labels:
+        app: workspaceconfiguration-api
+    spec:
+      containers:
+        - name: workspaceconfiguration-api
+          image: domih/mcce-smart-office-workspaceconfiguration-api:latest
+          imagePullPolicy: Always
+          env:
+            - name: SMARTOFFICE_BASEADDRESS
+              value: http://workspaceconfiguration-api-clusterip-srv:8080
+          envFrom:
+            - configMapRef:
+                name: env-configmap
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "125m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: workspaceconfiguration-api-clusterip-srv
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: workspaceconfiguration-api
+  ports:
+    - name: workspaceconfiguration-api
+      protocol: TCP
+      port: 80
+      targetPort: 8080
