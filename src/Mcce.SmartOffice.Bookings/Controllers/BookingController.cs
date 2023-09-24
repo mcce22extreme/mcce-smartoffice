@@ -1,5 +1,7 @@
 ﻿using Mcce.SmartOffice.Bookings.Managers;
 using Mcce.SmartOffice.Bookings.Models;
+using Mcce.SmartOffice.Core.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mcce.SmartOffice.Bookings.Controllers
@@ -21,36 +23,39 @@ namespace Mcce.SmartOffice.Bookings.Controllers
             return await _bookingManager.GetBookings();
         }
 
-        [HttpGet("{bookingId}")]
-        public async Task<BookingModel> GetBooking(int bookingId)
-        {
-            return await _bookingManager.GetBooking(bookingId);
-        }
-
         [HttpPost]
         public async Task<BookingModel> CreateBooking([FromBody] SaveBookingModel model)
         {
-            return await _bookingManager.CreateBooking(model, Url.ActionLink(nameof(ActivateBooking)));
+            return await _bookingManager.CreateBooking(model, CreateUrl);
         }
 
-        [HttpDelete("{bookingId}")]
-        public async Task DeleteBooking(int bookingId)
+        [HttpDelete("{bookingNumber}")]
+        public async Task DeleteBooking(string bookingNumber)
         {
-            await _bookingManager.DeleteBooking(bookingId);
+            await _bookingManager.DeleteBooking(bookingNumber);
         }
 
-        [HttpGet("activate")]
-        public async Task<IActionResult> ActivateBooking([FromQuery] string activationCode)
+        [AllowAnonymous]
+        [HttpGet("{bookingNumber}/activate")]        
+        public async Task<IActionResult> ActivateBooking(string bookingNumber)
         {
-            await _bookingManager.ActivateBooking(activationCode);
+            await _bookingManager.ActivateBooking(bookingNumber);
 
             return Ok();
         }
 
-        private string CreateUrl(int userImageId)
+        private string CreateUrl(string bookingNumber)
         {
-            var url = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/userimage/{userImageId}/content";
-            return url;
+            var origin = Request.Headers.Origin.FirstOrDefault();
+
+            if (origin.HasValue())
+            {
+                return $"{origin}/booking/{bookingNumber}/activate";
+            }
+            else
+            {
+                return $"{Request.Scheme}://{Request.Host}{Request.PathBase}/booking/{bookingNumber}/activate";
+            }
         }
     }
 }
