@@ -71,7 +71,7 @@ namespace Mcce22.SmartOffice.Client.Services
             var options = new OidcClientOptions
             {
                 Authority = _appConfig.AuthEndpoint,
-                ClientId = "smartoffice-api",
+                ClientId = _appConfig.ClientId,
                 Scope = "openid profile email roles",
                 RedirectUri = "http://127.0.0.1/smartoffice",
                 ClientSecret = _appConfig.ClientSecret,

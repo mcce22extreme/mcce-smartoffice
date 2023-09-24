@@ -144,6 +144,20 @@ data:
                     "SwaggerKey": "workspacedataentry",
                     "UpstreamHttpMethod": [ "POST", "GET", "DELETE" ],
                     "UpstreamPathTemplate": "/workspacedataentry/{everything}"
+                },
+                // Accounts
+                {
+                    "DownstreamHostAndPorts": [
+                        {
+                            "Host": "account-api-clusterip-srv",
+                            "Port": 80
+                        }
+                    ],
+                    "DownstreamPathTemplate": "/account",
+                    "DownstreamScheme": "http",
+                    "SwaggerKey": "account",
+                    "UpstreamHttpMethod": [ "GET" ],
+                    "UpstreamPathTemplate": "/account"
                 }
             ],
             "Serilog": {
@@ -214,7 +228,17 @@ data:
                         }
                     ],
                     "Key": "workspacedataentry"
-                }
+                },
+                {
+                    "Config": [
+                        {
+                            "Name": "Account API",
+                            "Url": "http://account-api-clusterip-srv:80/swagger/v1/swagger.json",
+                            "Version": "v1"
+                        }
+                    ],
+                    "Key": "account"
+                }                
             ]
         }
 ---

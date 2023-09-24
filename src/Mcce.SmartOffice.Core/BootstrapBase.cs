@@ -3,16 +3,22 @@ using Azure.Identity;
 using FluentValidation;
 using Mcce.SmartOffice.Core.Attributes;
 using Mcce.SmartOffice.Core.Configs;
+using Mcce.SmartOffice.Core.Constants;
 using Mcce.SmartOffice.Core.Extensions;
 using Mcce.SmartOffice.Core.Handlers;
 using Mcce.SmartOffice.Core.Providers;
 using Mcce.SmartOffice.Core.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -91,13 +97,64 @@ namespace Mcce.SmartOffice.Core
             // Configure global filters
             builder.Services.AddControllersWithViews(opt =>
             {
+                opt.Filters.Add(new AuthorizeFilter(AuthConstants.APP_ROLE_USERS));
                 opt.Filters.Add(new TypeFilterAttribute(typeof(OperationLoggerAttribute)));
                 opt.Filters.Add(new TypeFilterAttribute(typeof(OperationValidatorAttribute)));
             });
 
+            // Configure authentication
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opt =>
+                {
+                    opt.MetadataAddress = $"{AppConfig.AuthConfig.AuthUrl}/.well-known/openid-configuration";
+                    opt.Authority = AppConfig.AuthConfig.AuthUrl;
+                    opt.Audience = "account";
+                    opt.RequireHttpsMetadata = false;
+                    opt.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false
+                    };
+                });
+
+            // Configure authorization
+            builder.Services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy(AuthConstants.APP_ROLE_ADMINS, p => p.RequireRole(AuthConstants.APP_ROLE_ADMINS));
+                opt.AddPolicy(AuthConstants.APP_ROLE_USERS, p => p.RequireRole(AuthConstants.APP_ROLE_ADMINS, AuthConstants.APP_ROLE_USERS));
+
+            });
+
             builder.Services.AddEndpointsApiExplorer();
 
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(opt =>
+            {
+                var scheme = new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        Implicit = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri($"{AppConfig.AuthConfig.AuthUrl}/protocol/openid-connect/auth"),
+                            TokenUrl = new Uri($"{AppConfig.AuthConfig.AuthUrl}/protocol/openid-connect/token")
+                        }
+                    },
+                    Type = SecuritySchemeType.OAuth2
+                };
+
+                opt.AddSecurityDefinition("OAuth", scheme);
+                opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Id = "OAuth", Type = ReferenceType.SecurityScheme }
+                        },
+                        new List<string> { }
+                    }
+                });
+            });
 
             builder.Services.AddHttpContextAccessor();
 
@@ -139,7 +196,12 @@ namespace Mcce.SmartOffice.Core
 
             app.UseSwagger();
 
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(opt =>
+            {
+                opt.OAuthClientId(AppConfig.AuthConfig.ClientId);
+                opt.OAuthScopes("profile");
+                opt.OAuthUsePkce();
+            });
 
             app.MapDefaultControllerRoute();
 

@@ -1,6 +1,5 @@
 ﻿using Mcce.SmartOffice.Core.Constants;
 using Mcce.SmartOffice.Core.Services;
-using Mcce.SmartOffice.UserImages.Configs;
 using Mcce.SmartOffice.UserImages.Managers;
 using Newtonsoft.Json;
 
@@ -10,15 +9,13 @@ namespace Mcce.SmartOffice.UserImages.Handlers
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IMessageService _messageService;
-        private readonly AppConfig _appConfig;
 
         public string[] SupportedTopics => new[] { MessageTopics.TOPIC_BOOKING_ACTIVATED };
 
-        public BookingActivatedHandler(IServiceScopeFactory serviceScopeFactory, IMessageService messageService, AppConfig appConfig)
+        public BookingActivatedHandler(IServiceScopeFactory serviceScopeFactory, IMessageService messageService)
         {
             _serviceScopeFactory = serviceScopeFactory;
             _messageService = messageService;
-            _appConfig = appConfig;
         }
 
         public async Task Handle(string topic, string payload)
@@ -28,10 +25,7 @@ namespace Mcce.SmartOffice.UserImages.Handlers
             var scope = _serviceScopeFactory.CreateScope();
             var userImageManager = scope.ServiceProvider.GetService<IUserImageManager>();
 
-            var userImages = await userImageManager.GetUserImagesByUserName(bookingInfo.UserName, x =>
-            {
-                return $"{_appConfig.FrontendUrl}/{x}";
-            });
+            var userImages = await userImageManager.GetUserImagesByUserName(bookingInfo.UserName);
 
             if (userImages.Length > 0)
             {
