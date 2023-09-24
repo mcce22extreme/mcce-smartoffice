@@ -20,9 +20,8 @@ spec:
           env:
             - name: SMARTOFFICE_BASEADDRESS
               value: http://workspaceconfiguration-api-clusterip-srv:8080
-          envFrom:
-            - configMapRef:
-                name: env-configmap
+            - name: SMARTOFFICE_APPCONFIGURL
+              value: https://cfg-smartoffice-001.azconfig.io
           resources:
             requests:
               memory: "128Mi"

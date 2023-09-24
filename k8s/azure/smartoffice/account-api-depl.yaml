@@ -20,9 +20,8 @@ spec:
           env:
             - name: SMARTOFFICE_BASEADDRESS
               value: http://account-api-clusterip-srv:8080
-          envFrom:
-            - configMapRef:
-                name: env-configmap
+            - name: SMARTOFFICE_APPCONFIGURL
+              value: https://cfg-smartoffice-001.azconfig.io
           resources:
             requests:
               memory: "128Mi"
@@ -30,14 +29,6 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "250m"
-          volumeMounts:
-            - name: account-api-config
-              mountPath: /app/appsettings.json
-              subPath: appsettings.json
-      volumes:
-        - name: account-api-config
-          configMap:
-            name: account-api-config
 ---
 apiVersion: v1
 kind: Service

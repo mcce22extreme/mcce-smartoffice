@@ -1,28 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: workspaceconfiguration-api-depl
+  name: booking-api-depl
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: workspaceconfiguration-api
+      app: booking-api
   template:
     metadata:
       labels:
-        app: workspaceconfiguration-api
+        app: booking-api
     spec:
       containers:
-        - name: workspaceconfiguration-api
-          image: domih/mcce-smart-office-workspaceconfiguration-api:latest
+        - name: booking-api
+          image: domih/mcce-smart-office-booking-api:latest
           imagePullPolicy: Always
           env:
             - name: SMARTOFFICE_BASEADDRESS
-              value: http://workspaceconfiguration-api-clusterip-srv:8080
-          envFrom:
-            - configMapRef:
-                name: env-configmap
+              value: http://booking-api-clusterip-srv:8080
+            - name: SMARTOFFICE_APPCONFIGURL
+              value: https://cfg-smartoffice-001.azconfig.io
           resources:
             requests:
               memory: "128Mi"
@@ -34,14 +33,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: workspaceconfiguration-api-clusterip-srv
+  name: booking-api-clusterip-srv
   namespace: default
 spec:
   type: ClusterIP
   selector:
-    app: workspaceconfiguration-api
+    app: booking-api
   ports:
-    - name: workspaceconfiguration-api
+    - name: booking-api
       protocol: TCP
       port: 80
       targetPort: 8080
