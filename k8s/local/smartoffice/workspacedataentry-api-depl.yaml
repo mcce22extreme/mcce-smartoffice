@@ -1,34 +1,3 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: workspacedataentry-api-config
-  namespace: default
-  labels:
-    app: workspacedataentry-api
-data:
-  appsettings.json: |
-    {
-        "AppConfigUrl": "https://cfg-smartoffice-001.azconfig.io",
-        "BaseAddress": "http://workspacedataentry-api-clusterip-srv:8080",        
-        "Serilog": {
-            "MinimumLevel": {
-                "Default": "Debug",
-                "Override": {
-                    "Microsoft": "Error",
-                    "System": "Error"
-                }
-            },
-            "WriteTo": [
-                {
-                    "Args": {
-                        "OutputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
-                    },
-                    "Name": "Console"
-                }
-            ]
-        }
-    }
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -47,13 +16,20 @@ spec:
       containers:
         - name: workspacedataentry-api
           image: domih/mcce-smart-office-workspacedataentry-api:latest
+          imagePullPolicy: Always
+          env:
+            - name: SMARTOFFICE_BASEADDRESS
+              value: http://workspacedataentry-api-clusterip-srv:8080
+          envFrom:
+            - configMapRef:
+                name: env-configmap
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: "128Mi"
+              cpu: "125m"
             limits:
               memory: "512Mi"
-              cpu: "1000m"
+              cpu: "250m"
           volumeMounts:
             - name: workspacedataentry-api-config
               mountPath: /app/appsettings.json

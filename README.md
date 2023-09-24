@@ -71,8 +71,10 @@ By using the microservice design pattern, the services of the "Smart Office" can
 ### Smart Office Microservices
 Since the Smart Office microservices have been defined as independent Docker containers, they can be operated in any Docker engine. The solution contains a docker compose file that can help to orchestrate the microservices. In addition, the docker compose file shows which environment variables must be provided for each microservice.
 
-The microservices can be deployed to a local Docker Engine with the following command:
+The microservices can be deployed to a kubernetes cluster by applying the kubernetes definitions under k8s. 
 
 ```
-docker compose up -d
+kubectl apply -f ./k8s/keycloak
+kubectl apply -f ./k8s/mosquitto
+kubectl apply -f ./k8s/smartoffice
 ```

@@ -81,8 +81,6 @@ kind: Service
 metadata:
   name: mosquitto
   namespace: default
-  annotations:
-    service.beta.kubernetes.io/azure-dns-label-name: mosquitto-mcce22extreme
 spec:
   type: LoadBalancer
   selector:

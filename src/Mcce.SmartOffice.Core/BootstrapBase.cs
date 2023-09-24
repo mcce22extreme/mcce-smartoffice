@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -37,7 +36,8 @@ namespace Mcce.SmartOffice.Core
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true, reloadOnChange: true);
+                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables("SMARTOFFICE_");
 
             var cfg = builder.Build();
             var appConfig = cfg.Get<AppConfig>();
@@ -83,7 +83,10 @@ namespace Mcce.SmartOffice.Core
 
             Log.Information($"Starting {appInfo.AppName} v{appInfo.AppVersion}...");
 
-            Log.Debug($"AppConfig: \n" + JsonConvert.SerializeObject(AppConfig, Formatting.Indented));
+            Log.Debug($"AppConfig: \n" + JsonConvert.SerializeObject(AppConfig, Formatting.Indented, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+            }));
 
             builder.WebHost.UseUrls(AppConfig.BaseAddress);
 
@@ -112,7 +115,8 @@ namespace Mcce.SmartOffice.Core
                     opt.RequireHttpsMetadata = false;
                     opt.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateAudience = false
+                        ValidateAudience = false,
+                        ValidateIssuer = false,
                     };
                 });
 
@@ -136,8 +140,8 @@ namespace Mcce.SmartOffice.Core
                     {
                         Implicit = new OpenApiOAuthFlow
                         {
-                            AuthorizationUrl = new Uri($"{AppConfig.AuthConfig.AuthUrl}/protocol/openid-connect/auth"),
-                            TokenUrl = new Uri($"{AppConfig.AuthConfig.AuthUrl}/protocol/openid-connect/token")
+                            AuthorizationUrl = new Uri($"{AppConfig.AuthConfig.AuthFrontendUrl}/protocol/openid-connect/auth"),
+                            TokenUrl = new Uri($"{AppConfig.AuthConfig.AuthFrontendUrl}/protocol/openid-connect/token")
                         }
                     },
                     Type = SecuritySchemeType.OAuth2
