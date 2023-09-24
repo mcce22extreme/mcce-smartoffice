@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Mcce.SmartOffice.Bookings.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230920194820_InitialCreate")]
+    [Migration("20230924213734_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -29,7 +29,7 @@ namespace Mcce.SmartOffice.Bookings.Migrations
                     b.Property<bool>("Activated")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ActivationCode")
+                    b.Property<string>("BookingNumber")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("CreatedUtc")
@@ -66,6 +66,9 @@ namespace Mcce.SmartOffice.Bookings.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookingNumber")
+                        .IsUnique();
 
                     b.ToTable("Bookings");
 

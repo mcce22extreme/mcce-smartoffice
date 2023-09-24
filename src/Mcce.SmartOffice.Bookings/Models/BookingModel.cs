@@ -4,6 +4,8 @@ namespace Mcce.SmartOffice.Bookings.Models
 {
     public class BookingModel : AuditableModelBase
     {
+        public string BookingNumber { get; set; }
+
         public DateTime StartDateTime { get; set; }
 
         public DateTime EndDateTime { get; set; }

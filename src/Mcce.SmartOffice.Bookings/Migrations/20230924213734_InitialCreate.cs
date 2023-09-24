@@ -17,11 +17,11 @@ namespace Mcce.SmartOffice.Bookings.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    BookingNumber = table.Column<string>(type: "TEXT", nullable: true),
                     StartDateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     EndDateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Activated = table.Column<bool>(type: "INTEGER", nullable: false),
                     InvitationSent = table.Column<bool>(type: "INTEGER", nullable: false),
-                    ActivationCode = table.Column<string>(type: "TEXT", nullable: true),
                     WorkspaceNumber = table.Column<string>(type: "TEXT", nullable: true),
                     FirstName = table.Column<string>(type: "TEXT", nullable: true),
                     LastName = table.Column<string>(type: "TEXT", nullable: true),
@@ -35,6 +35,12 @@ namespace Mcce.SmartOffice.Bookings.Migrations
                 {
                     table.PrimaryKey("PK_Bookings", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_BookingNumber",
+                table: "Bookings",
+                column: "BookingNumber",
+                unique: true);
         }
 
         /// <inheritdoc />

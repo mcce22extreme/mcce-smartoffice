@@ -3,7 +3,6 @@ using AutoMapper.QueryableExtensions;
 using FluentValidation;
 using Mcce.SmartOffice.Bookings.Entities;
 using Mcce.SmartOffice.Bookings.Models;
-using Mcce.SmartOffice.Bookings.Services;
 using Mcce.SmartOffice.Core.Constants;
 using Mcce.SmartOffice.Core.Exceptions;
 using Mcce.SmartOffice.Core.Extensions;
@@ -17,13 +16,11 @@ namespace Mcce.SmartOffice.Bookings.Managers
     {
         Task<BookingModel[]> GetBookings();
 
-        Task<BookingModel> GetBooking(int bookingId);
+        Task<BookingModel> CreateBooking(SaveBookingModel model, Func<string, string> urlFunc);
 
-        Task<BookingModel> CreateBooking(SaveBookingModel model, string activationLink);
+        Task DeleteBooking(string bookingNumber);
 
-        Task DeleteBooking(int bookingId);
-
-        Task ActivateBooking(string activationCode);
+        Task ActivateBooking(string bookingNumber);
     }
 
     public class BookingManager : IBookingManager
@@ -34,20 +31,17 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
-        private readonly IEmailService _emailService;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IMessageService _messageService;
 
         public BookingManager(
             AppDbContext dbContext,
             IMapper mapper,
-            IEmailService emailService,
             IHttpContextAccessor contextAccessor,
             IMessageService messageService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
-            _emailService = emailService;
             _contextAccessor = contextAccessor;
             _messageService = messageService;
         }
@@ -65,16 +59,7 @@ namespace Mcce.SmartOffice.Bookings.Managers
             return bookings.ToArray();
         }
 
-        public async Task<BookingModel> GetBooking(int bookingId)
-        {
-            var booking = await _dbContext.Bookings
-                .ProjectTo<BookingModel>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync(x => x.Id == bookingId) ?? throw new EntityNotFoundException<Booking>(bookingId);
-
-            return booking;
-        }
-
-        public async Task<BookingModel> CreateBooking(SaveBookingModel model, string activationLink)
+        public async Task<BookingModel> CreateBooking(SaveBookingModel model, Func<string, string> urlFunc)
         {
             var currentUser = _contextAccessor.GetUserInfo();
 
@@ -93,37 +78,31 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
             var booking = _mapper.Map<Booking>(model);
 
+            booking.BookingNumber = GenerateBookingNumber();
             booking.FirstName = currentUser.FirstName;
             booking.LastName = currentUser.LastName;
             booking.UserName = currentUser.UserName;
-            booking.ActivationCode = GenerateActivationCode();
 
             await _dbContext.Bookings.AddAsync(booking);
 
             await _dbContext.SaveChangesAsync();
 
-            Log.Debug($"Created booking '{booking.Id}' for workspace '{booking.WorkspaceNumber}' and user '{booking.UserName}' with activation code '{booking.ActivationCode}'.");
+            Log.Debug($"Created booking '{booking.Id}' for workspace '{booking.WorkspaceNumber}' and user '{booking.UserName}' with booking number '{booking.BookingNumber}'.");
 
-            // send confirmation email
-            await _emailService.SendMail(
-                new BookingConfirmationModel
+            await _messageService.Publish(
+                string.Format(MessageTopics.TOPIC_BOOKING_CREATED, currentUser.UserName),
+                new
                 {
-                    FirstName = currentUser.FirstName,
-                    LastName = currentUser.LastName,
-                    UserName = currentUser.UserName,
-                    Email = currentUser.Email,
-                    StartDateTime = booking.StartDateTime,
-                    EndDateTime = booking.EndDateTime,
-                    ActivationCode = booking.ActivationCode,
-                    WorkspaceNumber = model.WorkspaceNumber,
-                }, activationLink);
+                    booking.WorkspaceNumber,
+                    ActivationUrl = urlFunc(booking.BookingNumber)
+                });
 
-            return await GetBooking(booking.Id);
+            return _mapper.Map<BookingModel>(booking);
         }
 
-        public async Task DeleteBooking(int bookingId)
+        public async Task DeleteBooking(string bookingNumber)
         {
-            var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.Id == bookingId);
+            var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.BookingNumber == bookingNumber);
 
             if (booking != null)
             {
@@ -135,15 +114,22 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
         private async Task<bool> HasCollision(string workspaceNumber, DateTime startDateTime, DateTime endDateTime)
         {
-            var bookings = await _dbContext.Bookings.ToListAsync();
+            var booksing = await _dbContext.Bookings
+                .Where(x => x.WorkspaceNumber == workspaceNumber)
+                .Select(x => new
+                {
+                    x.StartDateTime,
+                    x.EndDateTime
+                })
+                .ToListAsync();
 
-            var hasCollision = await _dbContext.Bookings
-                .AnyAsync(x => x.WorkspaceNumber == workspaceNumber && startDateTime < x.EndDateTime && endDateTime > x.StartDateTime);
+
+            var hasCollision = booksing.Any(x => startDateTime < x.EndDateTime && endDateTime > x.StartDateTime);
 
             return hasCollision;
         }
 
-        private string GenerateActivationCode()
+        private string GenerateBookingNumber()
         {
             var bitCount = 6 * ACTIVATION_CODE_LENGTH;
             var byteCount = (int)Math.Ceiling(bitCount / 8f);
@@ -159,16 +145,13 @@ namespace Mcce.SmartOffice.Bookings.Managers
             return guid.Substring(0, ACTIVATION_CODE_LENGTH);
         }
 
-        public async Task ActivateBooking(string activationCode)
+        public async Task ActivateBooking(string bookingNumber)
         {
-            var currentUser = _contextAccessor.GetUserInfo();
-
-            var booking = await _dbContext.Bookings
-                .FirstOrDefaultAsync(x => x.ActivationCode == activationCode);
+            var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.BookingNumber == bookingNumber);
 
             if (booking == null)
             {
-                throw new NotFoundException($"Could not find booking for activation code '{activationCode}'.");
+                throw new NotFoundException($"Could not find booking '{bookingNumber}'.");
             }
 
             booking.Activated = true;

@@ -1,10 +1,8 @@
-﻿using System.Data;
-using FakeItEasy;
+﻿using FakeItEasy;
 using FluentValidation;
 using Mcce.SmartOffice.Bookings.Entities;
 using Mcce.SmartOffice.Bookings.Managers;
 using Mcce.SmartOffice.Bookings.Models;
-using Mcce.SmartOffice.Bookings.Services;
 using Mcce.SmartOffice.Core.Services;
 using Microsoft.AspNetCore.Http;
 
@@ -17,6 +15,7 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
         {
             return new Booking
             {
+                BookingNumber = Make.Identifier(),
                 StartDateTime = DateTime.UtcNow,
                 EndDateTime = DateTime.UtcNow.AddHours(1),
                 WorkspaceNumber = Make.String(),
@@ -50,13 +49,13 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
             await DbContext.SaveChangesAsync();
 
             // Act
-            var manager = new BookingManager(DbContext, Mapper, A.Fake<IEmailService>(), A.Fake<IHttpContextAccessor>(), A.Fake<IMessageService>());
+            var manager = new BookingManager(DbContext, Mapper, A.Fake<IHttpContextAccessor>(), A.Fake<IMessageService>());
             var otherBookings = await manager.GetBookings();
 
             // Assert
             foreach (var expectedBooking in expectedBookings)
             {
-                var otherBooking = otherBookings.FirstOrDefault(x => x.Id == expectedBooking.Id);
+                var otherBooking = otherBookings.FirstOrDefault(x => x.BookingNumber == expectedBooking.BookingNumber);
 
                 Assert.IsNotNull(otherBooking);
                 Assert.That(otherBooking.StartDateTime, Is.EqualTo(expectedBooking.StartDateTime));
@@ -152,15 +151,15 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
             await DbContext.SaveChangesAsync();
 
             // Act
-            var manager = new BookingManager(DbContext, Mapper, A.Fake<IEmailService>(), A.Fake<IHttpContextAccessor>(), A.Fake<IMessageService>());
+            var manager = new BookingManager(DbContext, Mapper, A.Fake<IHttpContextAccessor>(), A.Fake<IMessageService>());
                         
             if (collision)
             {
-                Assert.ThrowsAsync<ValidationException>(() => manager.CreateBooking(newBooking, string.Empty));
+                Assert.ThrowsAsync<ValidationException>(() => manager.CreateBooking(newBooking, x => string.Empty));
             }
             else
             {
-                await manager.CreateBooking(newBooking, string.Empty);
+                await manager.CreateBooking(newBooking, x => string.Empty);
             }
         }
     }

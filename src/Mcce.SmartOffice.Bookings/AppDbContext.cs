@@ -18,7 +18,10 @@ namespace Mcce.SmartOffice.Bookings
             modelBuilder.Entity<Booking>()
                 .HasPartitionKey(x => x.WorkspaceNumber)
                 .HasNoDiscriminator()
-                .ToContainer(nameof(Bookings));
+                .ToContainer(nameof(Bookings))
+                .HasIndex(x => x.BookingNumber)
+                .IsUnique();
+            ;
         }
     }
 }

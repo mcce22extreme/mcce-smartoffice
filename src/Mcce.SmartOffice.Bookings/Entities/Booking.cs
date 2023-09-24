@@ -4,6 +4,8 @@ namespace Mcce.SmartOffice.Bookings.Entities
 {
     public class Booking : AuditableEntityBase
     {
+        public string BookingNumber { get; set; }
+
         public DateTime StartDateTime { get; set; }
 
         public DateTime EndDateTime { get; set; }
@@ -11,8 +13,6 @@ namespace Mcce.SmartOffice.Bookings.Entities
         public bool Activated { get; set; }
 
         public bool InvitationSent { get; set; }
-
-        public string ActivationCode { get; set; }
 
         public string WorkspaceNumber { get; set; }
 
