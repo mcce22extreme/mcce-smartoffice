@@ -25,6 +25,8 @@ namespace Mcce.SmartOffice.Core
 {
     public abstract class BootstrapBase<T> where T : AppConfig
     {
+        private static readonly string CORS_POLICY = "CORSPOLICY";
+
         protected Assembly Assembly => Assembly.GetEntryAssembly();
 
         protected IConfiguration Configuration { get; }
@@ -104,6 +106,21 @@ namespace Mcce.SmartOffice.Core
                 opt.Filters.Add(new TypeFilterAttribute(typeof(OperationLoggerAttribute)));
                 opt.Filters.Add(new TypeFilterAttribute(typeof(OperationValidatorAttribute)));
             });
+
+            // Configure cors
+            if (AppConfig.CorsConfig != null)
+            {
+                builder.Services.AddCors(options =>
+                {
+                    options.AddPolicy(CORS_POLICY, p =>
+                    {
+                        p.WithOrigins(AppConfig.CorsConfig.Origins);
+                        p.AllowAnyMethod();
+                        p.AllowAnyHeader();
+                        p.AllowCredentials();
+                    });
+                });
+            }
 
             // Configure authentication
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -191,6 +208,8 @@ namespace Mcce.SmartOffice.Core
         private async Task ConfigureApp(WebApplication app)
         {
             app.UseRouting();
+
+            app.UseCors(CORS_POLICY);
 
             app.UseAuthentication();
 
