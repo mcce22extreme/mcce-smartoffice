@@ -1,0 +1,74 @@
+name: CD Pipeline
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: "Build docker images"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: .
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+      - name: "Docker Login"
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}
+          username: ${{ secrets.AZURE_AD_CLIENT_ID }}
+          password: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build apigateway docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-apigateway:${{ github.sha }}
+          file: src/Mcce.SmartOffice.ApiGateway/Dockerfile
+      - name: Build account api docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-account-api:${{ github.sha }}
+          file: src/Mcce.SmartOffice.Accounts/Dockerfile
+      - name: Build user image api docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-userimage-api:${{ github.sha }}
+          file: src/Mcce.SmartOffice.UserImages/Dockerfile
+      - name: Build workspace api docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-workspace-api:${{ github.sha }}
+          file: src/Mcce.SmartOffice.Workspaces/Dockerfile
+      - name: Build workspace configuration api docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-workspaceconfiguration-api:${{ github.sha }}
+          file: src/Mcce.SmartOffice.WorkspaceConfigurations/Dockerfile
+      - name: Build workspace configuration api docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-workspacedataentry-api:${{ github.sha }}
+          file: src/Mcce.SmartOffice.WorkspaceDataEntries/Dockerfile
+      - name: Build booking api docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-booking-api:${{ github.sha }}
+          file: src/Mcce.SmartOffice.Bookings/Dockerfile
