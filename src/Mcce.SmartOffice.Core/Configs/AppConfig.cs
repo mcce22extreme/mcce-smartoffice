@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace Mcce.SmartOffice.Core.Configs
+﻿namespace Mcce.SmartOffice.Core.Configs
 {
     public class AppConfig
     {
@@ -13,5 +11,7 @@ namespace Mcce.SmartOffice.Core.Configs
         public DbConfig DbConfig { get; set; }
 
         public MqttConfig MqttConfig { get; set; }
+
+        public CorsConfig CorsConfig { get; set; }
     }
 }
