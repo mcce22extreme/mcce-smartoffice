@@ -87,7 +87,7 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
             await _dbContext.SaveChangesAsync();
 
-            Log.Debug($"Created booking '{booking.Id}' for workspace '{booking.WorkspaceNumber}' and user '{booking.UserName}' with booking number '{booking.BookingNumber}'.");
+            Log.Debug($"Created booking '{booking.BookingNumber}' for workspace '{booking.WorkspaceNumber}' and user '{booking.UserName}' with booking number '{booking.BookingNumber}'.");
 
             await _messageService.Publish(
                 string.Format(MessageTopics.TOPIC_BOOKING_CREATED, currentUser.UserName),
