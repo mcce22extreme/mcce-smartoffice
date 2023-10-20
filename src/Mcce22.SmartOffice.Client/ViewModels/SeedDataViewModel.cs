@@ -71,7 +71,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanSeed))]
-        private async void SeedData()
+        private async Task SeedData()
         {
             try
             {
@@ -112,17 +112,17 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                     }
 
                     Progress = 60;
-                    if (ActivateWorkspaceDataSeed)
-                    {
-                        ProgressText = "Seed workspace data...";
-                        await SeedWorkspaceData();
-                    }
-
-                    Progress = 70;
                     if (ActivateWorkspaceSeed)
                     {
                         ProgressText = "Seed workspaces...";
                         await SeedWorkspaces();
+                    }
+
+                    Progress = 70;
+                    if (ActivateWorkspaceDataSeed)
+                    {
+                        ProgressText = "Seed workspace data...";
+                        await SeedWorkspaceData();
                     }
 
                     Progress = 100;
@@ -192,6 +192,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                         Humidity = Random.Next(10, 70),
                         Co2Level = Random.Next(600, 1000),
                     };
+
                     await _workspaceDataManager.Save(model);
 
                     count++;
