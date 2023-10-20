@@ -101,7 +101,7 @@ namespace Mcce.SmartOffice.UserImages.Managers
             var currentUser = _contextAccessor.GetUserInfo();
 
             var userImages = await _dbContext.UserImages
-                .Where(x => x.UserName == currentUser.UserName)
+                .Where(x => x.ImageKey == imageKey && x.UserName == currentUser.UserName)
                 .ToListAsync();
 
             foreach (var userImage in userImages)
