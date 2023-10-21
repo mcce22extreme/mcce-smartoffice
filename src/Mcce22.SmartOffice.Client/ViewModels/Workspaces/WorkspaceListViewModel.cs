@@ -41,7 +41,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
                         foreach (var workspace in workspaces)
                         {
-                            var localWorkspace = Items.FirstOrDefault(x => x.Id == workspace.Id);
+                            var localWorkspace = Items.FirstOrDefault(x => x.WorkspaceNumber == workspace.WorkspaceNumber);
                             if (localWorkspace != null)
                             {
                                 localWorkspace.Wei = workspace.Wei;
@@ -90,7 +90,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         {
             if (CanCopyToClipboard())
             {
-                Clipboard.SetDataObject(SelectedItem.Id);
+                Clipboard.SetDataObject(SelectedItem.WorkspaceNumber);
             }
         }
 

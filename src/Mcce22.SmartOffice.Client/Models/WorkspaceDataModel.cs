@@ -4,7 +4,7 @@ namespace Mcce22.SmartOffice.Client.Models
 {
     public class WorkspaceDataModel : IModel
     {
-        public string Id { get; set; }
+        public string Identifier { get { return EntryId; } }
 
         public string EntryId { get; set; }
 
@@ -22,6 +22,6 @@ namespace Mcce22.SmartOffice.Client.Models
 
         public double Co2Level { get; set; }
 
-        public int Wei { get; set; }
+        public int Wei { get; set; }        
     }
 }

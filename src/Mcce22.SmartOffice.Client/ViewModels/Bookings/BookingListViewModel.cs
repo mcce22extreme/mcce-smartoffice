@@ -28,7 +28,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         protected override async Task OnDelete()
         {
-            await _bookingManager.Delete(SelectedItem.Id);
+            await _bookingManager.Delete(SelectedItem.BookingNumber);
         }
 
         protected override async Task<BookingModel[]> OnReload()
