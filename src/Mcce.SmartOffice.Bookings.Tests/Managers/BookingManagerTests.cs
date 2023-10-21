@@ -73,6 +73,7 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
             {
                 var booking = new Booking
                 {
+                    BookingNumber = Make.String(),
                     WorkspaceNumber = Make.String(),
                     StartDateTime = DateTime.Now,
                     EndDateTime = DateTime.Now.AddHours(1),
