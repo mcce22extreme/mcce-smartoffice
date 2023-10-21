@@ -6,6 +6,8 @@
 
         public string AppConfigUrl { get; set; }
 
+        public string FrontendUrl { get; set; }
+
         public AuthConfig AuthConfig { get; set; }
 
         public DbConfig DbConfig { get; set; }

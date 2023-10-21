@@ -1,6 +1,5 @@
 ﻿using Mcce.SmartOffice.Bookings.Managers;
 using Mcce.SmartOffice.Bookings.Models;
-using Mcce.SmartOffice.Core.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,7 +25,7 @@ namespace Mcce.SmartOffice.Bookings.Controllers
         [HttpPost]
         public async Task<BookingModel> CreateBooking([FromBody] SaveBookingModel model)
         {
-            return await _bookingManager.CreateBooking(model, CreateUrl);
+            return await _bookingManager.CreateBooking(model);
         }
 
         [HttpDelete("{bookingNumber}")]
@@ -42,20 +41,6 @@ namespace Mcce.SmartOffice.Bookings.Controllers
             await _bookingManager.ActivateBooking(bookingNumber);
 
             return Ok();
-        }
-
-        private string CreateUrl(string bookingNumber)
-        {
-            var origin = Request.Headers.Origin.FirstOrDefault();
-
-            if (origin.HasValue())
-            {
-                return $"{origin}/booking/{bookingNumber}/activate";
-            }
-            else
-            {
-                return $"{Request.Scheme}://{Request.Host}{Request.PathBase}/booking/{bookingNumber}/activate";
-            }
         }
     }
 }

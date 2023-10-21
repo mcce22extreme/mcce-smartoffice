@@ -22,14 +22,14 @@ namespace Mcce.SmartOffice.UserImages.Managers
 
     public class UserImageManager : IUserImageManager
     {
-        private readonly string _forntendUrl;
+        private readonly string _frontendUrl;
         private readonly AppDbContext _dbContext;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IStorageService _storageService;
 
-        public UserImageManager(string forntendUrl, AppDbContext dbContext, IHttpContextAccessor contextAccessor, IStorageService storageService)
+        public UserImageManager(string frontendUrl, AppDbContext dbContext, IHttpContextAccessor contextAccessor, IStorageService storageService)
         {
-            _forntendUrl = forntendUrl;
+            _frontendUrl = frontendUrl;
             _dbContext = dbContext;
             _contextAccessor = contextAccessor;
             _storageService = storageService;
@@ -37,7 +37,7 @@ namespace Mcce.SmartOffice.UserImages.Managers
 
         private string CreateImageUrl(string imageKey)
         {
-            return $"{_forntendUrl}/{imageKey}";
+            return $"{_frontendUrl}/userimage/{imageKey}";
         }
 
         public async Task<UserImageModel[]> GetUserImages()
