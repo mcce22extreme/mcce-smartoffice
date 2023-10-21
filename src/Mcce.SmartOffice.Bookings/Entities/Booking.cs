@@ -1,9 +1,11 @@
-﻿using Mcce.SmartOffice.Core.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+using Mcce.SmartOffice.Core.Entities;
 
 namespace Mcce.SmartOffice.Bookings.Entities
 {
     public class Booking : AuditableEntityBase
     {
+        [Key]
         public string BookingNumber { get; set; }
 
         public DateTime StartDateTime { get; set; }

@@ -136,13 +136,20 @@ namespace Mcce22.SmartOffice.Client.Services
                 }
             };
 
+            webView.IsBrowserInitializedChanged += (s, a) =>
+            {
+                if ((bool)a.NewValue == true)
+                {
+                    var wv = s as ChromiumWebBrowser;
+                    wv.GetCookieManager().DeleteCookiesAsync();
+                }
+            };
+
             webView.RequestHandler = requestHandler;
 
             signinWindow.Content = webView;
             signinWindow.Show();
             signinWindow.Focus();
-
-            await webView.GetCookieManager().DeleteCookiesAsync();
 
             webView.Address = _options.StartUrl;
 

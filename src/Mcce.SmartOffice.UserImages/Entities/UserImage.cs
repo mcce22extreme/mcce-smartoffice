@@ -1,11 +1,13 @@
-﻿using Mcce.SmartOffice.Core.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+using Mcce.SmartOffice.Core.Entities;
 
 namespace Mcce.SmartOffice.UserImages.Entities
 {
     public class UserImage : EntityBase
     {
-        public string UserName { get; set; }
-
+        [Key]
         public string ImageKey { get; set; }
+
+        public string UserName { get; set; }        
     }
 }

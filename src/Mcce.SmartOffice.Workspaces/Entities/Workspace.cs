@@ -5,7 +5,7 @@ namespace Mcce.SmartOffice.Workspaces.Entities
 {
     public class Workspace : AuditableEntityBase
     {
-        [Required]
+        [Key]
         public string WorkspaceNumber { get; set; }
 
         public int Top { get; set; }
