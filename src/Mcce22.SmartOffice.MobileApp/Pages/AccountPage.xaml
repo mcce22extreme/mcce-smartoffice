@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mcce22.SmartOffice.MobileApp.Pages.AccountPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="AccountInfoPage">
+    <VerticalStackLayout Padding="10">
+        <Label
+            HorizontalOptions="Start"
+            Text="Firstname"
+            VerticalOptions="Center" />
+        <Label
+            Margin="0,0,0,10"
+            HorizontalOptions="Start"
+            Text="{Binding FirstName}"
+            VerticalOptions="Center" />
+
+        <Label
+            HorizontalOptions="Start"
+            Text="Lastname"
+            VerticalOptions="Center" />
+        <Label
+            Margin="0,0,0,10"
+            HorizontalOptions="Start"
+            Text="{Binding LastName}"
+            VerticalOptions="Center" />
+        <Label
+            HorizontalOptions="Start"
+            Text="Username"
+            VerticalOptions="Center" />
+        <Label
+            Margin="0,0,0,10"
+            HorizontalOptions="Start"
+            Text="{Binding UserName}"
+            VerticalOptions="Center" />
+    </VerticalStackLayout>
+</ContentPage>
