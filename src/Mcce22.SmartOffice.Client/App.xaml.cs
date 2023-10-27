@@ -58,7 +58,6 @@ namespace Mcce22.SmartOffice.Client
             services.AddSingleton<SeedDataViewModel>();
             services.AddSingleton<CreateBookingViewModel>();
             services.AddSingleton<WorkspaceDataListViewModel>();
-            services.AddSingleton<ConfigViewModel>();
 
             services.AddSingleton<IWorkspaceManager, WorkspaceManager>();
             services.AddSingleton<IBookingManager, BookingManager>();
@@ -66,7 +65,6 @@ namespace Mcce22.SmartOffice.Client
             services.AddSingleton<IUserImageManager, UserImageManager>();
             services.AddSingleton<IWorkspaceDataEntryManager, WorkspaceDataEntryManager>();
             services.AddSingleton<IAccountManager, AccountManager>();
-            services.AddSingleton<IConfigManager, ConfigManager>();
 
             services.AddSingleton<HttpClient>();
 

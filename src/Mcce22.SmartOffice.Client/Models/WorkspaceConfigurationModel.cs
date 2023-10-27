@@ -2,10 +2,12 @@
 {
     public class WorkspaceConfigurationModel : IModel
     {
-        public string Id { get; set; }
+        public string Identifier { get { return ConfigurationNumber; } }
+
+        public string ConfigurationNumber { get; set; }
 
         public long DeskHeight { get; set; }
 
-        public string WorkspaceNumber { get; set; }        
+        public string WorkspaceNumber { get; set; }
     }
 }

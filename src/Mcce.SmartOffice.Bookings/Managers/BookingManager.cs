@@ -16,7 +16,7 @@ namespace Mcce.SmartOffice.Bookings.Managers
     {
         Task<BookingModel[]> GetBookings();
 
-        Task<BookingModel> CreateBooking(SaveBookingModel model, Func<string, string> urlFunc);
+        Task<BookingModel> CreateBooking(SaveBookingModel model);
 
         Task DeleteBooking(string bookingNumber);
 
@@ -29,17 +29,20 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
         private static readonly Random _random = new Random();
 
+        private readonly string _frontendUrl;
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IMessageService _messageService;
 
         public BookingManager(
+            string frontendUrl,
             AppDbContext dbContext,
             IMapper mapper,
             IHttpContextAccessor contextAccessor,
             IMessageService messageService)
         {
+            _frontendUrl = frontendUrl;
             _dbContext = dbContext;
             _mapper = mapper;
             _contextAccessor = contextAccessor;
@@ -59,7 +62,7 @@ namespace Mcce.SmartOffice.Bookings.Managers
             return bookings.ToArray();
         }
 
-        public async Task<BookingModel> CreateBooking(SaveBookingModel model, Func<string, string> urlFunc)
+        public async Task<BookingModel> CreateBooking(SaveBookingModel model)
         {
             var currentUser = _contextAccessor.GetUserInfo();
 
@@ -94,7 +97,7 @@ namespace Mcce.SmartOffice.Bookings.Managers
                 new
                 {
                     booking.WorkspaceNumber,
-                    ActivationUrl = urlFunc(booking.BookingNumber)
+                    ActivationUrl = $"{_frontendUrl}/booking/{booking.BookingNumber}/activate"
                 });
 
             return _mapper.Map<BookingModel>(booking);

@@ -13,7 +13,7 @@ namespace Mcce.SmartOffice.UserImages
             builder.Services.AddDbContext<AppDbContext>(AppConfig.DbConfig);
 
             builder.Services.AddScoped<IUserImageManager>(s => new UserImageManager(
-                AppConfig.FrontendUrl,
+                AppConfig.FrontendUrl?.TrimEnd('/'),
                 s.GetRequiredService<AppDbContext>(),
                 s.GetRequiredService<IHttpContextAccessor>(),
                 s.GetRequiredService<IStorageService>()));

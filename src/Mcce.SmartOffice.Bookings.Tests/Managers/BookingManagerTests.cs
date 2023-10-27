@@ -49,7 +49,7 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
             await DbContext.SaveChangesAsync();
 
             // Act
-            var manager = new BookingManager(DbContext, Mapper, A.Fake<IHttpContextAccessor>(), A.Fake<IMessageService>());
+            var manager = new BookingManager(Make.String(), DbContext, Mapper, A.Fake<IHttpContextAccessor>(), A.Fake<IMessageService>());
             var otherBookings = await manager.GetBookings();
 
             // Assert
@@ -152,15 +152,15 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
             await DbContext.SaveChangesAsync();
 
             // Act
-            var manager = new BookingManager(DbContext, Mapper, A.Fake<IHttpContextAccessor>(), A.Fake<IMessageService>());
+            var manager = new BookingManager(Make.String(), DbContext, Mapper, A.Fake<IHttpContextAccessor>(), A.Fake<IMessageService>());
                         
             if (collision)
             {
-                Assert.ThrowsAsync<ValidationException>(() => manager.CreateBooking(newBooking, x => string.Empty));
+                Assert.ThrowsAsync<ValidationException>(() => manager.CreateBooking(newBooking));
             }
             else
             {
-                await manager.CreateBooking(newBooking, x => string.Empty);
+                await manager.CreateBooking(newBooking);
             }
         }
     }

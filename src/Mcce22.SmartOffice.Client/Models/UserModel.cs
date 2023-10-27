@@ -2,7 +2,7 @@
 {
     public class UserModel : IModel
     {
-        public string Id { get; set; }
+        public string Identifier { get { return UserName; } }
 
         public bool IsAdmin { get; set; }
 
@@ -16,6 +16,6 @@
 
         public string Email { get; set; }
 
-        public string FullName { get { return $"{FirstName} {LastName} ({UserName})"; } }
+        public string FullName { get { return $"{FirstName} {LastName} ({UserName})"; } }        
     }
 }

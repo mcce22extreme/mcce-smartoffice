@@ -4,7 +4,7 @@ namespace Mcce22.SmartOffice.Client.Models
 {
     public partial class WorkspaceModel : ObservableObject, IModel
     {
-        public string Id { get; set; }
+        public string Identifier { get { return WorkspaceNumber; } }
 
         public string WorkspaceNumber { get; set; }
 

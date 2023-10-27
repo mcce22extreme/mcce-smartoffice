@@ -10,8 +10,6 @@ namespace Mcce22.SmartOffice.Client.ViewModels
     {
         private readonly IWorkspaceManager _workspaceManager;
 
-        public string WorkspaceId { get; set; }
-
         [ObservableProperty]
         private string _workspaceNumber;
 
@@ -42,7 +40,6 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         {
             Title = "Edit workspace";
 
-            WorkspaceId = model.Id;
             WorkspaceNumber = model.WorkspaceNumber;
             RoomNumber = model.RoomNumber;
             Top = model.Top;
@@ -55,7 +52,6 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         {
             await _workspaceManager.Save(new WorkspaceModel
             {
-                Id = WorkspaceId,
                 WorkspaceNumber = WorkspaceNumber,
                 RoomNumber = RoomNumber,
                 Top = Top,

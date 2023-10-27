@@ -30,7 +30,7 @@ namespace Mcce22.SmartOffice.Client.Managers
 
         public virtual async Task<T> Save(T model)
         {
-            if (string.IsNullOrEmpty(model.Id))
+            if (string.IsNullOrEmpty(model.Identifier))
             {
                 var response = await HttpClient.PostAsJsonAsync(BaseUrl, model);
 
@@ -40,7 +40,7 @@ namespace Mcce22.SmartOffice.Client.Managers
             }
             else
             {
-                var response = await HttpClient.PutAsJsonAsync($"{BaseUrl}/{model.Id}", model);
+                var response = await HttpClient.PutAsJsonAsync($"{BaseUrl}/{model.Identifier}", model);
 
                 await EnsureSuccessStatusCode(response);
 
