@@ -1,6 +1,8 @@
 using System.Reflection;
 using Mcce.SmartOffice.Core;
+using MMLib.SwaggerForOcelot.Configuration;
 using Newtonsoft.Json;
+using Ocelot.Configuration.File;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Serilog;
@@ -17,7 +19,8 @@ namespace Mcce.SmartOffice.ApiGateway
                 .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true, reloadOnChange: true)
-                .Build();
+                .AddJsonFile($"config/appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables("SMARTOFFICE_");
 
             // Configure serilog
             Log.Logger = new LoggerConfiguration()
@@ -48,7 +51,10 @@ namespace Mcce.SmartOffice.ApiGateway
 
             builder.Services.AddMvcCore();
 
-            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddEndpointsApiExplorer();            
+
+            var ocelotConfiguration = builder.Configuration.Get<FileConfiguration>();
+            var swaggerConfiguration = builder.Configuration.Get<SwaggerFileConfiguration>();
 
             var app = builder.Build();
 
@@ -63,5 +69,5 @@ namespace Mcce.SmartOffice.ApiGateway
 
             app.Run();
         }
-    }
+    }   
 }
