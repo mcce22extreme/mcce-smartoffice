@@ -36,6 +36,7 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, message):
     global g_userdata
+    global args
     
     # Decoding the message payload
     payload = message.payload.decode()
@@ -65,7 +66,8 @@ def on_message(client, userdata, message):
                 user_image_urls = [img['Url'] for img in data['UserImages']]
                 cmd = [set_picture_script] + user_image_urls
                 print (cmd)
-                #subprocess.Popen(cmd)
+                if (args.action):
+                    subprocess.Popen(cmd)
             except KeyError as e:
                 print(f"Key error: {e} - Check the structure of 'UserImages'")
             except TypeError as e:
@@ -75,9 +77,10 @@ def on_message(client, userdata, message):
     elif topic.endswith('activate/workspaceconfiguration'):
         try:
             deskHeight = data['DeskHeight']
-            cmd = [set_desk_script, deskHeight]
+            cmd = [set_desk_script, str(deskHeight)]
             print (cmd)
-            #subprocess.Popen(cmd)
+            if (args.action):
+                subprocess.Popen(cmd)
         except KeyError as e:
             print(f"Key error: {e} - Check the structure of 'DeskHeight'")
         except subprocess.SubprocessError as e:
@@ -85,6 +88,8 @@ def on_message(client, userdata, message):
 
 def main():
     global g_userdata
+    global args
+
     parser = argparse.ArgumentParser(description="MQTT publisher and subscriber")
     parser.add_argument("--endpoint", required=True, help="MQTT broker endpoint")
     parser.add_argument("--username", required=True, help="MQTT broker username")
@@ -94,6 +99,7 @@ def main():
     parser.add_argument("--workspace", default="workspace-001", help="Workspace number to subscribe to and publish on")
     parser.add_argument("--rcvcount", type=int, default=0, help="Number of messages to receive (0 for infinite loop)")
     parser.add_argument("--count", type=int, default=0, help="Number of messages to receive (0 for infinite loop)")
+    parser.add_argument("--action", type=int, default=1, help="Do action, like showing a picture or setting the height of the desk")
 
     args = parser.parse_args()
 
