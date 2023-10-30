@@ -33,7 +33,7 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations
                 {
                     bookingInfo.UserName,
                     bookingInfo.WorkspaceNumber,
-                    config.DeskHeight
+                    DeskHeight = config.DeskHeight * 10
                 });
             }
         }
