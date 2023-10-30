@@ -14,6 +14,6 @@
 
         public static string TOPIC_WORKSPACE_ACTIVATE_USERIMAGES { get; } = TOPIC_PREFIX + "workspace/{0}/activate/userimages";
 
-        public static string TOPIC_WORKSPACE_ACTIVATE_WORKSPACECONFIGURATION { get; } = TOPIC_PREFIX + "workspace/{0}/activated/workspaceconfiguration";
+        public static string TOPIC_WORKSPACE_ACTIVATE_WORKSPACECONFIGURATION { get; } = TOPIC_PREFIX + "workspace/{0}/activate/workspaceconfiguration";
     }
 }
