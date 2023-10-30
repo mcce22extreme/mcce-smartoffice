@@ -1,5 +1,5 @@
-﻿using Mcce.SmartOffice.Core.Services;
-using Mcce.SmartOffice.WorkspaceDataEntries.Generators;
+﻿using Mcce.SmartOffice.Core.Constants;
+using Mcce.SmartOffice.Core.Services;
 using Mcce.SmartOffice.WorkspaceDataEntries.Managers;
 using Mcce.SmartOffice.WorkspaceDataEntries.Models;
 using Newtonsoft.Json;
@@ -8,17 +8,13 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Handlers
 {
     public class DataIngressMessageHandler : IMessageHandler
     {
-        private const string DATA_INGRESS = "mcce22-smart-office/dataingress";
-
         private readonly IServiceScopeFactory _serviceScopeFactory;
-        private readonly IWeiGenerator _weiGenerator;
 
-        public string[] SupportedTopics => new[] { DATA_INGRESS };
+        public string[] SupportedTopics => new[] { MessageTopics.TOPIC_DATAINGRESS };
 
-        public DataIngressMessageHandler(IServiceScopeFactory serviceScopeFactory, IWeiGenerator weiGenerator)
+        public DataIngressMessageHandler(IServiceScopeFactory serviceScopeFactory)
         {
             _serviceScopeFactory = serviceScopeFactory;
-            _weiGenerator = weiGenerator;
         }
 
         public async Task Handle(string topic, string payload)
