@@ -13,13 +13,14 @@ using Mcce.SmartOffice.Core.Constants;
 using Mcce.SmartOffice.Core.Services;
 using Mcce22.SmartOffice.Simulator.Managers;
 using Mcce22.SmartOffice.Simulator.Messages;
+using Mcce22.SmartOffice.Simulator.Services;
 using Newtonsoft.Json;
 
 namespace Mcce22.SmartOffice.Simulator.ViewModels
 {
     public partial class MainViewModel : ObservableObject, IMessageHandler
     {
-        private const string TOPIC_DATA_INGRESS = "mcce22-smart-office/dataingress";
+        private const string TOPIC_DATA_INGRESS = "mcce-smartoffice/dataingress";
         private const double DEFAULT_DESK_CANVAS_TOP = 0;
         private const double MAX_DESK_HEIGHT = 120;
         private const double MIN_DESK_HEIGHT = 70;
@@ -32,7 +33,7 @@ namespace Mcce22.SmartOffice.Simulator.ViewModels
         private readonly Timer _imageTimer;
         private readonly IWorkspaceManager _workspaceManager;
         private readonly IMessageService _messageService;
-
+        private readonly IAuthService _authService;
         private List<string> _imageUrls = new List<string>();
         private int _currentImageIndex;
         private bool _updateSendInProgress;
@@ -120,10 +121,11 @@ namespace Mcce22.SmartOffice.Simulator.ViewModels
             TopicWorkspaceActivatedWorkspaceConfiguration
         };
 
-        public MainViewModel(IWorkspaceManager workspaceManager, IMessageService messageService)
+        public MainViewModel(IWorkspaceManager workspaceManager, IMessageService messageService, IAuthService authService)
         {
             _workspaceManager = workspaceManager;
             _messageService = messageService;
+            _authService = authService;
 
             _delayTimer = new Timer();
             _delayTimer.Interval = 5000;
@@ -140,11 +142,14 @@ namespace Mcce22.SmartOffice.Simulator.ViewModels
 
         private async void LoadWorkspaces()
         {
-            var workspaces = await _workspaceManager.GetWorkspaces();
+            if (await _authService.Login())
+            {
+                var workspaces = await _workspaceManager.GetWorkspaces();
 
-            Workspaces = workspaces.Select(x => x.WorkspaceNumber).ToArray();
+                Workspaces = workspaces.Select(x => x.WorkspaceNumber).ToArray();
 
-            SelectedWorkspace = Workspaces.FirstOrDefault();
+                SelectedWorkspace = Workspaces.FirstOrDefault();
+            }
         }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -234,6 +239,7 @@ namespace Mcce22.SmartOffice.Simulator.ViewModels
         public Task Handle(string topic, string payload)
         {
             var info = JsonConvert.DeserializeObject<WorkspaceActivateMessage>(payload);
+            info.DeskHeight = info.DeskHeight / 10;
 
             if (topic == TopicWorkspaceActivatedUserImages)
             {
