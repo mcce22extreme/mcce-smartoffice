@@ -9,7 +9,7 @@ import json
 from gpiozero import CPUTemperature
 import subprocess
 
-from grove_dht import Dht # from a custom made grovepi-based library import our needed class
+#from grove_dht import Dht # from a custom made grovepi-based library import our needed class
 import datetime # that's for printing the current date
 
 g_userdata = {
@@ -22,6 +22,8 @@ curdir = os.path.dirname(os.path.abspath(__file__))
 # Bash script paths
 set_desk_script = curdir + "/bash_scripts/move_desk.sh"
 set_picture_script = curdir + "/bash_scripts/display_picture.sh"
+
+black_picture_url = "https://www.solidbackgrounds.com/images/1920x1080/1920x1080-black-solid-color-background.jpg"
 
 print ("setting script paths to\n" + set_desk_script + "\n" + set_picture_script)
 
@@ -124,6 +126,10 @@ def main():
     print("Subscribing to: ")
     print(*mqttSubscribe, sep=", ")
     print("Send data to " + mqttPublish)
+
+    if (args.action):
+        cmd = [set_picture_script, black_picture_url]
+        subprocess.Popen(cmd)
 
     client.subscribe(mqttSubscribe)
 
