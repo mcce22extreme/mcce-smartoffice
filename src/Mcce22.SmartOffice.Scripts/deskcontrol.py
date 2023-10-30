@@ -62,8 +62,7 @@ def on_message(client, userdata, message):
         #if data.get('WorkspaceNumber') == 'workspace-002':
             # Extract image URLs and handle potential issues
             try:
-                user_image_urls = [img['Url'] for img in data['UserImages']]
-                cmd = [set_picture_script] + user_image_urls
+                cmd = [set_picture_script] + data['UserImages']
                 print (cmd)
                 if (args.action):
                     subprocess.Popen(cmd)
