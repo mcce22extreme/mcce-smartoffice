@@ -1,6 +1,3 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: Apache-2.0.
-
 import argparse
 import paho.mqtt.client as mqtt
 import sys
@@ -95,7 +92,7 @@ def main():
     parser.add_argument("--username", required=True, help="MQTT broker username")
     parser.add_argument("--password", required=True, help="MQTT broker password")
     parser.add_argument("--client_id", default="mcce-smart-office-python", help="Client ID for MQTT session")
-    parser.add_argument("--basetopic", default="mcce-smart-office", help="Base-topic to subscribe to and publish on")
+    parser.add_argument("--basetopic", default="mcce-smartoffice", help="Base-topic to subscribe to and publish on")
     parser.add_argument("--workspace", default="workspace-001", help="Workspace number to subscribe to and publish on")
     parser.add_argument("--rcvcount", type=int, default=0, help="Number of messages to receive (0 for infinite loop)")
     parser.add_argument("--count", type=int, default=0, help="Number of messages to receive (0 for infinite loop)")
@@ -106,8 +103,8 @@ def main():
     g_userdata["max_rcvcount"] = args.rcvcount
     g_userdata["max_sndcount"] = args.count
 
-    dht_pin = 7 # use Digital Port 4 found on GrovePi
-    dht_sensor = Dht(dht_pin) # instantiate a dht class with the appropriate pin
+    #dht_pin = 7 # use Digital Port 4 found on GrovePi
+    #dht_sensor = Dht(dht_pin) # instantiate a dht class with the appropriate pin
 
     #dht_sensor.start() # start collecting from the DHT sensor
 
@@ -122,7 +119,7 @@ def main():
 
     mqttSubscribe = [(args.basetopic+"/workspace/"+args.workspace+"/activate/userimages",0),
                      (args.basetopic+"/workspace/"+args.workspace+"/activate/workspaceconfiguration",0)]
-    mqttPublish = args.basetopic+"/workspace/"+args.workspace+"/dataingress"
+    mqttPublish = args.basetopic+"/dataingress"
 
     print("Subscribing to: ")
     print(*mqttSubscribe, sep=", ")
