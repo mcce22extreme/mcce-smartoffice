@@ -54,7 +54,6 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
             return await GetWorkspaceConfigurationByUserName(workspaceNumber, currentUser.UserName);
         }
 
-
         public async Task<WorkspaceConfigurationModel> GetWorkspaceConfigurationByUserName(string workspaceNumber, string userName)
         {
             var configuration = await _dbContext.WorkspaceConfigurations
@@ -69,7 +68,8 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
         {
             var currentUser = _contextAccessor.GetUserInfo();
 
-            var configuration = await _dbContext.WorkspaceConfigurations.FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber);
+            var configuration = await _dbContext.WorkspaceConfigurations
+                .FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber && x.UserName == currentUser.UserName);
 
             if(configuration == null)
             {
