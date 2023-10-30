@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Windows;
 using Mcce.SmartOffice.Core.Services;
 using Mcce22.SmartOffice.Simulator.Managers;
+using Mcce22.SmartOffice.Simulator.Services;
 using Mcce22.SmartOffice.Simulator.ViewModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +18,7 @@ namespace Mcce22.SmartOffice.Simulator
     public partial class App : Application
     {
         private readonly IConfiguration _configuration;
-        private readonly AppConfig _appConfig;
+        private readonly IAppConfig _appConfig;
 
         public App()
         {
@@ -34,11 +35,13 @@ namespace Mcce22.SmartOffice.Simulator
         {
             var services = new ServiceCollection();
 
+            services.AddSingleton(s => _appConfig);
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<MainWindow>();
             services.AddSingleton<IMessageService>(s => new MessageService(_appConfig.MqttConfig));
             services.AddSingleton<HttpClient>();
             services.AddSingleton<IWorkspaceManager>(s => new WorkspaceManager(_appConfig.BaseAddress, s.GetRequiredService<HttpClient>()));
+            services.AddSingleton<IAuthService, AuthService>();
 
             var serviceProvider = services.BuildServiceProvider();
 
