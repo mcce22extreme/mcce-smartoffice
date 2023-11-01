@@ -122,13 +122,13 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanCreateBooking))]
-        private async void CreateBooking()
+        private async Task CreateBooking()
         {
             try
             {
                 IsBusy = true;
 
-                await _bookingManager.Save(new BookingModel
+                await _bookingManager.Create(new BookingModel
                 {
                     StartDateTime = StartDateTime,
                     EndDateTime = EndDateTime,

@@ -9,6 +9,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
     public partial class WorkspaceDetailViewModel : DialogViewModelBase
     {
         private readonly IWorkspaceManager _workspaceManager;
+        private readonly bool _createWorkspace;
 
         [ObservableProperty]
         private string _workspaceNumber;
@@ -27,12 +28,14 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         [ObservableProperty]
         private int _height;
-        
+
         public WorkspaceDetailViewModel(IWorkspaceManager workspaceManager, IDialogService dialogService)
             : base(dialogService)
         {
             Title = "Create workspace";
             _workspaceManager = workspaceManager;
+
+            _createWorkspace = true;
         }
 
         public WorkspaceDetailViewModel(WorkspaceModel model, IWorkspaceManager workspaceManager, IDialogService dialogService)
@@ -50,7 +53,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         protected override async Task OnSave()
         {
-            await _workspaceManager.Save(new WorkspaceModel
+            var model =new WorkspaceModel
             {
                 WorkspaceNumber = WorkspaceNumber,
                 RoomNumber = RoomNumber,
@@ -58,7 +61,16 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                 Left = Left,
                 Width = Width,
                 Height = Height,
-            });
+            };
+
+            if (_createWorkspace)
+            {
+                await _workspaceManager.Create(model);
+            }
+            else
+            {
+                await _workspaceManager.Update(model);
+            }
         }
     }
 }

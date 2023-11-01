@@ -95,7 +95,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                     {
                         ProgressText = "Delete workspace data...";
                         await DeleteWorkspaceData();
-                    }                    
+                    }
 
                     Progress = 30;
                     if (ActivateWorkspaceSeed)
@@ -129,6 +129,10 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                     ProgressText = "Done";
                 }
             }
+            catch (Exception ex)
+            {
+                await _dialogService.ShowDialog(new ErrorViewModel(ex, _dialogService));
+            }
             finally
             {
                 IsBusy = false;
@@ -144,7 +148,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             var count = 0;
             foreach (var workspace in workspaces)
             {
-                await _workspaceManager.Save(workspace);
+                await _workspaceManager.Create(workspace);
 
                 count++;
                 StepProgress = count * 100 / workspaces.Length;
@@ -174,31 +178,62 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
             StepProgress = 0;
 
-            var hours = 24;
+            // Create simulated workspace data entries between the given start- and enddate in a 15 minute intervall
+            var startDate = DateTime.Now.Subtract(TimeSpan.FromDays(1));
+            var endDate = DateTime.Now;
+            var timeDifference = endDate - startDate;
+            var maxCount = (int)(timeDifference.TotalMinutes/15) * workspaces.Length;
             var count = 0;
-            var maxCount = workspaces.Length * hours;
-
-            var dateTimeNow = DateTime.Now;
 
             foreach (var workspace in workspaces)
             {
-                for (int i = 1; i < hours; i++)
+                var date = startDate;
+
+                while (date < endDate)
                 {
+                    date = date.AddMinutes(15);
+
                     var model = new WorkspaceDataModel
                     {
                         WorkspaceNumber = workspace.WorkspaceNumber,
-                        Timestamp = new DateTime(dateTimeNow.Year,dateTimeNow.Month,dateTimeNow.Day, i - 1, 0, 0),
+                        Timestamp = new DateTime(date.Year,date.Month,date.Day,date.Hour, date.Minute, 0),
                         Temperature = Random.Next(16, 30),
                         Humidity = Random.Next(10, 70),
                         Co2Level = Random.Next(600, 1000),
                     };
 
-                    await _workspaceDataManager.Save(model);
+                    await _workspaceDataManager.Create(model);
 
                     count++;
                     StepProgress = count * 100 / maxCount;
-                }
+                }                
             }
+
+            //var hours = 24*7;
+            //var count = 0;
+            //var maxCount = workspaces.Length * hours;
+
+            //var dateTimeNow = DateTime.Now;
+
+            //foreach (var workspace in workspaces)
+            //{
+            //    for (int i = 1; i < hours; i++)
+            //    {
+            //        var model = new WorkspaceDataModel
+            //        {
+            //            WorkspaceNumber = workspace.WorkspaceNumber,
+            //            Timestamp = new DateTime(dateTimeNow.Year,dateTimeNow.Month,dateTimeNow.Day, i - 1, 0, 0),
+            //            Temperature = Random.Next(16, 30),
+            //            Humidity = Random.Next(10, 70),
+            //            Co2Level = Random.Next(600, 1000),
+            //        };
+
+            //        await _workspaceDataManager.Create(model);
+
+            //        count++;
+            //        StepProgress = count * 100 / maxCount;
+            //    }
+            //}
 
             StepProgress = 100;
         }

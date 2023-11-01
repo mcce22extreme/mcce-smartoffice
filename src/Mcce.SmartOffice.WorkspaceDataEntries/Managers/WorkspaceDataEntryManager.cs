@@ -39,6 +39,16 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
                 .OrderByDescending(x => x.Timestamp)
                 .AsQueryable();
 
+            if (startDate.HasValue)
+            {
+                entryQuery = entryQuery.Where(x => x.Timestamp >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                entryQuery = entryQuery.Where(x => x.Timestamp <= endDate.Value);
+            }
+
             var workspaceData = await entryQuery.ToListAsync();
 
             return workspaceData
@@ -74,16 +84,20 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
 
         public async Task DeleteWorkspaceDataEntries(string workspaceNumber)
         {
-            var entries = await _dbContext.WorkspaceDataEntries
+            await _dbContext.WorkspaceDataEntries
                 .Where(x => x.WorkspaceNumber == workspaceNumber)
-                .ToListAsync();
+                .ExecuteDeleteAsync();
 
-            foreach (var entry in entries)
-            {
-                _dbContext.WorkspaceDataEntries.Remove(entry);
-            }
+            //var entries = await _dbContext.WorkspaceDataEntries
+            //    .Where(x => x.WorkspaceNumber == workspaceNumber)
+            //    .ToListAsync();
 
-            await _dbContext.SaveChangesAsync();
+            //foreach (var entry in entries)
+            //{
+            //    _dbContext.WorkspaceDataEntries.Remove(entry);
+            //}
+
+            //await _dbContext.SaveChangesAsync();
         }
     }
 }

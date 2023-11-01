@@ -30,6 +30,11 @@ namespace Mcce.SmartOffice.Core.Extensions
 
                 await dbContext.Database.MigrateAsync();
             }
+
+            if (dbContext.Database.IsSqlServer())
+            {
+                await dbContext.Database.MigrateAsync();
+            }
         }
     }
 }

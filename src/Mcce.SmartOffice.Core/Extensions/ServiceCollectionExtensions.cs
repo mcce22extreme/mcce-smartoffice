@@ -30,6 +30,13 @@ namespace Mcce.SmartOffice.Core.Extensions
                 case DbType.SQLite:
                     services.AddDbContext<TContext>(opt => opt.UseSqlite(dbConfig.ConnectionString));
                     break;
+                case DbType.SqlServer:
+                    services.AddDbContext<TContext>(opt => opt.UseSqlServer(dbConfig.ConnectionString, builder =>
+                    {
+                        builder.MigrationsHistoryTable("__EFMigrationsHistory", dbConfig.DatabaseSchema);
+                        builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                    }));
+                    break;
             }
 
             return services;

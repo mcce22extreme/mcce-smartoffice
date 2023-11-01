@@ -10,7 +10,7 @@ namespace Mcce22.SmartOffice.Client.Managers
     {
         Task<WorkspaceDataModel[]> GetList(string workspaceNumber);
 
-        Task<WorkspaceDataModel> Save(WorkspaceDataModel model);
+        Task<WorkspaceDataModel> Create(WorkspaceDataModel model);
 
         Task Delete(string workspaceNumber);
     }
@@ -31,7 +31,7 @@ namespace Mcce22.SmartOffice.Client.Managers
             return entries;
         }
 
-        public override async Task<WorkspaceDataModel> Save(WorkspaceDataModel model)
+        public override async Task<WorkspaceDataModel> Create(WorkspaceDataModel model)
         {
             var response = await HttpClient.PostAsJsonAsync($"{BaseUrl}/{model.WorkspaceNumber}", model);
 

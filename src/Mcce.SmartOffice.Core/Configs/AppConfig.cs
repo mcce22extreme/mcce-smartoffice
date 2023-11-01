@@ -1,6 +1,23 @@
 ﻿namespace Mcce.SmartOffice.Core.Configs
 {
-    public class AppConfig
+    public interface IAppConfig
+    {
+        string BaseAddress { get; }
+
+        string AppConfigUrl { get; }
+
+        string FrontendUrl { get; }
+
+        AuthConfig AuthConfig { get; }
+
+        DbConfig DbConfig {  get; }
+
+        MqttConfig MqttConfig { get; }
+
+        CorsConfig CorsConfig { get; }
+    }
+
+    public class AppConfig : IAppConfig
     {
         public string BaseAddress { get; set; }
 

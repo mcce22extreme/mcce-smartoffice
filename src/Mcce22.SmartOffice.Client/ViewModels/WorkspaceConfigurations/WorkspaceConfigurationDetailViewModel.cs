@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -13,7 +12,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
     {
         private readonly IWorkspaceConfigurationManager _workspaceConfigurationManager;
         private readonly IWorkspaceManager _workspaceManager;
-
+        private readonly bool _createConfiguration;
         private readonly string _workspaceNumber;
 
         [ObservableProperty]
@@ -35,6 +34,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
             _workspaceConfigurationManager = workspaceConfigurationManager;
             _workspaceManager = workspaceManager;
+            _createConfiguration = true;
         }
 
         public WorkspaceConfigurationDetailViewModel(
@@ -77,11 +77,21 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         protected override async Task OnSave()
         {
-            await _workspaceConfigurationManager.Save(new WorkspaceConfigurationModel
+            var model = new WorkspaceConfigurationModel
             {
                 DeskHeight = DeskHeight,
                 WorkspaceNumber = SelectedWorkspace.WorkspaceNumber
-            });
+            };
+
+            if(_createConfiguration)
+            {
+                await _workspaceConfigurationManager.Create(model);
+            }
+            else
+            {
+                await _workspaceConfigurationManager.Update(model);
+            }
+            
         }
     }
 }

@@ -8,7 +8,9 @@ namespace Mcce22.SmartOffice.Client.Managers
     {
         Task<WorkspaceModel[]> GetList();
 
-        Task<WorkspaceModel> Save(WorkspaceModel workspace);
+        Task<WorkspaceModel> Create(WorkspaceModel workspace);
+
+        Task<WorkspaceModel> Update(WorkspaceModel workspace);
 
         Task Delete(string workspaceId);
     }

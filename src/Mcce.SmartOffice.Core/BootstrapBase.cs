@@ -181,7 +181,7 @@ namespace Mcce.SmartOffice.Core
 
             builder.Services.AddSingleton<IAppInfo>(appInfo);
 
-            builder.Services.AddSingleton(AppConfig);
+            builder.Services.AddSingleton<IAppConfig>(AppConfig);
 
             builder.Services.AddSingleton<IValidationProvider, ValidationProvider>();
 

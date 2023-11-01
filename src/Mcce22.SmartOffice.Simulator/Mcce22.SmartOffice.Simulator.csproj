@@ -30,10 +30,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="CefSharp.Wpf.NETCore" Version="117.2.40" />
+        <PackageReference Include="CefSharp.Wpf.NETCore" Version="118.6.80" />
         <PackageReference Include="IdentityModel.OidcClient" Version="5.2.1" />
         <PackageReference Include="Castle.Windsor" Version="6.0.0" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
         <PackageReference Include="MahApps.Metro" Version="2.4.10" />
         <PackageReference Include="MahApps.Metro.IconPacks" Version="4.11.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
@@ -66,6 +66,18 @@
         <None Update="appsettings.MEWTU.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="chromiumembeddedframework.runtime.win-arm64" Version="118.6.8" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="chromiumembeddedframework.runtime.win-x64" Version="118.6.8" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="chromiumembeddedframework.runtime.win-x86" Version="118.6.8" />
     </ItemGroup>
 
 </Project>
