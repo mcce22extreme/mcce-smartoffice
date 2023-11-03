@@ -1,9 +1,8 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Mcce.SmartOffice.Core.Configs;
 using Mcce.SmartOffice.Core.Enums;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-
+using Microsoft.Extensions.DependencyInjection;
 namespace Mcce.SmartOffice.Core.Extensions
 {
     public static class ServiceCollectionExtensions
@@ -15,31 +14,27 @@ namespace Mcce.SmartOffice.Core.Extensions
             foreach (var type in typesFromAssemblies)
             {
                 services.Add(new ServiceDescriptor(typeof(T), type, lifetime));
-            }
-
+            }
             return services;
         }
 
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, DbConfig dbConfig) where TContext : DbContext
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, DbConfig dbConfig, string databaseSchema) where TContext : DbContext
         {
             switch (dbConfig.DatabaseType)
             {
-                case DbType.CosmosDb:
-                    services.AddDbContext<TContext>(opt => opt.UseCosmos(dbConfig.ConnectionString, dbConfig.DatabaseName));
-                    break;
-                case DbType.SQLite:
-                    services.AddDbContext<TContext>(opt => opt.UseSqlite(dbConfig.ConnectionString));
-                    break;
                 case DbType.SqlServer:
                     services.AddDbContext<TContext>(opt => opt.UseSqlServer(dbConfig.ConnectionString, builder =>
                     {
-                        builder.MigrationsHistoryTable("__EFMigrationsHistory", dbConfig.DatabaseSchema);
+                        builder.MigrationsHistoryTable("__EFMigrationsHistory", databaseSchema);
                         builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-                    }));
+                    }));
+                    break;
+                case DbType.InMemory:
+                    services.AddDbContext<TContext>(opt => opt.UseInMemoryDatabase(Guid.NewGuid().ToString()), ServiceLifetime.Singleton);
                     break;
             }
 
-            return services;
+            return services;
         }
     }
 }

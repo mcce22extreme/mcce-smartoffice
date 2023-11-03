@@ -117,19 +117,25 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
         private async Task<bool> HasCollision(string workspaceNumber, DateTime startDateTime, DateTime endDateTime)
         {
-            var booksing = await _dbContext.Bookings
-                .Where(x => x.WorkspaceNumber == workspaceNumber)
-                .Select(x => new
-                {
-                    x.StartDateTime,
-                    x.EndDateTime
-                })
-                .ToListAsync();
+            return await _dbContext.Bookings
+                .AnyAsync(x =>
+                    x.WorkspaceNumber == workspaceNumber &&
+                    startDateTime < x.EndDateTime &&
+                    endDateTime > x.StartDateTime);
+
+            //var booksing = await _dbContext.Bookings
+            //    .Any(x => x.WorkspaceNumber == workspaceNumber && startDateTime < x.EndDateTime && endDateTime > x.StartDateTime)
+            //    .Select(x => new
+            //    {
+            //        x.StartDateTime,
+            //        x.EndDateTime
+            //    })
+            //    .ToListAsync();
 
 
-            var hasCollision = booksing.Any(x => startDateTime < x.EndDateTime && endDateTime > x.StartDateTime);
+            //var hasCollision = booksing.Any(x => startDateTime < x.EndDateTime && endDateTime > x.StartDateTime);
 
-            return hasCollision;
+            //return hasCollision;
         }
 
         private string GenerateBookingNumber()

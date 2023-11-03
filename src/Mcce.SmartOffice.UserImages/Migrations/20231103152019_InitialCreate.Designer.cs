@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Mcce.SmartOffice.UserImages.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231101093718_InitialCreate")]
+    [Migration("20231103152019_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -19,7 +19,7 @@ namespace Mcce.SmartOffice.UserImages.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("sousi")
+                .HasDefaultSchema("soui")
                 .HasAnnotation("ProductVersion", "7.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -27,15 +27,23 @@ namespace Mcce.SmartOffice.UserImages.Migrations
 
             modelBuilder.Entity("Mcce.SmartOffice.UserImages.Entities.UserImage", b =>
                 {
-                    b.Property<string>("ImageKey")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("UserName")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageKey")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ImageKey");
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("UserImages", "sousi");
+                    b.HasKey("Id");
+
+                    b.ToTable("UserImages", "soui");
                 });
 #pragma warning restore 612, 618
         }

@@ -25,8 +25,11 @@ namespace Mcce.SmartOffice.Workspaces.Migrations
 
             modelBuilder.Entity("Mcce.SmartOffice.Workspaces.Entities.Workspace", b =>
                 {
-                    b.Property<string>("WorkspaceNumber")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("CreatedUtc")
                         .HasColumnType("datetime2");
@@ -55,7 +58,11 @@ namespace Mcce.SmartOffice.Workspaces.Migrations
                     b.Property<int>("Width")
                         .HasColumnType("int");
 
-                    b.HasKey("WorkspaceNumber");
+                    b.Property<string>("WorkspaceNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("WorkspaceNumber")
                         .IsUnique();

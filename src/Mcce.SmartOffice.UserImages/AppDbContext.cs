@@ -1,24 +1,22 @@
-﻿using Mcce.SmartOffice.Core.Configs;
-using Mcce.SmartOffice.UserImages.Entities;
+﻿using Mcce.SmartOffice.UserImages.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mcce.SmartOffice.UserImages
 {
     public class AppDbContext : DbContext
     {
-        private readonly IAppConfig _appConfig;
+        internal const string DATABASE_SCHEMA = "soui";
 
         public DbSet<UserImage> UserImages { get; set; }
 
-        public AppDbContext(DbContextOptions options, IAppConfig appConfig)
+        public AppDbContext(DbContextOptions options)
             : base(options)
         {
-            _appConfig = appConfig;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultSchema(_appConfig.DbConfig.DatabaseSchema);
+            modelBuilder.HasDefaultSchema(DATABASE_SCHEMA);
         }
     }
 }

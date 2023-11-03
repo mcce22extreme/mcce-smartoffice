@@ -19,15 +19,16 @@ namespace Mcce.SmartOffice.Bookings.Migrations
                 schema: "sobo",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     BookingNumber = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     StartDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Activated = table.Column<bool>(type: "bit", nullable: false),
-                    InvitationSent = table.Column<bool>(type: "bit", nullable: false),
-                    WorkspaceNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    WorkspaceNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Creator = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -35,7 +36,7 @@ namespace Mcce.SmartOffice.Bookings.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Bookings", x => x.BookingNumber);
+                    table.PrimaryKey("PK_Bookings", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(

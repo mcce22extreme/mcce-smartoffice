@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Mcce.SmartOffice.WorkspaceDataEntries.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231101093739_InitialCreate")]
+    [Migration("20231103152107_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("sowsd")
+                .HasDefaultSchema("sowd")
                 .HasAnnotation("ProductVersion", "7.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -28,8 +28,11 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Migrations
 
             modelBuilder.Entity("Mcce.SmartOffice.WorkspaceDataEntries.Entities.WorkspaceDataEntry", b =>
                 {
-                    b.Property<string>("EntryId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<float>("Co2Level")
                         .HasColumnType("real");
@@ -50,11 +53,11 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("EntryId");
+                    b.HasKey("Id");
 
                     b.HasIndex("WorkspaceNumber");
 
-                    b.ToTable("WorkspaceDataEntries", "sowsd");
+                    b.ToTable("WorkspaceDataEntries", "sowd");
                 });
 #pragma warning restore 612, 618
         }

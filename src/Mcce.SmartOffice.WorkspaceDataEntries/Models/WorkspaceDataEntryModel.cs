@@ -1,9 +1,9 @@
-﻿namespace Mcce.SmartOffice.WorkspaceDataEntries.Models
-{
-    public class WorkspaceDataEntryModel
-    {
-        public string EntryId { get; set; }
+﻿using Mcce.SmartOffice.Core.Models;
 
+namespace Mcce.SmartOffice.WorkspaceDataEntries.Models
+{
+    public class WorkspaceDataEntryModel : ModelBase
+    {
         public string WorkspaceNumber { get; set; }
 
         public DateTime Timestamp { get; set; }

@@ -9,7 +9,7 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations
     {
         protected override void OnConfigureBuilder(WebApplicationBuilder builder)
         {
-            builder.Services.AddDbContext<AppDbContext>(AppConfig.DbConfig);
+            builder.Services.AddDbContext<AppDbContext>(AppConfig.DbConfig, AppDbContext.DATABASE_SCHEMA);
 
             builder.Services.AddScoped<IWorkspaceConfigurationManager, WorkspaceConfigurationManager>();
         }

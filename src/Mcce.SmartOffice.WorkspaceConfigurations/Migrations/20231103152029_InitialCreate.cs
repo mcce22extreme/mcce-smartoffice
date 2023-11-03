@@ -12,14 +12,15 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "sowsc");
+                name: "sowc");
 
             migrationBuilder.CreateTable(
                 name: "WorkspaceConfigurations",
-                schema: "sowsc",
+                schema: "sowc",
                 columns: table => new
                 {
-                    ConfigurationNumber = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     DeskHeight = table.Column<long>(type: "bigint", nullable: false),
                     WorkspaceNumber = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -30,12 +31,12 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WorkspaceConfigurations", x => x.ConfigurationNumber);
+                    table.PrimaryKey("PK_WorkspaceConfigurations", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_WorkspaceConfigurations_WorkspaceNumber_UserName",
-                schema: "sowsc",
+                schema: "sowc",
                 table: "WorkspaceConfigurations",
                 columns: new[] { "WorkspaceNumber", "UserName" },
                 unique: true);
@@ -46,7 +47,7 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Migrations
         {
             migrationBuilder.DropTable(
                 name: "WorkspaceConfigurations",
-                schema: "sowsc");
+                schema: "sowc");
         }
     }
 }

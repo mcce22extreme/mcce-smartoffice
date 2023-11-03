@@ -19,6 +19,8 @@ namespace Mcce.SmartOffice.Workspaces.Migrations
                 schema: "sows",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     WorkspaceNumber = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Top = table.Column<int>(type: "int", nullable: false),
                     Left = table.Column<int>(type: "int", nullable: false),
@@ -32,7 +34,7 @@ namespace Mcce.SmartOffice.Workspaces.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Workspaces", x => x.WorkspaceNumber);
+                    table.PrimaryKey("PK_Workspaces", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(

@@ -1,25 +1,23 @@
 ﻿using Mcce.SmartOffice.Bookings.Entities;
 using Mcce.SmartOffice.Core;
-using Mcce.SmartOffice.Core.Configs;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mcce.SmartOffice.Bookings
 {
     public class AppDbContext : AppDbContextBase
     {
-        private readonly IAppConfig _appConfig;
+        internal const string DATABASE_SCHEMA = "sobo";
 
         public DbSet<Booking> Bookings { get; set; }
 
-        public AppDbContext(DbContextOptions options, IHttpContextAccessor contextAccessor, IAppConfig appConfig)
+        public AppDbContext(DbContextOptions options, IHttpContextAccessor contextAccessor)
             : base(options, contextAccessor)
         {
-            _appConfig = appConfig;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultSchema(_appConfig.DbConfig.DatabaseSchema);
+            modelBuilder.HasDefaultSchema(DATABASE_SCHEMA);
 
             modelBuilder.Entity<Booking>()
                 .HasIndex(x => x.BookingNumber)

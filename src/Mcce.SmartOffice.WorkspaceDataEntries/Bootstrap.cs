@@ -10,7 +10,7 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries
     {
         protected override void OnConfigureBuilder(WebApplicationBuilder builder)
         {
-            builder.Services.AddDbContext<AppDbContext>(AppConfig.DbConfig);
+            builder.Services.AddDbContext<AppDbContext>(AppConfig.DbConfig, AppDbContext.DATABASE_SCHEMA);
 
             builder.Services.AddScoped<IWorkspaceDataEntryManager, WorkspaceDataEntryManager>();
 

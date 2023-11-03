@@ -35,9 +35,7 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
         public async Task<WorkspaceDataEntryModel[]> GetWorkspaceDataEntries(string workspaceNumber, DateTime? startDate, DateTime? endDate)
         {
             var entryQuery = _dbContext.WorkspaceDataEntries
-                .Where(x => x.WorkspaceNumber ==  workspaceNumber)
-                .OrderByDescending(x => x.Timestamp)
-                .AsQueryable();
+                .Where(x => x.WorkspaceNumber ==  workspaceNumber);                
 
             if (startDate.HasValue)
             {
@@ -49,7 +47,9 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
                 entryQuery = entryQuery.Where(x => x.Timestamp <= endDate.Value);
             }
 
-            var workspaceData = await entryQuery.ToListAsync();
+            var workspaceData = await entryQuery
+                .OrderByDescending(x => x.Timestamp)
+                .ToListAsync();
 
             return workspaceData
                 .Select(_mapper.Map<WorkspaceDataEntryModel>)
@@ -60,7 +60,6 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
         {
             var entry = _mapper.Map<WorkspaceDataEntry>(model);
 
-            entry.EntryId = Guid.NewGuid().ToString();
             entry.WorkspaceNumber = workspaceNumber;
             entry.Wei = _weiGenerator.GenerateWei(entry.Temperature, entry.Humidity, entry.Co2Level);
 

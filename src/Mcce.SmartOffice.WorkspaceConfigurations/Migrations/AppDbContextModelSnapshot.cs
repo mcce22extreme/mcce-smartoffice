@@ -17,7 +17,7 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("sowsc")
+                .HasDefaultSchema("sowc")
                 .HasAnnotation("ProductVersion", "7.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -25,8 +25,11 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Migrations
 
             modelBuilder.Entity("Mcce.SmartOffice.WorkspaceConfigurations.Entities.WorkspaceConfiguration", b =>
                 {
-                    b.Property<string>("ConfigurationNumber")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("CreatedUtc")
                         .HasColumnType("datetime2");
@@ -51,12 +54,12 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ConfigurationNumber");
+                    b.HasKey("Id");
 
                     b.HasIndex("WorkspaceNumber", "UserName")
                         .IsUnique();
 
-                    b.ToTable("WorkspaceConfigurations", "sowsc");
+                    b.ToTable("WorkspaceConfigurations", "sowc");
                 });
 #pragma warning restore 612, 618
         }

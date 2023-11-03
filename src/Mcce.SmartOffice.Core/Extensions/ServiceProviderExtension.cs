@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Mcce.SmartOffice.Core.Extensions
@@ -11,25 +10,6 @@ namespace Mcce.SmartOffice.Core.Extensions
             using var scope = serviceProvider.CreateScope();
 
             var dbContext = scope.ServiceProvider.GetRequiredService<T>();
-
-            if (dbContext.Database.IsCosmos())
-            {
-                await dbContext.Database.EnsureCreatedAsync();
-            }
-
-            if (dbContext.Database.IsSqlite())
-            {
-                // Ensure db directory exists
-                var sb = new SqliteConnectionStringBuilder(dbContext.Database.GetConnectionString());
-                var directoryPath = Path.GetDirectoryName(sb.DataSource);
-
-                if (!Directory.Exists(directoryPath))
-                {
-                    Directory.CreateDirectory(directoryPath);
-                }
-
-                await dbContext.Database.MigrateAsync();
-            }
 
             if (dbContext.Database.IsSqlServer())
             {

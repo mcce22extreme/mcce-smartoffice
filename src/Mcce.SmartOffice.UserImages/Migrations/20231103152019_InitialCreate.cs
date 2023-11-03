@@ -11,19 +11,21 @@ namespace Mcce.SmartOffice.UserImages.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "sousi");
+                name: "soui");
 
             migrationBuilder.CreateTable(
                 name: "UserImages",
-                schema: "sousi",
+                schema: "soui",
                 columns: table => new
                 {
-                    ImageKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ImageKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserImages", x => x.ImageKey);
+                    table.PrimaryKey("PK_UserImages", x => x.Id);
                 });
         }
 
@@ -32,7 +34,7 @@ namespace Mcce.SmartOffice.UserImages.Migrations
         {
             migrationBuilder.DropTable(
                 name: "UserImages",
-                schema: "sousi");
+                schema: "soui");
         }
     }
 }

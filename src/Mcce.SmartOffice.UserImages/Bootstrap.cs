@@ -10,7 +10,7 @@ namespace Mcce.SmartOffice.UserImages
     {
         protected override void OnConfigureBuilder(WebApplicationBuilder builder)
         {
-            builder.Services.AddDbContext<AppDbContext>(AppConfig.DbConfig);
+            builder.Services.AddDbContext<AppDbContext>(AppConfig.DbConfig, AppDbContext.DATABASE_SCHEMA);
 
             builder.Services.AddScoped<IUserImageManager>(s => new UserImageManager(
                 AppConfig.FrontendUrl?.TrimEnd('/'),

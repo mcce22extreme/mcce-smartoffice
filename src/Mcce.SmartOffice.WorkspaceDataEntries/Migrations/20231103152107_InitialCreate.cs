@@ -12,14 +12,15 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "sowsd");
+                name: "sowd");
 
             migrationBuilder.CreateTable(
                 name: "WorkspaceDataEntries",
-                schema: "sowsd",
+                schema: "sowd",
                 columns: table => new
                 {
-                    EntryId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     WorkspaceNumber = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Wei = table.Column<int>(type: "int", nullable: false),
@@ -29,12 +30,12 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WorkspaceDataEntries", x => x.EntryId);
+                    table.PrimaryKey("PK_WorkspaceDataEntries", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_WorkspaceDataEntries_WorkspaceNumber",
-                schema: "sowsd",
+                schema: "sowd",
                 table: "WorkspaceDataEntries",
                 column: "WorkspaceNumber");
         }
@@ -44,7 +45,7 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Migrations
         {
             migrationBuilder.DropTable(
                 name: "WorkspaceDataEntries",
-                schema: "sowsd");
+                schema: "sowd");
         }
     }
 }

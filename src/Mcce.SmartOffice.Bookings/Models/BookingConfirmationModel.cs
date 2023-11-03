@@ -2,6 +2,8 @@
 {
     public class BookingConfirmationModel
     {
+        public string BookingNumber { get; set; }
+
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
@@ -15,7 +17,5 @@
         public DateTime EndDateTime { get; set; }
 
         public string WorkspaceNumber { get; set; }
-
-        public string ActivationCode { get; set; }
     }
 }

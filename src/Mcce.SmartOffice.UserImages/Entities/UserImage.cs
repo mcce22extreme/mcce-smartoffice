@@ -5,9 +5,10 @@ namespace Mcce.SmartOffice.UserImages.Entities
 {
     public class UserImage : EntityBase
     {
-        [Key]
+        [Required]
         public string ImageKey { get; set; }
 
+        [Required]
         public string UserName { get; set; }        
     }
 }
