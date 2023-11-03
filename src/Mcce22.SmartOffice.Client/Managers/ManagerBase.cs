@@ -28,43 +28,43 @@ namespace Mcce22.SmartOffice.Client.Managers
             return entries;
         }
 
-        //public virtual async Task<T> Save(T model)
+        public virtual async Task<T> Save(T model)
+        {
+            if (model.Id == 0)
+            {
+                var response = await HttpClient.PostAsJsonAsync(BaseUrl, model);
+
+                await EnsureSuccessStatusCode(response);
+
+                return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+            }
+            else
+            {
+                var response = await HttpClient.PutAsJsonAsync($"{BaseUrl}/{model.Id}", model);
+
+                await EnsureSuccessStatusCode(response);
+
+                return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+            }
+        }
+
+        //public virtual async Task<T> Create(T model)
         //{
-        //    if (string.IsNullOrEmpty(model.Identifier))
-        //    {
-        //        var response = await HttpClient.PostAsJsonAsync(BaseUrl, model);
+        //    var response = await HttpClient.PostAsJsonAsync(BaseUrl, model);
 
-        //        await EnsureSuccessStatusCode(response);
+        //    await EnsureSuccessStatusCode(response);
 
-        //        return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
-        //    }
-        //    else
-        //    {
-        //        var response = await HttpClient.PutAsJsonAsync($"{BaseUrl}/{model.Identifier}", model);
-
-        //        await EnsureSuccessStatusCode(response);
-
-        //        return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
-        //    }
+        //    return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
         //}
 
-        public virtual async Task<T> Create(T model)
-        {
-            var response = await HttpClient.PostAsJsonAsync(BaseUrl, model);
+        //public virtual async Task<T> Update(T model)
+        //{
+        //    var response = await HttpClient.PutAsJsonAsync($"{BaseUrl}/{model.Identifier}", model);
 
-            await EnsureSuccessStatusCode(response);
+        //    await EnsureSuccessStatusCode(response);
 
-            return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
-        }
-
-        public virtual async Task<T> Update(T model)
-        {
-            var response = await HttpClient.PutAsJsonAsync($"{BaseUrl}/{model.Identifier}", model);
-
-            await EnsureSuccessStatusCode(response);
-
-            return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
-        }
+        //    return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+        //}
 
         public async Task Delete(string identifier)
         {

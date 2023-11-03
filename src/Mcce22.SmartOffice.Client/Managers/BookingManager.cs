@@ -8,7 +8,7 @@ namespace Mcce22.SmartOffice.Client.Managers
     {
         Task<BookingModel[]> GetList();
 
-        Task<BookingModel> Create(BookingModel booking);
+        Task<BookingModel> Save(BookingModel booking);
 
         Task Delete(string bookingId);
     }

@@ -148,7 +148,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             var count = 0;
             foreach (var workspace in workspaces)
             {
-                await _workspaceManager.Create(workspace);
+                await _workspaceManager.Save(workspace);
 
                 count++;
                 StepProgress = count * 100 / workspaces.Length;
@@ -202,38 +202,13 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                         Co2Level = Random.Next(600, 1000),
                     };
 
-                    await _workspaceDataManager.Create(model);
+                    await _workspaceDataManager.Save(model);
 
                     count++;
+                    ProgressText = $"Seed workspace data ({count}/{maxCount})...";
                     StepProgress = count * 100 / maxCount;
                 }                
             }
-
-            //var hours = 24*7;
-            //var count = 0;
-            //var maxCount = workspaces.Length * hours;
-
-            //var dateTimeNow = DateTime.Now;
-
-            //foreach (var workspace in workspaces)
-            //{
-            //    for (int i = 1; i < hours; i++)
-            //    {
-            //        var model = new WorkspaceDataModel
-            //        {
-            //            WorkspaceNumber = workspace.WorkspaceNumber,
-            //            Timestamp = new DateTime(dateTimeNow.Year,dateTimeNow.Month,dateTimeNow.Day, i - 1, 0, 0),
-            //            Temperature = Random.Next(16, 30),
-            //            Humidity = Random.Next(10, 70),
-            //            Co2Level = Random.Next(600, 1000),
-            //        };
-
-            //        await _workspaceDataManager.Create(model);
-
-            //        count++;
-            //        StepProgress = count * 100 / maxCount;
-            //    }
-            //}
 
             StepProgress = 100;
         }

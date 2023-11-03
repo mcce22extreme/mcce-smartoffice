@@ -65,16 +65,6 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             CopyToClipboardCommand.NotifyCanExecuteChanged();
         }
 
-        protected override async Task OnAdd()
-        {
-            await DialogService.ShowDialog(new WorkspaceDetailViewModel(_workspaceManager, DialogService));
-        }
-
-        protected override async Task OnEdit()
-        {
-            await DialogService.ShowDialog(new WorkspaceDetailViewModel(SelectedItem, _workspaceManager, DialogService));
-        }
-
         protected override async Task OnDelete()
         {
             await _workspaceManager.Delete(SelectedItem.WorkspaceNumber);

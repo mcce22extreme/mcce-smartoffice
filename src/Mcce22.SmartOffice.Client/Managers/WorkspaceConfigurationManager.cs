@@ -10,9 +10,7 @@ namespace Mcce22.SmartOffice.Client.Managers
     {
         Task<WorkspaceConfigurationModel[]> GetList();
 
-        Task<WorkspaceConfigurationModel> Create(WorkspaceConfigurationModel user);
-
-        Task<WorkspaceConfigurationModel> Update(WorkspaceConfigurationModel user);
+        Task<WorkspaceConfigurationModel> Save(WorkspaceConfigurationModel user);
 
         Task Delete(string workspaceNumber);
     }
@@ -24,18 +22,18 @@ namespace Mcce22.SmartOffice.Client.Managers
         {
         }
 
-        public override async Task<WorkspaceConfigurationModel> Create(WorkspaceConfigurationModel model)
+        public override async Task<WorkspaceConfigurationModel> Save(WorkspaceConfigurationModel model)
         {
-            var response = await HttpClient.PostAsJsonAsync($"{BaseUrl}/{model.WorkspaceNumber}", model);
+            HttpResponseMessage response;
 
-            await EnsureSuccessStatusCode(response);
-
-            return JsonConvert.DeserializeObject<WorkspaceConfigurationModel>(await response.Content.ReadAsStringAsync());
-        }
-
-        public override async Task<WorkspaceConfigurationModel> Update(WorkspaceConfigurationModel model)
-        {
-            var response = await HttpClient.PutAsJsonAsync($"{BaseUrl}/{model.WorkspaceNumber}", model);
+            if (model.Id == 0)
+            {
+                response = await HttpClient.PostAsJsonAsync($"{BaseUrl}/{model.WorkspaceNumber}", model);
+            }
+            else
+            {
+                response = await HttpClient.PutAsJsonAsync($"{BaseUrl}/{model.WorkspaceNumber}", model);
+            }
 
             await EnsureSuccessStatusCode(response);
 

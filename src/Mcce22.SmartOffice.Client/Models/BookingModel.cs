@@ -2,10 +2,8 @@
 
 namespace Mcce22.SmartOffice.Client.Models
 {
-    public class BookingModel : IModel
+    public class BookingModel : ModelBase
     {
-        public string Identifier { get { return BookingNumber; } }
-
         public string BookingNumber { get; set; }
 
         public DateTime StartDateTime { get; set; }

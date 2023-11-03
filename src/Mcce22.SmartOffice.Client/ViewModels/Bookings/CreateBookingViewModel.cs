@@ -128,7 +128,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             {
                 IsBusy = true;
 
-                await _bookingManager.Create(new BookingModel
+                await _bookingManager.Save(new BookingModel
                 {
                     StartDateTime = StartDateTime,
                     EndDateTime = EndDateTime,

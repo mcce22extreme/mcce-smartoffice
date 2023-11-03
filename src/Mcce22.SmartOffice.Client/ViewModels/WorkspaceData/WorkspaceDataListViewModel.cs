@@ -85,6 +85,12 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         [ObservableProperty]
         private bool _showCo2LevelDiagram = true;
 
+        [ObservableProperty]
+        private DateTime _startDate = DateTime.Now.Subtract(TimeSpan.FromDays(1));
+
+        [ObservableProperty]
+        private DateTime? _endDate;
+
         public ICartesianAxis[] TemperatureYAxes { get; set; } =
         {
             new Axis
@@ -247,6 +253,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             base.OnPropertyChanged(e);
 
             DeleteCommand.NotifyCanExecuteChanged();
+            ReloadCommand.NotifyCanExecuteChanged();
         }
 
         public async Task Load()
@@ -269,24 +276,24 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         {
             try
             {
+                if (IsBusy)
+                {
+                    return;
+                }
+
                 IsBusy = true;
 
                 if (workspace == null)
                 {
-                    WorkspaceDataEntries = new List<WorkspaceDataModel>();
-
-                    _weiValues.Clear();
-                    _temperatureValues.Clear();
-                    _humidityValues.Clear();
-                    _co2LevelValues.Clear();
+                    ResetChartData();
                 }
                 else
                 {
-                    var workspaceDataEntries = await _workspaceDataManager.GetList(workspace.WorkspaceNumber);
+                    var workspaceDataEntries = await _workspaceDataManager.GetList(workspace.WorkspaceNumber, StartDate, EndDate);
 
                     foreach (var entry in workspaceDataEntries)
                     {
-                        if (!WorkspaceDataEntries.Any(x => x.EntryId == entry.EntryId))
+                        if (!WorkspaceDataEntries.Any(x => x.Id == entry.Id))
                         {
                             _weiValues.Add(new ObservableValue(entry.Wei));
                             _temperatureValues.Add(new ObservableValue(entry.Temperature));
@@ -304,6 +311,16 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             }
         }
 
+        private void ResetChartData()
+        {
+            WorkspaceDataEntries = new List<WorkspaceDataModel>();
+
+            _weiValues.Clear();
+            _temperatureValues.Clear();
+            _humidityValues.Clear();
+            _co2LevelValues.Clear();
+        }
+
         private void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
             //if (!IsBusy && _authService.LoggedIn)
@@ -312,6 +329,21 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             {
                 Application.Current.Dispatcher.BeginInvoke(new Action(() => UpdateWorkspaceDataEntries(SelectedWorkspace)));
             }
+        }
+
+        [RelayCommand(CanExecute = nameof(CanReload))]
+        private void Reload()
+        {
+            if (CanReload())
+            {
+                ResetChartData();
+                UpdateWorkspaceDataEntries(SelectedWorkspace);
+            }
+        }
+
+        private bool CanReload()
+        {
+            return !IsBusy && SelectedWorkspace != null;
         }
 
         [RelayCommand(CanExecute = nameof(CanDelete))]

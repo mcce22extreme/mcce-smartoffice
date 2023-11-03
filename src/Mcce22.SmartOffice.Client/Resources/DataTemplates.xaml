@@ -27,9 +27,6 @@
     <DataTemplate DataType="{x:Type vm:WorkspaceListViewModel}">
         <v:WorkspaceListView />
     </DataTemplate>
-    <DataTemplate DataType="{x:Type vm:WorkspaceDetailViewModel}">
-        <v:WorkspaceDetailView />
-    </DataTemplate>
     <DataTemplate DataType="{x:Type vm:BookingListViewModel}">
         <v:BookingListView />
     </DataTemplate>

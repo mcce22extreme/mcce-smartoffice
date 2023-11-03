@@ -1,9 +1,7 @@
 ﻿namespace Mcce22.SmartOffice.Client.Models
 {
-    public class UserImageModel : IModel
+    public class UserImageModel : ModelBase
     {
-        public string Identifier { get { return ImageKey; } }
-
         public string Url { get; set; }
 
         public string FileName { get; set; }

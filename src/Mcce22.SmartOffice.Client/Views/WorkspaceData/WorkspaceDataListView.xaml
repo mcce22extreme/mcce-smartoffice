@@ -218,6 +218,21 @@
                             Style="{StaticResource ToolbarButtonStyle}">
                             <iconPacks:FontAwesome Kind="TrashSolid" />
                         </Button>
+                        <mah:DateTimePicker
+                            Height="35"
+                            Margin="5,0,0,0"
+                            mah:TextBoxHelper.Watermark="Startdate"
+                            Culture="de-DE"
+                            SelectedDateTime="{Binding StartDate}" />
+                        <mah:DateTimePicker
+                            Height="35"
+                            Margin="5,0,5,0"
+                            mah:TextBoxHelper.Watermark="Enddate"
+                            Culture="de-DE"
+                            SelectedDateTime="{Binding EndDate}" />
+                        <Button Command="{Binding ReloadCommand}" Style="{StaticResource ToolbarButtonStyle}">
+                            <iconPacks:FontAwesome Kind="SyncSolid" />
+                        </Button>
                     </StackPanel>
                 </Grid>
                 <DataGrid
@@ -231,7 +246,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn
                             Width="150"
-                            Binding="{Binding Timestamp}"
+                            Binding="{Binding Timestamp, StringFormat=\{0:dd.MM.yy HH:mm:ss\}}"
                             Header="Timestamp"
                             SortDirection="Descending" />
                         <DataGridTextColumn
