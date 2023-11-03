@@ -20,7 +20,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Serilog;
-using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 
 namespace Mcce.SmartOffice.Core
 {
