@@ -65,8 +65,13 @@ namespace Mcce.SmartOffice.ApiGateway
                 opt.PathToSwaggerGenerator = "/swagger/docs";
             });
 
-            app.UseOcelot();
+            app.MapWhen((ctx) => ctx.Request.Path != "/", (app) =>
+            {
+                app.UseOcelot();
+            });
 
+            app.Map("/", () => "Hello from Smart Office!");
+            
             app.Run();
         }
     }   
