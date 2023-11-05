@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.ComponentModel;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Mcce22.SmartOffice.Client.Managers;
 using Mcce22.SmartOffice.Client.Models;
 using Mcce22.SmartOffice.Client.Services;
@@ -21,9 +23,26 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             _bookingManager = bookingManager;
         }
 
-        protected override bool CanEdit()
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            return !IsBusy && SelectedItem != null && !SelectedItem.InvitationSent;
+            base.OnPropertyChanged(e);
+
+            ActivateBookingCommand.NotifyCanExecuteChanged();
+        }
+
+        [RelayCommand(CanExecute = nameof(CanActivateBooking))]
+        protected async Task ActivateBooking()
+        {
+            if (CanActivateBooking())
+            {
+                await _bookingManager.ActivateBooking(SelectedItem.BookingNumber);
+                await Reload();
+            }
+        }
+
+        protected bool CanActivateBooking()
+        {
+            return !IsBusy && SelectedItem?.State == Enums.BookingState.Confirmed;
         }
 
         protected override async Task OnDelete()

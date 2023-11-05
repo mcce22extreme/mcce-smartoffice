@@ -31,9 +31,6 @@ namespace Mcce.SmartOffice.Bookings.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Activated")
-                        .HasColumnType("bit");
-
                     b.Property<string>("BookingNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -63,6 +60,9 @@ namespace Mcce.SmartOffice.Bookings.Migrations
 
                     b.Property<DateTime>("StartDateTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("State")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserName")
                         .IsRequired()

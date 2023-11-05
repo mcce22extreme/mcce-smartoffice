@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Mcce.SmartOffice.Bookings.Enums;
 using Mcce.SmartOffice.Core.Entities;
 
 namespace Mcce.SmartOffice.Bookings.Entities
@@ -15,9 +16,6 @@ namespace Mcce.SmartOffice.Bookings.Entities
         public DateTime EndDateTime { get; set; }
 
         [Required]
-        public bool Activated { get; set; }
-
-        [Required]
         public string WorkspaceNumber { get; set; }
 
         [Required]
@@ -28,5 +26,8 @@ namespace Mcce.SmartOffice.Bookings.Entities
 
         [Required]
         public string UserName { get; set; }
+
+        [Required]
+        public BookingState State { get; set; }
     }
 }

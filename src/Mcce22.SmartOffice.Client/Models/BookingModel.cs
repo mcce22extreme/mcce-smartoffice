@@ -1,4 +1,5 @@
 ﻿using System;
+using Mcce22.SmartOffice.Client.Enums;
 
 namespace Mcce22.SmartOffice.Client.Models
 {
@@ -10,11 +11,11 @@ namespace Mcce22.SmartOffice.Client.Models
 
         public DateTime EndDateTime { get; set; }
 
+        public BookingState State { get; set; }
+
         public string WorkspaceId { get; set; }
 
         public string UserId { get; set; }
-
-        public string RoomNumber { get; set; }
 
         public string WorkspaceNumber { get; set; }
 
@@ -27,9 +28,5 @@ namespace Mcce22.SmartOffice.Client.Models
         public string Email { get; set; }
 
         public string FullUserName { get { return $"{FirstName} {LastName} ({UserName})"; } }
-
-        public bool Activated { get; set; }
-
-        public bool InvitationSent { get; set; }
     }
 }
