@@ -19,6 +19,8 @@ namespace Mcce.SmartOffice.Workspaces.Managers
 
         Task<WorkspaceModel> UpdateWorkspaceWei(string workspaceNumber, int wei);
 
+        Task<bool> WorkspaceExists(string workspaceNumber);
+
         Task DeleteWorkspace(string workspaceNumber);
     }
 
@@ -107,6 +109,11 @@ namespace Mcce.SmartOffice.Workspaces.Managers
             await _dbContext.SaveChangesAsync(auditInfoUpdateMode: AuditInfoUpdateMode.Suppress);
 
             return await GetWorkspace(workspaceNumber);
+        }
+
+        public async Task<bool> WorkspaceExists(string workspaceNumber)
+        {
+            return await _dbContext.Workspaces.AnyAsync(x => x.WorkspaceNumber == workspaceNumber);
         }
     }
 }

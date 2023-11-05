@@ -9,7 +9,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 {
     public interface IListViewModel
     {
-        void Reload();
+        Task Reload();
     }
 
     public abstract partial class ListViewModelBase<T> : ViewModelBase, IListViewModel
@@ -36,13 +36,13 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanAdd))]
-        protected async void Add()
+        protected async Task Add()
         {
             if (CanAdd())
             {
                 await OnAdd();
 
-                Reload();
+                await Reload();
             }
         }
 
@@ -57,13 +57,13 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanEdit))]
-        protected async void Edit()
+        protected async Task Edit()
         {
             if (CanEdit())
             {
                 await OnEdit();
 
-                Reload();
+                await Reload();
             }
         }
 
@@ -79,7 +79,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
 
         [RelayCommand(CanExecute = nameof(CanDelete))]
-        protected virtual async void Delete()
+        protected virtual async Task Delete()
         {
             if (CanDelete())
             {
@@ -101,7 +101,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                     IsBusy = false;
                 }
 
-                Reload();
+                await Reload();
             }
         }
 
@@ -116,7 +116,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanReload))]
-        public async void Reload()
+        public async Task Reload()
         {
             if (CanReload())
             {

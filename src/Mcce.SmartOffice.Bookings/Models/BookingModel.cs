@@ -1,4 +1,5 @@
-﻿using Mcce.SmartOffice.Core.Models;
+﻿using Mcce.SmartOffice.Bookings.Enums;
+using Mcce.SmartOffice.Core.Models;
 
 namespace Mcce.SmartOffice.Bookings.Models
 {
@@ -10,6 +11,8 @@ namespace Mcce.SmartOffice.Bookings.Models
 
         public DateTime EndDateTime { get; set; }
 
+        public BookingState State { get; set; }
+
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
@@ -17,7 +20,5 @@ namespace Mcce.SmartOffice.Bookings.Models
         public string UserName { get; set; }
 
         public string WorkspaceNumber { get; set; }
-
-        public bool Activated { get; set; }
     }
 }

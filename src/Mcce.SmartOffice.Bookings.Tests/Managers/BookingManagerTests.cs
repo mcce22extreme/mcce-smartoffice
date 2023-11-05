@@ -64,7 +64,7 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
                 Assert.That(otherBooking.EndDateTime, Is.EqualTo(expectedBooking.EndDateTime));
                 Assert.That(otherBooking.WorkspaceNumber, Is.EqualTo(expectedBooking.WorkspaceNumber));
                 Assert.That(otherBooking.UserName, Is.EqualTo(expectedBooking.UserName));
-                Assert.That(otherBooking.Activated, Is.False);
+                Assert.That(otherBooking.State, Is.EqualTo(expectedBooking.State));
             }
         }
 

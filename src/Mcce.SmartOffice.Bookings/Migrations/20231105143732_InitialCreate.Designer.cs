@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Mcce.SmartOffice.Bookings.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231103152010_InitialCreate")]
+    [Migration("20231105143732_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -33,9 +33,6 @@ namespace Mcce.SmartOffice.Bookings.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Activated")
-                        .HasColumnType("bit");
 
                     b.Property<string>("BookingNumber")
                         .IsRequired()
@@ -66,6 +63,9 @@ namespace Mcce.SmartOffice.Bookings.Migrations
 
                     b.Property<DateTime>("StartDateTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("State")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserName")
                         .IsRequired()

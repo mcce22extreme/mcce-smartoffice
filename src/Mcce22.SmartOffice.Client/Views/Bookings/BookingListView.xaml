@@ -27,6 +27,9 @@
             <Button Command="{Binding ReloadCommand}" Style="{StaticResource ToolbarButtonStyle}">
                 <iconPacks:FontAwesome Kind="SyncSolid" />
             </Button>
+            <Button Command="{Binding ActivateBookingCommand}" Style="{StaticResource ToolbarButtonStyle}">
+                <iconPacks:FontAwesome Kind="CheckSolid" />
+            </Button>
         </StackPanel>
         <DataGrid
             Grid.Row="1"
@@ -55,12 +58,8 @@
                     Header="End" />
                 <DataGridTextColumn
                     Width="150"
-                    Binding="{Binding Activated, Converter={StaticResource BooleanToYesNoConverter}}"
-                    Header="Activated" />
-                <DataGridTextColumn
-                    Width="150"
-                    Binding="{Binding InvitationSent, Converter={StaticResource BooleanToYesNoConverter}}"
-                    Header="Invitation sent" />
+                    Binding="{Binding State}"
+                    Header="State" />
             </DataGrid.Columns>
         </DataGrid>
         <mah:ProgressRing Grid.RowSpan="2" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />

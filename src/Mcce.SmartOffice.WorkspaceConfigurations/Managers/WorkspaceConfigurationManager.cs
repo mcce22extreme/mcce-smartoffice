@@ -51,7 +51,12 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
         {
             var currentUser = _contextAccessor.GetUserInfo();
 
-            return await GetWorkspaceConfigurationByUserName(workspaceNumber, currentUser.UserName);
+            var configuration = await _dbContext.WorkspaceConfigurations
+                .FirstOrDefaultAsync(x => x.UserName == currentUser.UserName && x.WorkspaceNumber == workspaceNumber);
+
+            return configuration == null
+                ? throw new NotFoundException($"Could not find configuration for user '{currentUser.UserName}' and workspace '{workspaceNumber}'!")
+                : _mapper.Map<WorkspaceConfigurationModel>(configuration);
         }
 
         public async Task<WorkspaceConfigurationModel> GetWorkspaceConfigurationByUserName(string workspaceNumber, string userName)
@@ -59,9 +64,7 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
             var configuration = await _dbContext.WorkspaceConfigurations
                 .FirstOrDefaultAsync(x => x.UserName == userName && x.WorkspaceNumber == workspaceNumber);
 
-            return configuration == null
-                ? throw new NotFoundException($"Could not find configuration for user '{userName}' and workspace '{workspaceNumber}'!")
-                : _mapper.Map<WorkspaceConfigurationModel>(configuration);
+            return configuration == null ? null : _mapper.Map<WorkspaceConfigurationModel>(configuration);
         }
 
         public async Task<WorkspaceConfigurationModel> SaveWorkspaceConfiguration(string workspaceNumber, SaveWorkspaceConfigurationModel model)
@@ -71,7 +74,7 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
             var configuration = await _dbContext.WorkspaceConfigurations
                 .FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber && x.UserName == currentUser.UserName);
 
-            if(configuration == null)
+            if (configuration == null)
             {
                 configuration = new WorkspaceConfiguration
                 {

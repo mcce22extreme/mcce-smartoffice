@@ -27,7 +27,7 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations
 
             var config = await workspaceConfigurationManager.GetWorkspaceConfigurationByUserName(bookingInfo.WorkspaceNumber, bookingInfo.UserName);
 
-            if(config != null)
+            if (config != null)
             {
                 await _messageService.Publish(string.Format(MessageTopics.TOPIC_WORKSPACE_ACTIVATE_WORKSPACECONFIGURATION, bookingInfo.WorkspaceNumber), new
                 {
