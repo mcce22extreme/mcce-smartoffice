@@ -7,7 +7,5 @@ namespace Mcce.SmartOffice.Core.Configs
         public DbType DatabaseType { get; set; }
 
         public string ConnectionString { get; set; }
-
-        public string DatabaseName { get; set; }
     }
 }

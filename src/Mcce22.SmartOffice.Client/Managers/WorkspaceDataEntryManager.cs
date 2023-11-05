@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Mcce22.SmartOffice.Client.Models;
@@ -8,7 +9,7 @@ namespace Mcce22.SmartOffice.Client.Managers
 {
     public interface IWorkspaceDataEntryManager
     {
-        Task<WorkspaceDataModel[]> GetList(string workspaceNumber);
+        Task<WorkspaceDataModel[]> GetList(string workspaceNumber, DateTime? startDate, DateTime? endDate);
 
         Task<WorkspaceDataModel> Save(WorkspaceDataModel model);
 
@@ -22,9 +23,28 @@ namespace Mcce22.SmartOffice.Client.Managers
         {
         }
 
-        public async Task<WorkspaceDataModel[]> GetList(string workspaceNumber)
-        {
-            var json = await HttpClient.GetStringAsync($"{BaseUrl}/{workspaceNumber}");
+        public async Task<WorkspaceDataModel[]> GetList(string workspaceNumber, DateTime? startDate, DateTime? endDate)
+        {           
+            var queryString = string.Empty;
+
+            if(startDate.HasValue)
+            {
+                queryString = $"startDate={startDate:s}";
+            }
+
+            if(endDate.HasValue)
+            {
+                if(!string.IsNullOrEmpty(queryString))
+                {
+                    queryString += "&";
+                }
+
+                queryString += $"endDate={endDate:s}";
+            }
+
+            var url = $"{BaseUrl}/{workspaceNumber}" + (string.IsNullOrEmpty(queryString) ? string.Empty : $"?{queryString}");
+
+            var json = await HttpClient.GetStringAsync(url);
 
             var entries = JsonConvert.DeserializeObject<WorkspaceDataModel[]>(json);
 

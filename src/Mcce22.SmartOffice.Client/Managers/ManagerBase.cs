@@ -30,7 +30,7 @@ namespace Mcce22.SmartOffice.Client.Managers
 
         public virtual async Task<T> Save(T model)
         {
-            if (string.IsNullOrEmpty(model.Identifier))
+            if (model.Id == 0)
             {
                 var response = await HttpClient.PostAsJsonAsync(BaseUrl, model);
 
@@ -40,13 +40,31 @@ namespace Mcce22.SmartOffice.Client.Managers
             }
             else
             {
-                var response = await HttpClient.PutAsJsonAsync($"{BaseUrl}/{model.Identifier}", model);
+                var response = await HttpClient.PutAsJsonAsync($"{BaseUrl}/{model.Id}", model);
 
                 await EnsureSuccessStatusCode(response);
 
                 return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
             }
         }
+
+        //public virtual async Task<T> Create(T model)
+        //{
+        //    var response = await HttpClient.PostAsJsonAsync(BaseUrl, model);
+
+        //    await EnsureSuccessStatusCode(response);
+
+        //    return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+        //}
+
+        //public virtual async Task<T> Update(T model)
+        //{
+        //    var response = await HttpClient.PutAsJsonAsync($"{BaseUrl}/{model.Identifier}", model);
+
+        //    await EnsureSuccessStatusCode(response);
+
+        //    return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+        //}
 
         public async Task Delete(string identifier)
         {

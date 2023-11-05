@@ -75,7 +75,6 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
             {
                 configuration = new WorkspaceConfiguration
                 {
-                    ConfigurationNumber = $"{workspaceNumber}-{currentUser.UserName}",
                     WorkspaceNumber = workspaceNumber,
                     UserName = currentUser.UserName,
                 };

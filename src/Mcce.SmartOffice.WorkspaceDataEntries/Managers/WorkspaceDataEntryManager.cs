@@ -35,11 +35,21 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
         public async Task<WorkspaceDataEntryModel[]> GetWorkspaceDataEntries(string workspaceNumber, DateTime? startDate, DateTime? endDate)
         {
             var entryQuery = _dbContext.WorkspaceDataEntries
-                .Where(x => x.WorkspaceNumber ==  workspaceNumber)
-                .OrderByDescending(x => x.Timestamp)
-                .AsQueryable();
+                .Where(x => x.WorkspaceNumber ==  workspaceNumber);                
 
-            var workspaceData = await entryQuery.ToListAsync();
+            if (startDate.HasValue)
+            {
+                entryQuery = entryQuery.Where(x => x.Timestamp >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                entryQuery = entryQuery.Where(x => x.Timestamp <= endDate.Value);
+            }
+
+            var workspaceData = await entryQuery
+                .OrderByDescending(x => x.Timestamp)
+                .ToListAsync();
 
             return workspaceData
                 .Select(_mapper.Map<WorkspaceDataEntryModel>)
@@ -50,7 +60,6 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
         {
             var entry = _mapper.Map<WorkspaceDataEntry>(model);
 
-            entry.EntryId = Guid.NewGuid().ToString();
             entry.WorkspaceNumber = workspaceNumber;
             entry.Wei = _weiGenerator.GenerateWei(entry.Temperature, entry.Humidity, entry.Co2Level);
 
@@ -74,16 +83,20 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Managers
 
         public async Task DeleteWorkspaceDataEntries(string workspaceNumber)
         {
-            var entries = await _dbContext.WorkspaceDataEntries
+            await _dbContext.WorkspaceDataEntries
                 .Where(x => x.WorkspaceNumber == workspaceNumber)
-                .ToListAsync();
+                .ExecuteDeleteAsync();
 
-            foreach (var entry in entries)
-            {
-                _dbContext.WorkspaceDataEntries.Remove(entry);
-            }
+            //var entries = await _dbContext.WorkspaceDataEntries
+            //    .Where(x => x.WorkspaceNumber == workspaceNumber)
+            //    .ToListAsync();
 
-            await _dbContext.SaveChangesAsync();
+            //foreach (var entry in entries)
+            //{
+            //    _dbContext.WorkspaceDataEntries.Remove(entry);
+            //}
+
+            //await _dbContext.SaveChangesAsync();
         }
     }
 }

@@ -1,9 +1,7 @@
 ﻿namespace Mcce22.SmartOffice.Client.Models
 {
-    public class UserModel : IModel
+    public class UserModel : ModelBase
     {
-        public string Identifier { get { return UserName; } }
-
         public bool IsAdmin { get; set; }
 
         public bool IsEnabled { get; set; }

@@ -11,7 +11,7 @@ namespace Mcce.SmartOffice.Bookings
     {
         protected override void OnConfigureBuilder(WebApplicationBuilder builder)
         {
-            builder.Services.AddDbContext<AppDbContext>(AppConfig.DbConfig);
+            builder.Services.AddDbContext<AppDbContext>(AppConfig.DbConfig, AppDbContext.DATABASE_SCHEMA);
 
             builder.Services.AddScoped<IBookingManager>(s => new BookingManager(
                 AppConfig.FrontendUrl?.TrimEnd('/'),

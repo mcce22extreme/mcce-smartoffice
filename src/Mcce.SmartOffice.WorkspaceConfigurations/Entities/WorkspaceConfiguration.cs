@@ -5,9 +5,6 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Entities
 {
     public class WorkspaceConfiguration : AuditableEntityBase
     {
-        [Key]
-        public string ConfigurationNumber { get; set; }
-
         [Required]
         public long DeskHeight { get; set; }
 

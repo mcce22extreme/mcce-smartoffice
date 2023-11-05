@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -13,7 +12,6 @@ namespace Mcce22.SmartOffice.Client.ViewModels
     {
         private readonly IWorkspaceConfigurationManager _workspaceConfigurationManager;
         private readonly IWorkspaceManager _workspaceManager;
-
         private readonly string _workspaceNumber;
 
         [ObservableProperty]
@@ -47,7 +45,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
             _workspaceNumber = model.WorkspaceNumber;
 
             Title = "Edit workspace configuration";
-            DeskHeight = model.DeskHeight;            
+            DeskHeight = model.DeskHeight;
         }
 
         public override async void Load()
@@ -62,7 +60,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
                 Workspaces = new ObservableCollection<WorkspaceModel>(workspaces.Where(x => !lookup.Contains(x.WorkspaceNumber)));
 
-                SelectedWorkspace =  string.IsNullOrEmpty(_workspaceNumber) ? null : workspaces.FirstOrDefault(x => x.WorkspaceNumber == _workspaceNumber);
+                SelectedWorkspace = string.IsNullOrEmpty(_workspaceNumber) ? null : workspaces.FirstOrDefault(x => x.WorkspaceNumber == _workspaceNumber);
             }
             finally
             {
@@ -77,11 +75,13 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
         protected override async Task OnSave()
         {
-            await _workspaceConfigurationManager.Save(new WorkspaceConfigurationModel
+            var model = new WorkspaceConfigurationModel
             {
                 DeskHeight = DeskHeight,
                 WorkspaceNumber = SelectedWorkspace.WorkspaceNumber
-            });
+            };
+
+            await _workspaceConfigurationManager.Save(model);
         }
     }
 }

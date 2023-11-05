@@ -6,6 +6,8 @@ namespace Mcce.SmartOffice.Bookings
 {
     public class AppDbContext : AppDbContextBase
     {
+        internal const string DATABASE_SCHEMA = "sobo";
+
         public DbSet<Booking> Bookings { get; set; }
 
         public AppDbContext(DbContextOptions options, IHttpContextAccessor contextAccessor)
@@ -15,10 +17,9 @@ namespace Mcce.SmartOffice.Bookings
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasDefaultSchema(DATABASE_SCHEMA);
+
             modelBuilder.Entity<Booking>()
-                .HasPartitionKey(x => x.WorkspaceNumber)
-                .HasNoDiscriminator()
-                .ToContainer(nameof(Bookings))
                 .HasIndex(x => x.BookingNumber)
                 .IsUnique();
             ;

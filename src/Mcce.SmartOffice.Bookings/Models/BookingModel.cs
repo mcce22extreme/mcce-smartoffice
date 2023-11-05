@@ -19,7 +19,5 @@ namespace Mcce.SmartOffice.Bookings.Models
         public string WorkspaceNumber { get; set; }
 
         public bool Activated { get; set; }
-
-        public bool InvitationSent { get; set; }
     }
 }

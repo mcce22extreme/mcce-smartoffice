@@ -5,6 +5,8 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries
 {
     public class AppDbContext : DbContext
     {
+        internal const string DATABASE_SCHEMA = "sowd";
+
         public DbSet<WorkspaceDataEntry> WorkspaceDataEntries { get; set; }
 
         public AppDbContext(DbContextOptions options)
@@ -14,10 +16,7 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<WorkspaceDataEntry>()
-                .HasPartitionKey(x => x.EntryId)
-                .HasNoDiscriminator()
-                .ToContainer(nameof(WorkspaceDataEntries));
+            modelBuilder.HasDefaultSchema(DATABASE_SCHEMA);
 
             modelBuilder.Entity<WorkspaceDataEntry>()
                 .HasIndex(x => x.WorkspaceNumber);

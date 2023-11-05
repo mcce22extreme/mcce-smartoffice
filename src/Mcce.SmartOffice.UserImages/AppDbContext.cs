@@ -5,6 +5,8 @@ namespace Mcce.SmartOffice.UserImages
 {
     public class AppDbContext : DbContext
     {
+        internal const string DATABASE_SCHEMA = "soui";
+
         public DbSet<UserImage> UserImages { get; set; }
 
         public AppDbContext(DbContextOptions options)
@@ -14,10 +16,7 @@ namespace Mcce.SmartOffice.UserImages
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserImage>()
-                .HasPartitionKey(x => x.UserName)
-                .HasNoDiscriminator()
-                .ToContainer(nameof(UserImages));
+            modelBuilder.HasDefaultSchema(DATABASE_SCHEMA);
         }
     }
 }

@@ -20,6 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Serilog;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 
 namespace Mcce.SmartOffice.Core
 {
@@ -92,6 +93,7 @@ namespace Mcce.SmartOffice.Core
 
             builder.WebHost.UseUrls(AppConfig.BaseAddress);
 
+
             // Configure logging
             builder.Services.AddLogging(cfg =>
             {
@@ -105,7 +107,7 @@ namespace Mcce.SmartOffice.Core
                 opt.Filters.Add(new AuthorizeFilter(AuthConstants.APP_ROLE_USERS));
                 opt.Filters.Add(new TypeFilterAttribute(typeof(OperationLoggerAttribute)));
                 opt.Filters.Add(new TypeFilterAttribute(typeof(OperationValidatorAttribute)));
-            });
+            }).AddNewtonsoftJson();
 
             // Configure cors
             if (AppConfig.CorsConfig != null)
@@ -181,7 +183,7 @@ namespace Mcce.SmartOffice.Core
 
             builder.Services.AddSingleton<IAppInfo>(appInfo);
 
-            builder.Services.AddSingleton(AppConfig);
+            builder.Services.AddSingleton<IAppConfig>(AppConfig);
 
             builder.Services.AddSingleton<IValidationProvider, ValidationProvider>();
 

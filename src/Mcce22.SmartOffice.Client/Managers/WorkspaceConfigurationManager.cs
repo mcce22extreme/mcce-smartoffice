@@ -24,7 +24,16 @@ namespace Mcce22.SmartOffice.Client.Managers
 
         public override async Task<WorkspaceConfigurationModel> Save(WorkspaceConfigurationModel model)
         {
-            var response = await HttpClient.PostAsJsonAsync($"{BaseUrl}/{model.WorkspaceNumber}", model);
+            HttpResponseMessage response;
+
+            if (model.Id == 0)
+            {
+                response = await HttpClient.PostAsJsonAsync($"{BaseUrl}/{model.WorkspaceNumber}", model);
+            }
+            else
+            {
+                response = await HttpClient.PutAsJsonAsync($"{BaseUrl}/{model.WorkspaceNumber}", model);
+            }
 
             await EnsureSuccessStatusCode(response);
 

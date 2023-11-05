@@ -122,7 +122,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanCreateBooking))]
-        private async void CreateBooking()
+        private async Task CreateBooking()
         {
             try
             {

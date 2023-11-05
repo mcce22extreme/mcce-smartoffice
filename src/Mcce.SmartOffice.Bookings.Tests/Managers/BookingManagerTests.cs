@@ -19,7 +19,9 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
                 StartDateTime = DateTime.UtcNow,
                 EndDateTime = DateTime.UtcNow.AddHours(1),
                 WorkspaceNumber = Make.String(),
-                UserName = Make.String()
+                UserName = Make.String(),
+                FirstName = Make.String(),
+                LastName = Make.String(),
             };
         }
 
@@ -63,7 +65,6 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
                 Assert.That(otherBooking.WorkspaceNumber, Is.EqualTo(expectedBooking.WorkspaceNumber));
                 Assert.That(otherBooking.UserName, Is.EqualTo(expectedBooking.UserName));
                 Assert.That(otherBooking.Activated, Is.False);
-                Assert.That(otherBooking.InvitationSent, Is.False);
             }
         }
 
@@ -77,6 +78,9 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
                     WorkspaceNumber = Make.String(),
                     StartDateTime = DateTime.Now,
                     EndDateTime = DateTime.Now.AddHours(1),
+                    UserName = Make.String(),
+                    FirstName = Make.String(),
+                    LastName = Make.String(),
                 };
 
                 var testCaseData = new List<TestCaseData>
@@ -86,7 +90,7 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
                     {
                         WorkspaceNumber = booking.WorkspaceNumber,
                         StartDateTime = booking.StartDateTime,
-                        EndDateTime = booking.EndDateTime
+                        EndDateTime = booking.EndDateTime,
                     }, true),
 
                     // Starts before buts ends within -> collision
