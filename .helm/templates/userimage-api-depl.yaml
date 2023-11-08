@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.userimageApi.appName }}-depl
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.userimageApi.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.userimageApi.appName }}
+    spec:
+      containers:
+        - name: {{ .Values.userimageApi.appName }}
+          image: "{{ .Values.userimageApi.image.name }}:{{ .Values.userimageApi.image.tag }}"
+          imagePullPolicy: Always
+          env:
+            - name: SMARTOFFICE_BASEADDRESS
+              value: http://{{ .Values.userimageApi.appName }}-clusterip-srv:8080
+            - name: SMARTOFFICE_STORAGEPATH
+              value: /mnt/userimages
+            {{ if eq .Values.deployment "azure" }}
+            - name: SMARTOFFICE_APPCONFIGURL            
+              value: {{ .Values.configUrl }}
+            {{ else if eq .Values.deployment "local"}}
+            - name: SMARTOFFICE_FRONTENDURL
+              value: {{ .Values.userimageApi.frontendUrl }}            
+            - name: SMARTOFFICE_AUTHCONFIG__AUTHURL
+              value: {{ .Values.authConfig.authUrl }}
+            - name: SMARTOFFICE_AUTHCONFIG__CLIENTID
+              value: {{ .Values.authConfig.clientId }}              
+            - name: SMARTOFFICE_DBCONFIG__DATABASETYPE
+              value: {{ .Values.dbConfig.databaseType }}
+            - name: SMARTOFFICE_MQTTCONFIG__HOSTNAME
+              value: {{ .Values.mqttConfig.hostname }}
+            - name: SMARTOFFICE_MQTTCONFIG__PORT
+              value: "{{ .Values.mqttConfig.port }}"
+            - name: SMARTOFFICE_MQTTCONFIG__USERNAME
+              value: {{ .Values.mqttConfig.username }}
+            - name: SMARTOFFICE_MQTTCONFIG__PASSWORD
+              value: {{ .Values.mqttConfig.password }}                
+            {{ end }}              
+          resources:
+            requests:
+              memory: {{ .Values.resources.requests.memory }}
+              cpu: {{ .Values.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.resources.limits.memory }}
+              cpu: {{ .Values.resources.limits.cpu }}
+          volumeMounts:
+            - name: userimage-storage
+              mountPath: /mnt/userimages
+      volumes:
+        {{ if eq .Values.deployment "azure" }}      
+        - name: userimage-storage
+          csi:
+            driver: file.csi.azure.com
+            readOnly: false
+            volumeAttributes:
+              secretName: {{ .Values.userimageApi.secretName }}
+              shareName: {{ .Values.userimageApi.shareName }}
+              mountOptions: "dir_mode=0777,file_mode=0777,cache=strict,actimeo=30,nosharesock"
+        {{ else if eq .Values.deployment "local"}}
+        - name: userimage-storage
+          hostPath:
+            path: {{ .Values.userimageApi.storagePath }}
+            type: Directory
+        {{ end }}              
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.userimageApi.appName }}-clusterip-srv
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Values.userimageApi.appName }}
+  ports:
+    - name: {{ .Values.userimageApi.appName }}
+      protocol: TCP
+      port: 80
+      targetPort: 8080
