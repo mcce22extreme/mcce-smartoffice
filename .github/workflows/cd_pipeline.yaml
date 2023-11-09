@@ -1,8 +1,11 @@
 name: CD Pipeline
 
-on:
-  release:
-    types: [published]
+on: push
+
+# on:
+#   push:
+#     branches:
+#       - develop
 
 jobs:
   build:
@@ -15,14 +18,17 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
+
       - name: "Docker Login"
         uses: azure/docker-login@v1
         with:
           login-server: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}
           username: ${{ secrets.AZURE_AD_CLIENT_ID }}
           password: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
       - name: Build apigateway docker image
         uses: docker/build-push-action@v5
         with:
@@ -30,6 +36,7 @@ jobs:
           push: true
           tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-apigateway:${{ github.sha }}
           file: src/Mcce.SmartOffice.ApiGateway/Dockerfile
+
       - name: Build account api docker image
         uses: docker/build-push-action@v5
         with:
@@ -37,6 +44,7 @@ jobs:
           push: true
           tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-account-api:${{ github.sha }}
           file: src/Mcce.SmartOffice.Accounts/Dockerfile
+
       - name: Build user image api docker image
         uses: docker/build-push-action@v5
         with:
@@ -44,6 +52,7 @@ jobs:
           push: true
           tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-userimage-api:${{ github.sha }}
           file: src/Mcce.SmartOffice.UserImages/Dockerfile
+
       - name: Build workspace api docker image
         uses: docker/build-push-action@v5
         with:
@@ -51,6 +60,7 @@ jobs:
           push: true
           tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-workspace-api:${{ github.sha }}
           file: src/Mcce.SmartOffice.Workspaces/Dockerfile
+
       - name: Build workspace configuration api docker image
         uses: docker/build-push-action@v5
         with:
@@ -58,6 +68,7 @@ jobs:
           push: true
           tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-workspaceconfiguration-api:${{ github.sha }}
           file: src/Mcce.SmartOffice.WorkspaceConfigurations/Dockerfile
+
       - name: Build workspace configuration api docker image
         uses: docker/build-push-action@v5
         with:
@@ -65,6 +76,7 @@ jobs:
           push: true
           tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-workspacedataentry-api:${{ github.sha }}
           file: src/Mcce.SmartOffice.WorkspaceDataEntries/Dockerfile
+
       - name: Build booking api docker image
         uses: docker/build-push-action@v5
         with:
@@ -72,3 +84,55 @@ jobs:
           push: true
           tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-booking-api:${{ github.sha }}
           file: src/Mcce.SmartOffice.Bookings/Dockerfile
+
+  deploy:
+    name: "Deploy"
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: azure/aks-set-context@v3
+        with:
+          resource-group: ${{ vars.AZURE_RESOURCEGROUP_NAME }}
+          cluster-name: ${{ vars.AZURE_CLUSTER_NAME }}
+
+      # - name: Initialize aks context
+      #   uses: Azure/aks-set-context@v3
+      #   with:
+      #     creds: ${{ secrets.AZURE_CREDENTIALS }}
+      #     cluster-name: ${{ vars.AZURE_CLUSTER_NAME }}
+      #     resource-group: ${{ vars.AZURE_RESOURCEGROUP_NAME }}
+
+      - name: Install helm
+        uses: azure/setup-helm@v3
+
+      - name: Deploy nginx
+        shell: bash
+        run: |
+          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+          helm repo update
+          helm upgrade ingress-nginx ingress-nginx/ingress-nginx --install --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --set controller.replicaCount=1 --create-namespace --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-dns-label-name"="${{ vars.SMARTOFFICE_API_DNS_LABEL }}"
+
+      - name: Deploy certmanager
+        shell: bash
+        run: |
+          helm repo add jetstack https://charts.jetstack.io
+          helm repo update
+          helm upgrade cert-manager jetstack/cert-manager --install --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --create-namespace --version v1.7.1 --set installCRDs=false --set nodeSelector."kubernetes\.io/os"=linux
+
+      - name: Deploy mosquitto
+        shell: bash
+        run: |
+          helm repo add t3n https://storage.googleapis.com/t3n-helm-charts
+          helm upgrade mosquitto t3n/mosquitto --version 2.4.1 --install --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --create-namespace --set service.type=LoadBalancer --set 'authentication.passwordEntries=${{ secrets.MOSQUITTO_PASSWORD }}' --set 'service.annotations.service\.beta\.kubernetes\.io/azure-dns-label-name=${{ vars.SMARTOFFICE_MOSQUITTO_DNS_LABEL }}'
+
+      - name: Deploy smartoffice
+        shell: bash
+        run: |
+          helm upgrade smartoffice .helm/ --install --values .helm/values.azure.yaml --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --create-namespace --set configUrl=${{ vars.SMARTOFFICE_CONFIG_URL }}

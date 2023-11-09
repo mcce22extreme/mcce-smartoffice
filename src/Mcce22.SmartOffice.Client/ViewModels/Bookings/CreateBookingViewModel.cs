@@ -14,7 +14,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         private readonly IWorkspaceManager _workspaceManager;
         private readonly IBookingManager _bookingManager;
 
-        private List<BookingModel> _allBookings = new List<BookingModel>();
+        private List<BookingModel> _allBookings = new();
 
         [ObservableProperty]
         private DateTime _startDateTime;
@@ -74,7 +74,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
 
                 Workspaces = new List<WorkspaceModel>(workspaces);
 
-                UpdateAvailability();
+                await UpdateAvailability();
             }
             finally
             {
@@ -88,7 +88,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanUpdateAvailability))]
-        private async void UpdateAvailability()
+        private async Task UpdateAvailability()
         {
             try
             {
@@ -140,7 +140,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
                 IsBusy = false;
             }
 
-            UpdateAvailability();
+            await UpdateAvailability();
         }
 
         private void UpdateBookings()
