@@ -41,7 +41,7 @@ namespace Mcce22.SmartOffice.Client.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanSave))]
-        protected async void Save()
+        protected async Task Save()
         {
             if (CanSave())
             {
