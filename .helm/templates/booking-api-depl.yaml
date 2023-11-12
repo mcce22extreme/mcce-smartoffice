@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: {{ .Values.bookingApi.appName }}
-          image: "{{ .Values.bookingApi.image.name }}:{{ .Values.bookingApi.image.tag }}"
+          image: "{{ .Values.registryName }}/{{ .Values.bookingApi.image.name }}:{{ .Values.bookingApi.image.tag }}"
           imagePullPolicy: Always
           env:
             - name: SMARTOFFICE_BASEADDRESS
