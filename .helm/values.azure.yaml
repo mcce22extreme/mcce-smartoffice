@@ -2,7 +2,7 @@ namespace: smartoffice
 
 deployment: azure
 
-configUrl: https://cfg-smartoffice-6z6i.azconfig.io
+configUrl: https://cfg-smartoffice-xlbt.azconfig.io
 
 registryName: acrsmartofficexlbt.azurecr.io
 
