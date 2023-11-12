@@ -259,7 +259,7 @@ spec:
         spec:
             containers:
                 - name: {{ .Values.apiGateway.appName }}
-                  image: "{{ .Values.registryName }}/{{ .Values.apiGateway.image.name }}:{{ .Values.apiGateway.image.tag }}"
+                  image: "{{ .Values.registryName }}/{{ .Values.apiGateway.image.name }}:{{ .Values.imageTag }}"
                   imagePullPolicy: Always
                   resources:
                     requests:

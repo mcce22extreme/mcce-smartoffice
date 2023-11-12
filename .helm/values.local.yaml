@@ -4,6 +4,8 @@ namespace: smartoffice
 
 registryName: "domih"
 
+imageTag: latest
+
 dbConfig:
   databaseType: "InMemory"
 

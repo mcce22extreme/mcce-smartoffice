@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: {{ .Values.workspacedataentryApi.appName }}
-          image: "{{ .Values.registryName }}/{{ .Values.workspacedataentryApi.image.name }}:{{ .Values.workspacedataentryApi.image.tag }}"
+          image: "{{ .Values.registryName }}/{{ .Values.workspacedataentryApi.image.name }}:{{ .Values.imageTag }}"
           imagePullPolicy: Always
           env:
             - name: SMARTOFFICE_BASEADDRESS
