@@ -25,7 +25,6 @@ data:
                     "UpstreamPathTemplate": "/userimage"
                 },
                 {
-                    "Priority": 1,
                     "DownstreamHostAndPorts": [
                         {
                             "Host": "userimage-api-clusterip-srv",
@@ -40,7 +39,7 @@ data:
                 },
                 // User Images Version
                 {
-                    "Priority": 2,
+                    "Priority": 99,
                     "DownstreamHostAndPorts": [
                         {
                             "Host": "userimage-api-clusterip-srv",
@@ -82,6 +81,7 @@ data:
                 },
                 // Workspaces Version
                 {
+                    "Priority": 99,
                     "DownstreamHostAndPorts": [
                         {
                             "Host": "workspace-api-clusterip-srv",
@@ -123,6 +123,7 @@ data:
                 },
                 // Workspace Configurations Version
                 {
+                    "Priority": 99,
                     "DownstreamHostAndPorts": [
                         {
                             "Host": "workspaceconfiguration-api-clusterip-srv",
@@ -164,6 +165,7 @@ data:
                 },
                 // Bookings Version
                 {
+                    "Priority": 99,
                     "DownstreamHostAndPorts": [
                         {
                             "Host": "booking-api-clusterip-srv",
@@ -205,6 +207,7 @@ data:
                 },
                 // Workspace Data Entries Version
                 {
+                    "Priority": 99,
                     "DownstreamHostAndPorts": [
                         {
                             "Host": "workspacedataentry-api-clusterip-srv",
@@ -233,6 +236,7 @@ data:
                 },
                 // Accounts Version
                 {
+                    "Priority": 99,
                     "DownstreamHostAndPorts": [
                         {
                             "Host": "account-api-clusterip-srv",
