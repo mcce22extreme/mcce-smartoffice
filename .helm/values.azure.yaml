@@ -2,7 +2,11 @@ namespace: smartoffice
 
 deployment: azure
 
-configUrl: https://cfg-smartoffice-6z6i.azconfig.io
+configUrl: https://cfg-smartoffice-xlbt.azconfig.io
+
+registryName: acrsmartofficexlbt.azurecr.io
+
+imageTag: latest
 
 resources:
   requests:
@@ -15,44 +19,37 @@ resources:
 accountApi:
   appName: account-api
   image:
-    name: acrsmartoffice5ssa.azurecr.io/mcce-smart-office-account-api
-    tag: latest
+    name: mcce-smart-office-account-api
 
 apiGateway:
   appName: apigateway
   dnsLabel: smartoffice-mcce22extreme
   image:
-    name: acrsmartoffice5ssa.azurecr.io/mcce-smart-office-apigateway
-    tag: latest
+    name: mcce-smart-office-apigateway
 
 bookingApi:
   appName: booking-api
   image:
-    name: acrsmartoffice5ssa.azurecr.io/mcce-smart-office-booking-api
-    tag: latest
+    name: mcce-smart-office-booking-api
 
 userimageApi:
   appName: userimage-api
   image:
-    name: acrsmartoffice5ssa.azurecr.io/mcce-smart-office-userimage-api
-    tag: latest
+    name: mcce-smart-office-userimage-api
   shareName: userimages
   secretName: azure-secret
 
 workspaceApi:
   appName: workspace-api
   image:
-    name: acrsmartoffice5ssa.azurecr.io/mcce-smart-office-workspace-api
-    tag: latest
+    name: mcce-smart-office-workspace-api
 
 workspaceconfigurationApi:
   appName: workspaceconfiguration-api
   image:
-    name: acrsmartoffice5ssa.azurecr.io/mcce-smart-office-workspaceconfiguration-api
-    tag: latest
+    name: mcce-smart-office-workspaceconfiguration-api
 
 workspacedataentryApi:
   appName: workspacedataentry-api
   image:
-    name: acrsmartoffice5ssa.azurecr.io/mcce-smart-office-workspacedataentry-api
-    tag: latest
+    name: mcce-smart-office-workspacedataentry-api

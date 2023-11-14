@@ -1,0 +1,87 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net7.0-windows</TargetFramework>
+        <Nullable>disable</Nullable>
+        <UseWPF>true</UseWPF>
+        <ApplicationIcon>Images\icon.ico</ApplicationIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="Certificates\**" />
+        <EmbeddedResource Remove="Certificates\**" />
+        <None Remove="Certificates\**" />
+        <Page Remove="Certificates\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Images\background.png" />
+        <None Remove="Images\desk.png" />
+        <None Remove="Images\desk_legs.png" />
+        <None Remove="Images\icon.png" />
+        <None Remove="Images\leg.png" />
+        <None Remove="Images\smartoffice.png" />
+        <None Remove="Images\workspace.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Images\icon.ico" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CefSharp.Wpf.NETCore" Version="118.6.80" />
+        <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="IdentityModel.OidcClient" Version="5.2.1" />
+        <PackageReference Include="Castle.Windsor" Version="6.0.0" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+        <PackageReference Include="MahApps.Metro" Version="2.4.10" />
+        <PackageReference Include="MahApps.Metro.IconPacks" Version="4.11.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+        <PackageReference Include="MQTTnet" Version="4.3.1.873" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Oocx.ReadX509CertificateFromPem" Version="1.2.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Mcce.SmartOffice.Core\Mcce.SmartOffice.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Resource Include="Images\background.png" />
+        <Resource Include="Images\desk.png" />
+        <Resource Include="Images\desk_legs.png" />
+        <Resource Include="Images\icon.png" />
+        <Resource Include="Images\leg.png" />
+        <Resource Include="Images\smartoffice.png" />
+        <Resource Include="Images\workspace.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="appsettings.MEWTU.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="chromiumembeddedframework.runtime.win-arm64" Version="118.6.8" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="chromiumembeddedframework.runtime.win-x64" Version="118.6.8" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="chromiumembeddedframework.runtime.win-x86" Version="118.6.8" />
+    </ItemGroup>
+
+</Project>
