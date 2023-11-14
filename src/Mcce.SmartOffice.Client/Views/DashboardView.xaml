@@ -7,7 +7,7 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="450"
+    d:DesignHeight="600"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -26,6 +26,7 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -118,6 +119,44 @@
                         VerticalAlignment="Bottom"
                         FontSize="16"
                         Text="User Images" />
+                </Grid>
+            </Button>
+        </StackPanel>
+        <StackPanel
+            Grid.Row="2"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Orientation="Horizontal">
+            <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static enum:NavigationType.MyBookings}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <iconPacks:PackIconFontAwesome
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Width="32"
+                        Height="32"
+                        Kind="CalendarRegular" />
+                    <iconPacks:PackIconFontAwesome
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Width="12"
+                        Height="12"
+                        Margin="10,14,0,0"
+                        Kind="UserAltSolid" />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        FontSize="16"
+                        Text="My Bookings" />
                 </Grid>
             </Button>
         </StackPanel>

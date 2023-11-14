@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using MahApps.Metro.Controls;
+using Mcce.SmartOffice.Client.Enums;
 using Mcce.SmartOffice.Client.Services;
 using Mcce.SmartOffice.Client.ViewModels;
 
@@ -72,9 +73,11 @@ namespace Mcce.SmartOffice.Client
             }
         }
 
-        private void OnItemInvoked(object sender, HamburgerMenuItemInvokedEventArgs args)
+        private async void OnItemInvoked(object sender, HamburgerMenuItemInvokedEventArgs args)
         {
-            HamburgerMenuControl.Content = args.InvokedItem;
+            var item = args.InvokedItem as HamburgerMenuItem;
+
+            await ((MainViewModel)DataContext).ActivateContent((NavigationType)item.Tag);
         }
 
         private void OnOptionsItemInvoked(object sender, ItemClickEventArgs args)

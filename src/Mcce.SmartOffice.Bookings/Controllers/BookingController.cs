@@ -1,5 +1,6 @@
 ﻿using Mcce.SmartOffice.Bookings.Managers;
 using Mcce.SmartOffice.Bookings.Models;
+using Mcce.SmartOffice.Core.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,9 +18,16 @@ namespace Mcce.SmartOffice.Bookings.Controllers
         }
 
         [HttpGet]
-        public async Task<BookingModel[]> GetBookings()
+        public async Task<BookingModel[]> GetBookings(DateTime? startDateTime = null, DateTime? endDateTime = null)
         {
-            return await _bookingManager.GetBookings();
+            return await _bookingManager.GetBookings(startDateTime, endDateTime);
+        }
+
+        [HttpGet("details")]
+        [Authorize(AuthConstants.APP_ROLE_ADMINS)]
+        public async Task<BookingModel[]> GetBookingDetails(bool includeAll = false, DateTime? startDateTime = null, DateTime? endDateTime = null)
+        {
+            return await _bookingManager.GetBookingDetails(includeAll, startDateTime, endDateTime);
         }
 
         [HttpPost]
@@ -35,7 +43,7 @@ namespace Mcce.SmartOffice.Bookings.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("{bookingNumber}/activate")]        
+        [HttpGet("{bookingNumber}/activate")]
         public async Task<IActionResult> ActivateBooking(string bookingNumber)
         {
             await _bookingManager.ActivateBooking(bookingNumber);

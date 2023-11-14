@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace Mcce.SmartOffice.Client.Views
 {
@@ -11,16 +10,6 @@ namespace Mcce.SmartOffice.Client.Views
         public DashboardView()
         {
             InitializeComponent();
-
-            Loaded += OnLoaded;
-        }
-
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    WrapPanel.Children.Add(new CardView());
-            //}
         }
     }
 }

@@ -1,9 +1,15 @@
 ﻿using System.ComponentModel;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Mcce.SmartOffice.Client.ViewModels
 {
-    public partial class ViewModelBase : ObservableObject
+    public interface IViewModel
+    {
+        Task Activate();
+    }
+
+    public partial class ViewModelBase : ObservableObject, IViewModel
     {
         [ObservableProperty]
         private bool _isBusy;
@@ -17,6 +23,11 @@ namespace Mcce.SmartOffice.Client.ViewModels
 
         protected virtual void UpdateCommandStates()
         {
+        }
+
+        public virtual Task Activate()
+        {
+            return Task.CompletedTask;
         }
     }
 }
