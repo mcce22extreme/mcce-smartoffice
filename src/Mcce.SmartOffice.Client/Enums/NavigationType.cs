@@ -8,6 +8,7 @@
         UserImages,
         Workspaces,
         Bookings,
+        MyBookings,
         WorkspaceData,
         SeedData,
     }

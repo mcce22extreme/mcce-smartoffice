@@ -48,24 +48,6 @@ namespace Mcce.SmartOffice.Client.Managers
             }
         }
 
-        //public virtual async Task<T> Create(T model)
-        //{
-        //    var response = await HttpClient.PostAsJsonAsync(BaseUrl, model);
-
-        //    await EnsureSuccessStatusCode(response);
-
-        //    return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
-        //}
-
-        //public virtual async Task<T> Update(T model)
-        //{
-        //    var response = await HttpClient.PutAsJsonAsync($"{BaseUrl}/{model.Identifier}", model);
-
-        //    await EnsureSuccessStatusCode(response);
-
-        //    return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
-        //}
-
         public async Task Delete(string identifier)
         {
             await EnsureSuccessStatusCode(await HttpClient.DeleteAsync($"{BaseUrl}/{identifier}"));

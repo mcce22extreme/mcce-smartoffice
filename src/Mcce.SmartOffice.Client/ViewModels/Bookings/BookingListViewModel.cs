@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -14,6 +15,9 @@ namespace Mcce.SmartOffice.Client.ViewModels
 
         [ObservableProperty]
         private bool _isAdmin;
+
+        [ObservableProperty]
+        private bool _onlyMyBookings;
 
         public BookingListViewModel(
             IBookingManager bookingManager,
@@ -52,7 +56,22 @@ namespace Mcce.SmartOffice.Client.ViewModels
 
         protected override async Task<BookingModel[]> OnReload()
         {
-            return await _bookingManager.GetList();
+            try
+            {
+                if(OnlyMyBookings)
+                {
+                    return await _bookingManager.GetList();
+                }
+                else
+                {
+                    return await _bookingManager.GetDetailList();
+                }                
+            }
+            catch (Exception ex)
+            {
+                await DialogService.ShowDialog(new ErrorViewModel(ex, DialogService));
+                return Array.Empty<BookingModel>();   
+            }
         }
     }
 }

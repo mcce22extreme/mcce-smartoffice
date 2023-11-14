@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:enum="clr-namespace:Mcce.SmartOffice.Client.Enums"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -179,6 +180,7 @@
                 Margin="0"
                 Padding="0"
                 BorderThickness="0"
+                Content="{Binding ActiveContent}"
                 DisplayMode="CompactOverlay"
                 HamburgerWidth="48"
                 IsPaneOpen="False"
@@ -193,40 +195,59 @@
                         <mah:HamburgerMenuIconItem
                             Icon="{iconPacks:FontAwesome Kind=HomeSolid}"
                             Label="Dashboard"
-                            Tag="{Binding Dashboard}" />
+                            Tag="{x:Static enum:NavigationType.Dashboard}" />
                         <mah:HamburgerMenuIconItem
                             Icon="{iconPacks:FontAwesome Kind=CalendarPlusSolid}"
                             Label="Create Booking"
-                            Tag="{Binding CreateBooking}" />
+                            Tag="{x:Static enum:NavigationType.CreateBooking}" />
+                        <mah:HamburgerMenuIconItem Label="My Bookings" Tag="{x:Static enum:NavigationType.MyBookings}">
+                            <mah:HamburgerMenuIconItem.Icon>
+                                <Grid>
+                                    <iconPacks:PackIconFontAwesome
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Width="32"
+                                        Height="32"
+                                        Kind="CalendarRegular" />
+                                    <iconPacks:PackIconFontAwesome
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Width="12"
+                                        Height="12"
+                                        Margin="10,14,0,0"
+                                        Kind="UserAltSolid" />
+                                </Grid>
+                            </mah:HamburgerMenuIconItem.Icon>
+                        </mah:HamburgerMenuIconItem>
                         <mah:HamburgerMenuIconItem
                             Icon="{iconPacks:FontAwesome Kind=UserCogSolid}"
                             Label="Configurations"
-                            Tag="{Binding UserWorkspaceList}" />
+                            Tag="{x:Static enum:NavigationType.UserConfigs}" />
                         <mah:HamburgerMenuIconItem
                             Icon="{iconPacks:FontAwesome Kind=ImagesSolid}"
                             Label="Slideshow"
-                            Tag="{Binding SlideshowItemList}" />
+                            Tag="{x:Static enum:NavigationType.UserImages}" />
                         <mah:HamburgerMenuSeparatorItem />
                         <mah:HamburgerMenuIconItem
                             Icon="{iconPacks:FontAwesome Kind=DesktopSolid}"
                             IsVisible="{Binding Login.IsAdmin}"
                             Label="Workspaces"
-                            Tag="{Binding WorkspaceList}" />
+                            Tag="{x:Static enum:NavigationType.Workspaces}" />
                         <mah:HamburgerMenuIconItem
                             Icon="{iconPacks:FontAwesome Kind=CalendarAltSolid}"
                             IsVisible="{Binding Login.IsAdmin}"
                             Label="Bookings"
-                            Tag="{Binding BookingList}" />
+                            Tag="{x:Static enum:NavigationType.Bookings}" />
                         <mah:HamburgerMenuIconItem
                             Icon="{iconPacks:FontAwesome Kind=ChartBarRegular}"
                             IsVisible="{Binding Login.IsAdmin}"
                             Label="Analytics"
-                            Tag="{Binding WorkspaceDataList}" />
+                            Tag="{x:Static enum:NavigationType.WorkspaceData}" />
                         <mah:HamburgerMenuIconItem
                             Icon="{iconPacks:Material Kind=DatabaseRefresh}"
                             IsVisible="{Binding Login.IsAdmin}"
                             Label="Seed Data"
-                            Tag="{Binding SeedData}" />
+                            Tag="{x:Static enum:NavigationType.SeedData}" />
                     </mah:HamburgerMenuItemCollection>
                 </mah:HamburgerMenu.ItemsSource>
                 <mah:HamburgerMenu.OptionsItemsSource>
@@ -239,7 +260,7 @@
                     <DataTemplate>
                         <mah:TransitioningContentControl
                             Grid.Row="1"
-                            Content="{Binding Tag}"
+                            Content="{Binding}"
                             RestartTransitionOnContentChange="True"
                             ScrollViewer.CanContentScroll="True"
                             ScrollViewer.VerticalScrollBarVisibility="Auto"

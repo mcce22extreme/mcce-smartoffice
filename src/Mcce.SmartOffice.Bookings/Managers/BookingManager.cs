@@ -16,7 +16,9 @@ namespace Mcce.SmartOffice.Bookings.Managers
 {
     public interface IBookingManager
     {
-        Task<BookingModel[]> GetBookings();
+        Task<BookingModel[]> GetBookings(DateTime? startDateTime = null, DateTime? endDateTime = null);
+
+        Task<BookingDetail[]> GetBookingDetails(bool includeAll = false, DateTime? startDateTime = null, DateTime? endDateTime = null);
 
         Task<BookingModel> GetBooking(string bookingNumber);
 
@@ -57,14 +59,59 @@ namespace Mcce.SmartOffice.Bookings.Managers
             _messageService = messageService;
         }
 
-        public async Task<BookingModel[]> GetBookings()
+        public async Task<BookingModel[]> GetBookings(DateTime? startDateTime = null, DateTime? endDateTime = null)
         {
             var bookingsQuery = _dbContext.Bookings
                 .OrderBy(x => x.StartDateTime)
                 .AsQueryable();
 
+            if (startDateTime.HasValue)
+            {
+                bookingsQuery = bookingsQuery.Where(x => x.StartDateTime >= startDateTime.Value);
+            }
+
+            if (endDateTime.HasValue)
+            {
+                bookingsQuery = bookingsQuery.Where(x => x.EndDateTime <= endDateTime.Value);
+            }
+
             var bookings = await bookingsQuery
                 .ProjectTo<BookingModel>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            return bookings.ToArray();
+        }
+
+        public async Task<BookingDetail[]> GetBookingDetails(bool includeAll = false, DateTime? startDateTime = null, DateTime? endDateTime = null)
+        {
+            var currentUser = _contextAccessor.GetUserInfo();
+
+            var bookingsQuery = _dbContext.Bookings
+                .OrderBy(x => x.StartDateTime)
+                .AsQueryable();
+
+            if (includeAll && !currentUser.IsAdmin)
+            {
+                throw new ForbiddenException("You are not authorized to perform this action!");
+            }
+
+            if (!includeAll)
+            {
+                bookingsQuery = bookingsQuery.Where(x => x.UserName == currentUser.UserName);
+            }
+
+            if (startDateTime.HasValue)
+            {
+                bookingsQuery = bookingsQuery.Where(x => x.StartDateTime >= startDateTime.Value);
+            }
+
+            if (endDateTime.HasValue)
+            {
+                bookingsQuery = bookingsQuery.Where(x => x.EndDateTime <= endDateTime.Value);
+            }
+
+            var bookings = await bookingsQuery
+                .ProjectTo<BookingDetail>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
             return bookings.ToArray();
