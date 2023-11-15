@@ -4,6 +4,10 @@ deployment: azure
 
 configUrl: https://cfg-smartoffice-xlbt.azconfig.io
 
+authConfig:
+  authUrl: https://keycloak.gruber.info:8943
+  clientId: smartoffice
+
 registryName: acrsmartofficexlbt.azurecr.io
 
 imageTag: latest
@@ -53,3 +57,7 @@ workspacedataentryApi:
   appName: workspacedataentry-api
   image:
     name: mcce-smart-office-workspacedataentry-api
+
+webapp:
+  appName: webapp
+  image: tederer/apeni-smartoffice-web-app:0.33.0
