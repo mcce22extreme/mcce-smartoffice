@@ -10,14 +10,14 @@ dbConfig:
   databaseType: "InMemory"
 
 authConfig:
-  authUrl: https://<hostname>:<port>/realms/<realm>
+  authUrl: https://{server}:{port}/realms/{realm}
   clientId: smartoffice
 
 mqttConfig:
   hostname: localhost
   port: 1883
   username: iot
-  password: <password>
+  password: { password }
 
 resources:
   requests:
@@ -73,3 +73,7 @@ workspacedataentryApi:
   image:
     name: mcce-smart-office-workspacedataentry-api
     tag: latest
+
+webapp:
+  appName: webapp
+  image: tederer/apeni-smartoffice-web-app:0.33.0

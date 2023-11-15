@@ -9,7 +9,32 @@ data:
     appsettings.json: |
         {
             "BaseAddress":"http://{{ .Values.apiGateway.appName }}-clusterip-srv:8080",
-            "Routes": [             
+            "Routes": [
+                // Web App
+                {
+                    "DownstreamHostAndPorts": [
+                        {
+                            "Host": "webapp-clusterip-srv",
+                            "Port": 80
+                        }
+                    ],
+                    "DownstreamPathTemplate": "/",
+                    "DownstreamScheme": "http",
+                    "UpstreamHttpMethod": [ "POST", "GET", "OPTIONS" ],
+                    "UpstreamPathTemplate": "/"
+                },
+                {
+                    "DownstreamHostAndPorts": [
+                        {
+                            "Host": "webapp-clusterip-srv",
+                            "Port": 80
+                        }
+                    ],
+                    "DownstreamPathTemplate": "/{everything}",
+                    "DownstreamScheme": "http",
+                    "UpstreamHttpMethod": [ "POST", "GET", "OPTIONS" ],
+                    "UpstreamPathTemplate": "/{everything}"
+                },                                      
                 // User Images
                 {
                     "DownstreamHostAndPorts": [
@@ -254,9 +279,9 @@ data:
                 "MinimumLevel": {
                     "Default": "Debug",
                     "Override": {
-                        "Microsoft": "Error",
-                        "Ocelot": "Error",
-                        "System": "Error"
+                        "Microsoft": "Debug",
+                        "Ocelot": "Debug",
+                        "System": "Debug"
                     }
                 },
                 "WriteTo": [
@@ -467,6 +492,6 @@ spec:
         app: {{ .Values.apiGateway.appName }}
     ports:
         - name: http
-          port: 8686
+          port: 8080
           targetPort: 8080
 {{ end }}              
