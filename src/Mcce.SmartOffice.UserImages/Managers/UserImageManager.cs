@@ -1,5 +1,5 @@
-﻿using Mcce.SmartOffice.Core.Exceptions;
-using Mcce.SmartOffice.Core.Extensions;
+﻿using Mcce.SmartOffice.Core.Accessors;
+using Mcce.SmartOffice.Core.Exceptions;
 using Mcce.SmartOffice.UserImages.Entities;
 using Mcce.SmartOffice.UserImages.Models;
 using Mcce.SmartOffice.UserImages.Services;
@@ -24,10 +24,10 @@ namespace Mcce.SmartOffice.UserImages.Managers
     {
         private readonly string _frontendUrl;
         private readonly AppDbContext _dbContext;
-        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IAuthContextAccessor _contextAccessor;
         private readonly IStorageService _storageService;
 
-        public UserImageManager(string frontendUrl, AppDbContext dbContext, IHttpContextAccessor contextAccessor, IStorageService storageService)
+        public UserImageManager(string frontendUrl, AppDbContext dbContext, IAuthContextAccessor contextAccessor, IStorageService storageService)
         {
             _frontendUrl = frontendUrl;
             _dbContext = dbContext;

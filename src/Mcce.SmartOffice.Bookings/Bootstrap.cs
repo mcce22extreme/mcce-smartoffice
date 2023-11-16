@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Mcce.SmartOffice.Bookings.Managers;
 using Mcce.SmartOffice.Core;
+using Mcce.SmartOffice.Core.Accessors;
 using Mcce.SmartOffice.Core.Configs;
 using Mcce.SmartOffice.Core.Extensions;
 using Mcce.SmartOffice.Core.Services;
@@ -17,7 +18,7 @@ namespace Mcce.SmartOffice.Bookings
                 AppConfig.FrontendUrl?.TrimEnd('/'),
                 s.GetRequiredService<AppDbContext>(),
                 s.GetRequiredService<IMapper>(),
-                s.GetRequiredService<IHttpContextAccessor>(),
+                s.GetRequiredService<IAuthContextAccessor>(),
                 s.GetRequiredService<IMessageService>()));
         }
 

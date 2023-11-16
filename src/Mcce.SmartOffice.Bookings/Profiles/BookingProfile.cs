@@ -10,8 +10,6 @@ namespace Mcce.SmartOffice.Bookings.Profiles
         {
             CreateMap<Booking, BookingModel>();
 
-            CreateMap<Booking, BookingDetail>();
-
             CreateMap<SaveBookingModel, Booking>();
         }
     }

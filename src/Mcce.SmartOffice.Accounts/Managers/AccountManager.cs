@@ -1,4 +1,4 @@
-﻿using Mcce.SmartOffice.Core.Extensions;
+﻿using Mcce.SmartOffice.Core.Accessors;
 using Mcce.SmartOffice.Core.Models;
 
 namespace Mcce.SmartOffice.Accounts.Managers
@@ -10,11 +10,11 @@ namespace Mcce.SmartOffice.Accounts.Managers
 
     public class AccountManager : IAccountManager
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthContextAccessor _httpContextAccessor;
 
-        public AccountManager(IHttpContextAccessor httpContextAccessor)
+        public AccountManager(IAuthContextAccessor contextAccessor)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _httpContextAccessor = contextAccessor;
         }
 
         public Task<UserInfoModel> GetAccountInfo()

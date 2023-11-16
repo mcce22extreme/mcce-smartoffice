@@ -77,7 +77,10 @@ namespace Mcce.SmartOffice.Client
         {
             var item = args.InvokedItem as HamburgerMenuItem;
 
-            await ((MainViewModel)DataContext).ActivateContent((NavigationType)item.Tag);
+            if (item.Tag != null)
+            {
+                await ((MainViewModel)DataContext).ActivateContent((NavigationType)item.Tag);
+            }            
         }
 
         private void OnOptionsItemInvoked(object sender, ItemClickEventArgs args)

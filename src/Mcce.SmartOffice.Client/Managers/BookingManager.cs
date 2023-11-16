@@ -9,10 +9,9 @@ namespace Mcce.SmartOffice.Client.Managers
 {
     public interface IBookingManager
     {
+        Task<BookingModel[]> GetMyBookings();
 
         Task<BookingModel[]> GetList();
-
-        Task<BookingModel[]> GetDetailList();
 
         Task<BookingModel> Save(BookingModel booking);
 
@@ -30,14 +29,14 @@ namespace Mcce.SmartOffice.Client.Managers
         {
         }
 
-        public async Task<BookingModel[]> GetDetailList()
+        public async Task<BookingModel[]> GetMyBookings()
         {
-            var json = await HttpClient.GetStringAsync($"{BaseUrl}/details");
+            var json = await HttpClient.GetStringAsync($"{BaseUrl}?onlyMyBookings=true");
 
             var bookings = JsonConvert.DeserializeObject<BookingModel[]>(json);
 
             return bookings;
-        }
+        }        
 
         public async Task ActivateBooking(string bookingNumber)
         {
@@ -50,5 +49,7 @@ namespace Mcce.SmartOffice.Client.Managers
 
             return result;
         }
+
+
     }
 }

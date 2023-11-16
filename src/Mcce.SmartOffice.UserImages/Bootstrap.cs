@@ -1,4 +1,5 @@
 ﻿using Mcce.SmartOffice.Core;
+using Mcce.SmartOffice.Core.Accessors;
 using Mcce.SmartOffice.Core.Extensions;
 using Mcce.SmartOffice.UserImages.Configs;
 using Mcce.SmartOffice.UserImages.Managers;
@@ -15,7 +16,7 @@ namespace Mcce.SmartOffice.UserImages
             builder.Services.AddScoped<IUserImageManager>(s => new UserImageManager(
                 AppConfig.FrontendUrl?.TrimEnd('/'),
                 s.GetRequiredService<AppDbContext>(),
-                s.GetRequiredService<IHttpContextAccessor>(),
+                s.GetRequiredService<IAuthContextAccessor>(),
                 s.GetRequiredService<IStorageService>()));
 
             builder.Services.AddScoped<IStorageService, FileSystemStorageService>(s => new FileSystemStorageService(AppConfig.StoragePath));

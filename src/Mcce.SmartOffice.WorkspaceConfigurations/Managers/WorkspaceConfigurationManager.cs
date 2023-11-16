@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Mcce.SmartOffice.Core.Accessors;
 using Mcce.SmartOffice.Core.Exceptions;
 using Mcce.SmartOffice.Core.Extensions;
 using Mcce.SmartOffice.WorkspaceConfigurations.Entities;
@@ -24,9 +25,9 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
     {
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IAuthContextAccessor _contextAccessor;
 
-        public WorkspaceConfigurationManager(AppDbContext dbContext, IMapper mapper, IHttpContextAccessor contextAccessor)
+        public WorkspaceConfigurationManager(AppDbContext dbContext, IMapper mapper, IAuthContextAccessor contextAccessor)
         {
             _dbContext = dbContext;
             _mapper = mapper;

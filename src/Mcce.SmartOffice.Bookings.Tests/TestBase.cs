@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FakeItEasy;
 using Mcce.SmartOffice.Bookings.Entities;
+using Mcce.SmartOffice.Core.Accessors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,24 +24,6 @@ namespace Mcce.SmartOffice.Bookings.Tests
             Mapper = config.CreateMapper();
         }
 
-        public TestBase()
-        {
-            //var dbOptionsBuilder = new DbContextOptionsBuilder();
-
-            //dbOptionsBuilder.UseInMemoryDatabase("smartoffice");
-
-            //DbContext = new AppDbContext(dbOptionsBuilder.Options, A.Fake<IHttpContextAccessor>());
-        }
-
-        //private AppDbContext CreateDbContext()
-        //{
-        //    var dbOptionsBuilder = new DbContextOptionsBuilder();
-
-        //    dbOptionsBuilder.UseInMemoryDatabase("smartoffice");
-
-        //    return new AppDbContext(dbOptionsBuilder.Options, A.Fake<IHttpContextAccessor>());
-        //}
-
         [SetUp]
         public void Setup()
         {
@@ -48,7 +31,7 @@ namespace Mcce.SmartOffice.Bookings.Tests
 
             dbOptionsBuilder.UseInMemoryDatabase("smartoffice");
 
-            DbContext = new AppDbContext(dbOptionsBuilder.Options, A.Fake<IHttpContextAccessor>());
+            DbContext = new AppDbContext(dbOptionsBuilder.Options, A.Fake<IAuthContextAccessor>());
         }
 
         [TearDown]
