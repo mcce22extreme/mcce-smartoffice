@@ -128,7 +128,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="chromiumembeddedframework.runtime.win-x64" Version="118.6.8" />
+    <PackageReference Update="chromiumembeddedframework.runtime.win-x64" Version="119.4.3" />
   </ItemGroup>
 
   <ItemGroup>
