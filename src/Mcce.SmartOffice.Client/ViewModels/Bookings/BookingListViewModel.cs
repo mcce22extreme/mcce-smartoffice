@@ -60,11 +60,11 @@ namespace Mcce.SmartOffice.Client.ViewModels
             {
                 if(OnlyMyBookings)
                 {
-                    return await _bookingManager.GetList();
+                    return await _bookingManager.GetMyBookings();
                 }
                 else
                 {
-                    return await _bookingManager.GetDetailList();
+                    return await _bookingManager.GetList();
                 }                
             }
             catch (Exception ex)

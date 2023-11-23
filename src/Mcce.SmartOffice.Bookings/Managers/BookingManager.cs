@@ -1,13 +1,14 @@
-﻿using AutoMapper;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using FluentValidation;
 using Mcce.SmartOffice.Bookings.Entities;
 using Mcce.SmartOffice.Bookings.Enums;
+using Mcce.SmartOffice.Bookings.Messages;
 using Mcce.SmartOffice.Bookings.Models;
+using Mcce.SmartOffice.Core.Accessors;
 using Mcce.SmartOffice.Core.Constants;
 using Mcce.SmartOffice.Core.Enums;
 using Mcce.SmartOffice.Core.Exceptions;
-using Mcce.SmartOffice.Core.Extensions;
 using Mcce.SmartOffice.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -16,9 +17,7 @@ namespace Mcce.SmartOffice.Bookings.Managers
 {
     public interface IBookingManager
     {
-        Task<BookingModel[]> GetBookings(DateTime? startDateTime = null, DateTime? endDateTime = null);
-
-        Task<BookingDetail[]> GetBookingDetails(bool includeAll = false, DateTime? startDateTime = null, DateTime? endDateTime = null);
+        Task<BookingModel[]> GetBookings(bool onlyMyBookings = false, DateTime? startDateTime = null, DateTime? endDateTime = null);
 
         Task<BookingModel> GetBooking(string bookingNumber);
 
@@ -42,14 +41,14 @@ namespace Mcce.SmartOffice.Bookings.Managers
         private readonly string _frontendUrl;
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IAuthContextAccessor _contextAccessor;
         private readonly IMessageService _messageService;
 
         public BookingManager(
             string frontendUrl,
             AppDbContext dbContext,
             IMapper mapper,
-            IHttpContextAccessor contextAccessor,
+            IAuthContextAccessor contextAccessor,
             IMessageService messageService)
         {
             _frontendUrl = frontendUrl;
@@ -59,30 +58,7 @@ namespace Mcce.SmartOffice.Bookings.Managers
             _messageService = messageService;
         }
 
-        public async Task<BookingModel[]> GetBookings(DateTime? startDateTime = null, DateTime? endDateTime = null)
-        {
-            var bookingsQuery = _dbContext.Bookings
-                .OrderBy(x => x.StartDateTime)
-                .AsQueryable();
-
-            if (startDateTime.HasValue)
-            {
-                bookingsQuery = bookingsQuery.Where(x => x.StartDateTime >= startDateTime.Value);
-            }
-
-            if (endDateTime.HasValue)
-            {
-                bookingsQuery = bookingsQuery.Where(x => x.EndDateTime <= endDateTime.Value);
-            }
-
-            var bookings = await bookingsQuery
-                .ProjectTo<BookingModel>(_mapper.ConfigurationProvider)
-                .ToListAsync();
-
-            return bookings.ToArray();
-        }
-
-        public async Task<BookingDetail[]> GetBookingDetails(bool includeAll = false, DateTime? startDateTime = null, DateTime? endDateTime = null)
+        public async Task<BookingModel[]> GetBookings(bool onlyMyBookings = false, DateTime? startDateTime = null, DateTime? endDateTime = null)
         {
             var currentUser = _contextAccessor.GetUserInfo();
 
@@ -90,16 +66,6 @@ namespace Mcce.SmartOffice.Bookings.Managers
                 .OrderBy(x => x.StartDateTime)
                 .AsQueryable();
 
-            if (includeAll && !currentUser.IsAdmin)
-            {
-                throw new ForbiddenException("You are not authorized to perform this action!");
-            }
-
-            if (!includeAll)
-            {
-                bookingsQuery = bookingsQuery.Where(x => x.UserName == currentUser.UserName);
-            }
-
             if (startDateTime.HasValue)
             {
                 bookingsQuery = bookingsQuery.Where(x => x.StartDateTime >= startDateTime.Value);
@@ -110,20 +76,41 @@ namespace Mcce.SmartOffice.Bookings.Managers
                 bookingsQuery = bookingsQuery.Where(x => x.EndDateTime <= endDateTime.Value);
             }
 
+            if (onlyMyBookings == true)
+            {
+                bookingsQuery = bookingsQuery.Where(x => x.UserName == currentUser.UserName);
+            }
+
             var bookings = await bookingsQuery
-                .ProjectTo<BookingDetail>(_mapper.ConfigurationProvider)
+                .ProjectTo<BookingModel>(_mapper.ConfigurationProvider)
                 .ToListAsync();
+
+            // Suppress user information for other users if user is not admin
+            if (!currentUser.IsAdmin)
+            {
+                foreach (var booking in bookings.Where(x => x.UserName != currentUser.UserName))
+                {
+                    booking.UserName = booking.FirstName = booking.LastName = booking.Creator = booking.Modifier = null;
+                }
+            }
 
             return bookings.ToArray();
         }
 
         public async Task<BookingModel> GetBooking(string bookingNumber)
         {
+            var currentUser = _contextAccessor.GetUserInfo();
+
             var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.BookingNumber == bookingNumber);
 
             if (booking == null)
             {
                 throw new NotFoundException($"Could not find booking '{bookingNumber}'.");
+            }
+
+            if (!currentUser.IsAdmin && booking.UserName != currentUser.UserName)
+            {
+                throw new ForbiddenException("You are not allowed to perform this action!");
             }
 
             return _mapper.Map<BookingModel>(booking);
@@ -174,10 +161,17 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
         public async Task DeleteBooking(string bookingNumber)
         {
+            var currentUser = _contextAccessor.GetUserInfo();
+
             var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.BookingNumber == bookingNumber);
 
             if (booking != null)
             {
+                if (!currentUser.IsAdmin && booking.UserName != currentUser.UserName)
+                {
+                    throw new ForbiddenException("You are not allowed to perform this action!");
+                }
+
                 _dbContext.Bookings.Remove(booking);
 
                 await _dbContext.SaveChangesAsync();
@@ -191,20 +185,6 @@ namespace Mcce.SmartOffice.Bookings.Managers
                     x.WorkspaceNumber == workspaceNumber &&
                     startDateTime < x.EndDateTime &&
                     endDateTime > x.StartDateTime);
-
-            //var booksing = await _dbContext.Bookings
-            //    .Any(x => x.WorkspaceNumber == workspaceNumber && startDateTime < x.EndDateTime && endDateTime > x.StartDateTime)
-            //    .Select(x => new
-            //    {
-            //        x.StartDateTime,
-            //        x.EndDateTime
-            //    })
-            //    .ToListAsync();
-
-
-            //var hasCollision = booksing.Any(x => startDateTime < x.EndDateTime && endDateTime > x.StartDateTime);
-
-            //return hasCollision;
         }
 
         private string GenerateBookingNumber()
@@ -232,7 +212,7 @@ namespace Mcce.SmartOffice.Bookings.Managers
                 throw new NotFoundException($"Could not find booking '{bookingNumber}'.");
             }
 
-            if (booking.State != BookingState.Confirmed || booking.State == BookingState.Activated)
+            if (booking.State != BookingState.Confirmed && booking.State != BookingState.Activated)
             {
                 throw new ValidationException($"The booking '{booking.BookingNumber}' has not yet been confirmed and therefore cannot be activated!");
             }
@@ -241,12 +221,9 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
             await _dbContext.SaveChangesAsync();
 
-            await _messageService.Publish(MessageTopics.TOPIC_BOOKING_ACTIVATED.Replace("{0}", booking.UserName), new
-            {
-                booking.UserName,
-                booking.WorkspaceNumber,
-            });
-            ;
+            await _messageService.Publish(
+                MessageTopics.TOPIC_BOOKING_ACTIVATED.Replace("{0}", booking.UserName),
+                new BookingActivatedMessage(booking.BookingNumber, booking.WorkspaceNumber, booking.UserName));
         }
 
         public async Task<BookingModel> ConfirmBooking(string bookingNumber)
@@ -299,6 +276,5 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
             return await GetBooking(bookingNumber);
         }
-
     }
 }

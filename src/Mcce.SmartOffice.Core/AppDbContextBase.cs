@@ -1,4 +1,5 @@
-﻿using Mcce.SmartOffice.Core.Entities;
+﻿using Mcce.SmartOffice.Core.Accessors;
+using Mcce.SmartOffice.Core.Entities;
 using Mcce.SmartOffice.Core.Enums;
 using Mcce.SmartOffice.Core.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -8,9 +9,9 @@ namespace Mcce.SmartOffice.Core
 {
     public abstract class AppDbContextBase : DbContext
     {
-        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IAuthContextAccessor _contextAccessor;
 
-        public AppDbContextBase(DbContextOptions options, IHttpContextAccessor contextAccessor)
+        public AppDbContextBase(DbContextOptions options, IAuthContextAccessor contextAccessor)
             : base(options)
         {
             _contextAccessor = contextAccessor;

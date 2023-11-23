@@ -1,6 +1,7 @@
 using System.Reflection;
 using Azure.Identity;
 using FluentValidation;
+using Mcce.SmartOffice.Core.Accessors;
 using Mcce.SmartOffice.Core.Attributes;
 using Mcce.SmartOffice.Core.Configs;
 using Mcce.SmartOffice.Core.Constants;
@@ -106,7 +107,10 @@ namespace Mcce.SmartOffice.Core
                 opt.Filters.Add(new AuthorizeFilter(AuthConstants.APP_ROLE_USERS));
                 opt.Filters.Add(new TypeFilterAttribute(typeof(OperationLoggerAttribute)));
                 opt.Filters.Add(new TypeFilterAttribute(typeof(OperationValidatorAttribute)));
-            }).AddNewtonsoftJson();
+            }).AddNewtonsoftJson(opt =>
+            {
+                opt.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            });
 
             // Configure cors
             if (AppConfig.CorsConfig != null)
@@ -179,6 +183,8 @@ namespace Mcce.SmartOffice.Core
             });
 
             builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddSingleton<IAuthContextAccessor, AuthContextAccessor>();
 
             builder.Services.AddSingleton<IAppInfo>(appInfo);
 
