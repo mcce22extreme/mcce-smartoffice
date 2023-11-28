@@ -39,6 +39,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcce.SmartOffice.Client", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcce.SmartOffice.Simulator", "src\Mcce.SmartOffice.Simulator\Mcce.SmartOffice.Simulator.csproj", "{7C115EC6-1D85-4A40-9DB8-3432B63A802C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mcce.SmartOffice.MobileApp", "src\Mcce.SmartOffice.MobileApp\Mcce.SmartOffice.MobileApp.csproj", "{4EB0C503-FF99-427F-B175-C3F822F04C79}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -181,6 +183,24 @@ Global
 		{7C115EC6-1D85-4A40-9DB8-3432B63A802C}.Release|x64.Build.0 = Release|Any CPU
 		{7C115EC6-1D85-4A40-9DB8-3432B63A802C}.Release|x86.ActiveCfg = Release|Any CPU
 		{7C115EC6-1D85-4A40-9DB8-3432B63A802C}.Release|x86.Build.0 = Release|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Debug|x64.Build.0 = Debug|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Debug|x64.Deploy.0 = Debug|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Debug|x86.Build.0 = Debug|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Debug|x86.Deploy.0 = Debug|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Release|x64.ActiveCfg = Release|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Release|x64.Build.0 = Release|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Release|x64.Deploy.0 = Release|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Release|x86.ActiveCfg = Release|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Release|x86.Build.0 = Release|Any CPU
+		{4EB0C503-FF99-427F-B175-C3F822F04C79}.Release|x86.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -197,6 +217,7 @@ Global
 		{AEBC5B83-C6AF-498F-930B-3EAC24BB5580} = {5805A17B-151A-4474-81DE-FF214703BBDB}
 		{C0838A9F-A49A-457D-B376-32C1ACBF21D6} = {9D747313-CB04-4C7F-95BE-4083BE7A893A}
 		{7C115EC6-1D85-4A40-9DB8-3432B63A802C} = {9D747313-CB04-4C7F-95BE-4083BE7A893A}
+		{4EB0C503-FF99-427F-B175-C3F822F04C79} = {9D747313-CB04-4C7F-95BE-4083BE7A893A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6B4406B8-0A6E-4D84-9828-BCF8BDD1781C}

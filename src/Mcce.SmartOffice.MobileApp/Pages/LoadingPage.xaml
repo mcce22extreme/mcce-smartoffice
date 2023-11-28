@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mcce.SmartOffice.MobileApp.Pages.LoadingPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="The Smart Office"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarIsVisible="True">
+    <ScrollView>
+        <VerticalStackLayout Padding="30,0" Spacing="10">
+            <Image
+                Margin="50"
+                HeightRequest="200"
+                Source="/Resources/Images/logo512.png"
+                WidthRequest="200" />
+            <Label
+                FontAttributes="Bold"
+                FontSize="30"
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center"
+                Text="Welcome"
+                TextColor="{DynamicResource PrimaryDark}" />
+            <Label
+                FontAttributes="Bold"
+                FontSize="30"
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center"
+                Text="to the Smart Office!"
+                TextColor="{DynamicResource PrimaryDark}" />
+            <ActivityIndicator
+                Grid.Row="4"
+                IsRunning="True"
+                WidthRequest="64" />
+            <Label
+                Grid.Row="5"
+                HorizontalOptions="Center"
+                Text="Checking authentication state..." />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
