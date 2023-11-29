@@ -27,4 +27,12 @@
         Icon="{mi:Fluent Icon=Home48,
                          IconColor=#ac99ea}"
         Route="MainPage" />
+
+    <ShellContent
+        Title="My Bookings"
+        ContentTemplate="{DataTemplate pages:MyBookingsPage}"
+        Icon="{mi:Fluent Icon=CalendarPerson24,
+                         IconColor=#ac99ea}"
+        Route="MyBookingsPage"
+        Shell.FlyoutBehavior="Flyout" />
 </Shell>

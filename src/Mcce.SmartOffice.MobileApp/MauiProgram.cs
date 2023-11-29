@@ -39,7 +39,7 @@ namespace Mcce.SmartOffice.MobileApp
                 ClientId = "smartoffice",
                 Scope = "openid profile",
                 RedirectUri = "smartofficemobileapp://callback",
-                PostLogoutRedirectUri = "smartofficemobileapp://",
+                PostLogoutRedirectUri = "smartofficemobileapp://callback",
                 Browser = sp.GetRequiredService<WebAuthenticatorBrowser>()
             }));
 
@@ -55,6 +55,8 @@ namespace Mcce.SmartOffice.MobileApp
 
             builder.Services.AddSingleton<IAccountManager, AccountManager>();
 
+            builder.Services.AddSingleton<IBookingManager, BookingManager>();
+
             builder.Services.AddTransient<LoadingPage>();
 
             builder.Services.AddTransient<LoadingViewModel>();
@@ -68,6 +70,10 @@ namespace Mcce.SmartOffice.MobileApp
             builder.Services.AddTransient<MainPage>();
 
             builder.Services.AddTransient<MainViewModel>();
+
+            builder.Services.AddTransient<MyBookingsPage>();
+
+            builder.Services.AddTransient<MyBookingsViewModel>();
 
             return builder.Build();
         }

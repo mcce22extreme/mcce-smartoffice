@@ -35,11 +35,22 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         }
 
         [RelayCommand]
+        private async Task MyBookings()
+        {
+            await Shell.Current.GoToAsync($"{nameof(MyBookingsPage)}");
+        }
+
+        [RelayCommand]
         public async Task SignOut()
         {
-            await _authService.SignOut();
+            var result = await Application.Current.MainPage.DisplayAlert("Sign Out?", "Do you really want to sign out?", "Yes", "No");
 
-            await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+            if (result)
+            {
+                await _authService.SignOut();
+
+                await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+            }
         }
     }
 }

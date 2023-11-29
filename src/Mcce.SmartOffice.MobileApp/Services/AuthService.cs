@@ -1,4 +1,5 @@
 ﻿using IdentityModel.OidcClient;
+using IdentityModel.OidcClient.Browser;
 
 namespace Mcce.SmartOffice.MobileApp.Services
 {
@@ -39,6 +40,7 @@ namespace Mcce.SmartOffice.MobileApp.Services
                     return false;
                 }
 
+                await _secureStorage.SetAsync(Constants.IDENTITY_TOKEN, loginResult.IdentityToken);
                 await _secureStorage.SetAsync(Constants.ACCESS_TOKEN, loginResult.AccessToken);
 
                 return true;
@@ -50,11 +52,18 @@ namespace Mcce.SmartOffice.MobileApp.Services
             }
         }
 
-        public Task SignOut()
+        public async Task SignOut()
         {
+            var identityToken = await _secureStorage.GetAsync(Constants.IDENTITY_TOKEN);
+
+            _secureStorage.Remove(Constants.IDENTITY_TOKEN);
             _secureStorage.Remove(Constants.ACCESS_TOKEN);
 
-            return Task.CompletedTask;
+            await _client.LogoutAsync(new LogoutRequest
+            {
+                IdTokenHint = identityToken,
+                BrowserDisplayMode = DisplayMode.Hidden
+            });
         }
     }
 }
