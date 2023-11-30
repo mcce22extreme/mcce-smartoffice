@@ -8,21 +8,25 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem
             Command="{Binding LoadBookingsCommand}"
-            IconImageSource="{mi:Fluent Icon=ArrowSync24}"
+            IconImageSource="{mi:Fluent Icon=ArrowSync24,
+                                        IconColor=White}"
             Text="Sync" />
         <ToolbarItem
             Command="{Binding CancelBookingCommand}"
             IconImageSource="{mi:Fluent Icon=Delete48,
-                                        IconColor=#861B2D}"
+                                        IconColor=White}"
             Text="Sync" />
     </ContentPage.ToolbarItems>
     <!--<VerticalStackLayout>-->
     <Grid VerticalOptions="Fill">
-        <ListView ItemsSource="{Binding Bookings}" SelectedItem="{Binding SelectedBooking}">
+        <ListView
+            ItemsSource="{Binding Bookings}"
+            RowHeight="60"
+            SelectedItem="{Binding SelectedBooking}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <Grid>
+                        <Grid VerticalOptions="Center">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition />
@@ -33,18 +37,20 @@
                             </Grid.ColumnDefinitions>
                             <Label
                                 Grid.Row="0"
-                                Margin="10,5,0,3"
+                                Margin="5,5,0,3"
                                 FontAttributes="Bold"
-                                FontSize="15"
+                                FontSize="16"
                                 Text="{Binding BookingTitle}"
-                                TextColor="{DynamicResource PrimaryDark}" />
+                                TextColor="{AppThemeBinding Light={DynamicResource ListItemColorLight},
+                                                            Dark={DynamicResource ListItemColorDark}}" />
                             <Label
                                 Grid.Row="1"
-                                Margin="10,0,0,3"
+                                Margin="5,0,0,3"
                                 FontAttributes="Bold"
-                                FontSize="10"
+                                FontSize="12"
                                 Text="{Binding BookingSubTitle}"
-                                TextColor="{DynamicResource PrimaryDark}" />
+                                TextColor="{AppThemeBinding Light={DynamicResource ListItemColorLight},
+                                                            Dark={DynamicResource ListItemColorDark}}" />
                             <!--<Button
                                 Grid.RowSpan="2"
                                 Grid.Column="1"

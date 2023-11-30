@@ -6,8 +6,9 @@
     xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
     xmlns:pages="clr-namespace:Mcce.SmartOffice.MobileApp.Pages"
     Title="The Smart Office"
-    Shell.BackgroundColor="#333"
-    Shell.FlyoutBehavior="Flyout">
+    Shell.BackgroundColor="{DynamicResource Primary}"
+    Shell.FlyoutBehavior="Flyout"
+    Shell.TitleColor="{DynamicResource White}">
 
     <ShellContent
         Title="Home"
@@ -31,7 +32,7 @@
     <ShellContent
         Title="My Bookings"
         ContentTemplate="{DataTemplate pages:MyBookingsPage}"
-        Icon="{mi:Fluent Icon=CalendarPerson24,
+        Icon="{mi:Fluent Icon=CalendarLtr48,
                          IconColor=#ac99ea}"
         Route="MyBookingsPage"
         Shell.FlyoutBehavior="Flyout" />

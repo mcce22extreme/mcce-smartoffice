@@ -15,8 +15,8 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="110" />
+                <RowDefinition Height="110" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
@@ -36,74 +36,74 @@
                 HorizontalOptions="Center"
                 HorizontalTextAlignment="Center"
                 Text="The Smart Office"
-                TextColor="{DynamicResource PrimaryDark}" />
+                TextColor="{DynamicResource Primary}" />
             <Button
                 Grid.Row="2"
                 Grid.Column="0"
                 Margin="5,5,0,5"
-                Background="#333"
+                Background="{DynamicResource Primary}"
                 ContentLayout="Top"
                 FontAttributes="Bold"
-                HeightRequest="120"
+                FontSize="13"
                 ImageSource="{mi:Fluent Icon=CalendarAdd16,
-                                        IconColor=#444,
-                                        IconSize=60}"
+                                        IconColor=White,
+                                        IconSize=50}"
                 Text="New Booking"
-                TextColor="#444" />
+                TextColor="White" />
             <Button
                 Grid.Row="2"
                 Grid.Column="1"
                 Margin="5,5,0,5"
-                Background="#333"
+                Background="{DynamicResource Primary}"
                 Command="{Binding MyBookingsCommand}"
                 ContentLayout="Top"
                 FontAttributes="Bold"
-                HeightRequest="120"
+                FontSize="13"
                 ImageSource="{mi:Fluent Icon=CalendarLtr48,
-                                        IconColor=#ac99ea,
-                                        IconSize=60}"
+                                        IconColor=White,
+                                        IconSize=50}"
                 Text="My Bookings"
-                TextColor="{DynamicResource PrimaryDark}" />
+                TextColor="White" />
             <Button
                 Grid.Row="2"
                 Grid.Column="2"
                 Margin="5,5,5,5"
-                Background="#333"
+                Background="{DynamicResource Primary}"
                 ContentLayout="Top"
                 FontAttributes="Bold"
-                HeightRequest="120"
+                FontSize="13"
                 ImageSource="{mi:Fluent Icon=Image32,
-                                        IconColor=#444,
-                                        IconSize=60}"
+                                        IconColor=White,
+                                        IconSize=50}"
                 Text="My Images"
-                TextColor="#444" />
+                TextColor="White" />
             <Button
                 Grid.Row="3"
                 Grid.Column="0"
                 Margin="5,0,0,5"
-                Background="#333"
+                Background="{DynamicResource Primary}"
                 ContentLayout="Top"
                 FontAttributes="Bold"
-                HeightRequest="120"
+                FontSize="13"
                 ImageSource="{mi:Fluent Icon=ContentSettings32,
-                                        IconColor=#444,
-                                        IconSize=60}"
+                                        IconColor=White,
+                                        IconSize=50}"
                 Text="My Configs"
-                TextColor="#444" />
+                TextColor="White" />
             <Button
                 Grid.Row="3"
                 Grid.Column="1"
                 Margin="5,0,0,5"
-                Background="#333"
+                Background="{DynamicResource Primary}"
                 Command="{Binding SignOutCommand}"
                 ContentLayout="Top"
                 FontAttributes="Bold"
-                HeightRequest="120"
+                FontSize="13"
                 ImageSource="{mi:Fluent Icon=SignOut24,
-                                        IconColor=#ac99ea,
-                                        IconSize=60}"
+                                        IconColor=White,
+                                        IconSize=50}"
                 Text="Sign Out"
-                TextColor="{DynamicResource PrimaryDark}" />
+                TextColor="White" />
             <!--<Border
                 Grid.Row="0"
                 Grid.Column="0"

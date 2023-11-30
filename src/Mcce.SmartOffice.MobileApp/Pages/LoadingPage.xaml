@@ -19,14 +19,14 @@
                 HorizontalOptions="Center"
                 HorizontalTextAlignment="Center"
                 Text="Welcome"
-                TextColor="{DynamicResource PrimaryDark}" />
+                TextColor="{DynamicResource Primary}" />
             <Label
                 FontAttributes="Bold"
                 FontSize="30"
                 HorizontalOptions="Center"
                 HorizontalTextAlignment="Center"
                 Text="to the Smart Office!"
-                TextColor="{DynamicResource PrimaryDark}" />
+                TextColor="{DynamicResource Primary}" />
             <ActivityIndicator
                 Grid.Row="4"
                 IsRunning="True"
