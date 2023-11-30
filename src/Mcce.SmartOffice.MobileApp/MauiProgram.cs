@@ -57,6 +57,8 @@ namespace Mcce.SmartOffice.MobileApp
 
             builder.Services.AddSingleton<IBookingManager, BookingManager>();
 
+            builder.Services.AddSingleton<IWorkspaceManager, WorkspaceManager>();
+
             builder.Services.AddTransient<LoadingPage>();
 
             builder.Services.AddTransient<LoadingViewModel>();
@@ -74,6 +76,10 @@ namespace Mcce.SmartOffice.MobileApp
             builder.Services.AddTransient<MyBookingsPage>();
 
             builder.Services.AddTransient<MyBookingsViewModel>();
+
+            builder.Services.AddTransient<CreateBookingPage>();
+
+            builder.Services.AddTransient<CreateBookingViewModel>();
 
             return builder.Build();
         }

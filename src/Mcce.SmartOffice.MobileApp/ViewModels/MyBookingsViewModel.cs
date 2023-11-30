@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Mcce.SmartOffice.MobileApp.Managers;
 using Mcce.SmartOffice.MobileApp.Models;
+using Mcce.SmartOffice.MobileApp.Pages;
 
 namespace Mcce.SmartOffice.MobileApp.ViewModels
 {
@@ -28,8 +29,23 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         {
             base.OnPropertyChanged(e);
 
+            CreateBookingCommand.NotifyCanExecuteChanged();
             LoadBookingsCommand.NotifyCanExecuteChanged();
             CancelBookingCommand.NotifyCanExecuteChanged();
+        }
+
+        [RelayCommand(CanExecute = nameof(CanCreateBooking))]
+        public async Task CreateBooking()
+        {
+            if (CanCreateBooking())
+            {
+                await Shell.Current.GoToAsync($"{nameof(CreateBookingPage)}");
+            }
+        }
+
+        public bool CanCreateBooking()
+        {
+            return !IsBusy;
         }
 
         [RelayCommand(CanExecute = nameof(CanLoadBookings))]

@@ -6,7 +6,7 @@
     xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
     Title="The Smart Office">
     <ScrollView>
-        <Grid Padding="10,0,10,0">
+        <Grid Padding="0,0,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
@@ -15,9 +15,9 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="110" />
-                <RowDefinition Height="110" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="115" />
+                <RowDefinition Height="115" />
+                <RowDefinition Height="115" />
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Image
@@ -42,6 +42,7 @@
                 Grid.Column="0"
                 Margin="5,5,0,5"
                 Background="{DynamicResource Primary}"
+                Command="{Binding CreateBookingCommand}"
                 ContentLayout="Top"
                 FontAttributes="Bold"
                 FontSize="13"
