@@ -3,7 +3,7 @@ using Android.Runtime;
 
 namespace Mcce.SmartOffice.MobileApp
 {
-    [Application]
+    [Application(UsesCleartextTraffic = false, AllowBackup = false)]
     public class MainApplication : MauiApplication
     {
         public MainApplication(IntPtr handle, JniHandleOwnership ownership)
