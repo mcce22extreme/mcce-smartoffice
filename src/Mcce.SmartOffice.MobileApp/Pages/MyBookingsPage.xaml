@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mcce.SmartOffice.MobileApp.Pages.MyBookingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
+    Title="My Bookings">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Command="{Binding LoadBookingsCommand}"
+            IconImageSource="{mi:Fluent Icon=ArrowSync24,
+                                        IconColor=White}"
+            Text="Sync" />
+        <ToolbarItem
+            Command="{Binding CancelBookingCommand}"
+            IconImageSource="{mi:Fluent Icon=Delete48,
+                                        IconColor=White}"
+            Text="Sync" />
+    </ContentPage.ToolbarItems>
+    <!--<VerticalStackLayout>-->
+    <Grid VerticalOptions="Fill">
+        <ListView
+            ItemsSource="{Binding Bookings}"
+            RowHeight="60"
+            SelectedItem="{Binding SelectedBooking}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid VerticalOptions="Center">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Label
+                                Grid.Row="0"
+                                Margin="5,5,0,3"
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="{Binding BookingTitle}"
+                                TextColor="{AppThemeBinding Light={DynamicResource ListItemColorLight},
+                                                            Dark={DynamicResource ListItemColorDark}}" />
+                            <Label
+                                Grid.Row="1"
+                                Margin="5,0,0,3"
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                Text="{Binding BookingSubTitle}"
+                                TextColor="{AppThemeBinding Light={DynamicResource ListItemColorLight},
+                                                            Dark={DynamicResource ListItemColorDark}}" />
+                            <!--<Button
+                                Grid.RowSpan="2"
+                                Grid.Column="1"
+                                Margin="0,3,20,3"
+                                BorderColor="{DynamicResource Primary}"
+                                BorderWidth="1"
+                                HorizontalOptions="End"
+                                IsEnabled="False"
+                                Text="Activate"
+                                WidthRequest="100" />-->
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <ActivityIndicator
+            Grid.Row="4"
+            HorizontalOptions="Center"
+            IsRunning="True"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Center"
+            WidthRequest="64" />
+    </Grid>
+    <!--</VerticalStackLayout>-->
+</ContentPage>
