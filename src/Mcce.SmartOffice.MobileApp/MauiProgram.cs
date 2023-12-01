@@ -59,6 +59,8 @@ namespace Mcce.SmartOffice.MobileApp
 
             builder.Services.AddSingleton<IWorkspaceManager, WorkspaceManager>();
 
+            builder.Services.AddSingleton<IUserImageManager, UserImageManager>();
+
             builder.Services.AddTransient<LoadingPage>();
 
             builder.Services.AddTransient<LoadingViewModel>();
@@ -80,6 +82,10 @@ namespace Mcce.SmartOffice.MobileApp
             builder.Services.AddTransient<CreateBookingPage>();
 
             builder.Services.AddTransient<CreateBookingViewModel>();
+
+            builder.Services.AddTransient<UserImagesPage>();
+
+            builder.Services.AddTransient<UserImagesViewModel>();
 
             return builder.Build();
         }
