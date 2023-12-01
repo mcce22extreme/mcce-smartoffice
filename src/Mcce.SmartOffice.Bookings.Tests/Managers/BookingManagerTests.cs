@@ -83,7 +83,7 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
             {
                 var otherBooking = otherBookings.FirstOrDefault(x => x.BookingNumber == expectedBooking.BookingNumber);
 
-                Assert.IsNotNull(otherBooking);
+                Assert.That(otherBooking, Is.Not.Null);
                 Assert.That(otherBooking.StartDateTime, Is.EqualTo(expectedBooking.StartDateTime));
                 Assert.That(otherBooking.EndDateTime, Is.EqualTo(expectedBooking.EndDateTime));
                 Assert.That(otherBooking.WorkspaceNumber, Is.EqualTo(expectedBooking.WorkspaceNumber));
@@ -128,15 +128,16 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
                 var otherBooking = otherBookings.FirstOrDefault(x => x.BookingNumber == expectedBooking.BookingNumber);
                 var otherUser = users.FirstOrDefault(x => x.UserName == expectedBooking.UserName);
 
-                Assert.IsNotNull(otherBooking);
-                Assert.IsNotNull(otherUser);
+
+                Assert.That(otherBooking, Is.Not.Null);
+                Assert.That(otherUser, Is.Not.Null);
                 Assert.That(otherBooking.StartDateTime, Is.EqualTo(expectedBooking.StartDateTime));
                 Assert.That(otherBooking.EndDateTime, Is.EqualTo(expectedBooking.EndDateTime));
                 Assert.That(otherBooking.WorkspaceNumber, Is.EqualTo(expectedBooking.WorkspaceNumber));
                 Assert.That(otherBooking.State, Is.EqualTo(expectedBooking.State));
-                Assert.IsNull(otherBooking.UserName);
-                Assert.IsNull(otherBooking.FirstName);
-                Assert.IsNull(otherBooking.LastName);
+                Assert.That(otherBooking.UserName, Is.Null);
+                Assert.That(otherBooking.FirstName, Is.Null);
+                Assert.That(otherBooking.LastName, Is.Null);
             }
         }
 
@@ -156,7 +157,7 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
             var manager = new BookingManager(Make.String(), DbContext, Mapper, auchAccessor, A.Fake<IMessageService>());
             var otherBooking = await manager.GetBooking(expectedBooking.BookingNumber);
 
-            Assert.IsNotNull(otherBooking);
+            Assert.That(otherBooking, Is.Not.Null);
             Assert.That(otherBooking.StartDateTime, Is.EqualTo(expectedBooking.StartDateTime));
             Assert.That(otherBooking.EndDateTime, Is.EqualTo(expectedBooking.EndDateTime));
             Assert.That(otherBooking.WorkspaceNumber, Is.EqualTo(expectedBooking.WorkspaceNumber));
@@ -202,7 +203,7 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
             var manager = new BookingManager(Make.String(), DbContext, Mapper, auchAccessor, A.Fake<IMessageService>());
             var otherBooking = await manager.GetBooking(expectedBooking.BookingNumber);
 
-            Assert.IsNotNull(otherBooking);
+            Assert.That(otherBooking, Is.Not.Null);
             Assert.That(otherBooking.StartDateTime, Is.EqualTo(expectedBooking.StartDateTime));
             Assert.That(otherBooking.EndDateTime, Is.EqualTo(expectedBooking.EndDateTime));
             Assert.That(otherBooking.WorkspaceNumber, Is.EqualTo(expectedBooking.WorkspaceNumber));
@@ -333,7 +334,7 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
 
             //Assert
             var otherBooking = await DbContext.Bookings.FirstOrDefaultAsync(x => x.BookingNumber == expectedBooking.BookingNumber);
-            Assert.IsNull(otherBooking);
+            Assert.That(otherBooking, Is.Null);
         }
 
         [Test]
@@ -375,7 +376,7 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
 
             // Assert
             var otherBooking = await DbContext.Bookings.FirstOrDefaultAsync(x => x.BookingNumber == expectedBooking.BookingNumber);
-            Assert.IsNull(otherBooking);
+            Assert.That(otherBooking, Is.Null);
         }
 
         [Test]
