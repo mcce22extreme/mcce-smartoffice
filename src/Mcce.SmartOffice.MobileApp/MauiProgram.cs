@@ -73,9 +73,9 @@ namespace Mcce.SmartOffice.MobileApp
 
             builder.Services.AddTransient<MainViewModel>();
 
-            builder.Services.AddTransient<MyBookingsPage>();
+            builder.Services.AddTransient<BookingsPage>();
 
-            builder.Services.AddTransient<MyBookingsViewModel>();
+            builder.Services.AddTransient<BookingsViewModel>();
 
             builder.Services.AddTransient<CreateBookingPage>();
 

@@ -99,7 +99,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
 
                     HasUnsavedData = false;
 
-                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(MyBookingsPage)}");                    
+                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(BookingsPage)}");                    
                 }
                 catch (Exception ex)
                 {

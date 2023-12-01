@@ -7,7 +7,7 @@ using Mcce.SmartOffice.MobileApp.Pages;
 
 namespace Mcce.SmartOffice.MobileApp.ViewModels
 {
-    public partial class MyBookingsViewModel : ObservableObject
+    public partial class BookingsViewModel : ObservableObject
     {
         private readonly IBookingManager _bookingManager;
 
@@ -20,7 +20,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         [ObservableProperty]
         private bool _isBusy;
 
-        public MyBookingsViewModel(IBookingManager bookingManager)
+        public BookingsViewModel(IBookingManager bookingManager)
         {
             _bookingManager = bookingManager;
         }
@@ -32,6 +32,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             CreateBookingCommand.NotifyCanExecuteChanged();
             LoadBookingsCommand.NotifyCanExecuteChanged();
             CancelBookingCommand.NotifyCanExecuteChanged();
+            ActivateBookingCommand.NotifyCanExecuteChanged();
         }
 
         [RelayCommand(CanExecute = nameof(CanCreateBooking))]
@@ -74,6 +75,35 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             return !IsBusy;
         }
 
+        [RelayCommand(CanExecute = nameof(CanActivateBooking))]
+        public async Task ActivateBooking()
+        {
+            if (CanActivateBooking())
+            {
+                IsBusy = true;
+                try
+                {
+                    var result = await Application.Current.MainPage.DisplayAlert("Activate Booking?", "Do you really want to activate this booking?", "Yes", "No");
+
+                    if (result)
+                    {
+                        await _bookingManager.ActivateBooking(SelectedBooking.BookingNumber);                        
+                    }
+                }
+                finally
+                {
+                    IsBusy = false;
+                }
+
+                await LoadBookings();
+            }
+        }
+
+        private bool CanActivateBooking()
+        {
+            return !IsBusy && (SelectedBooking?.State == Enums.BookingState.Confirmed || SelectedBooking?.State == Enums.BookingState.Activated);
+        }
+
         [RelayCommand(CanExecute = nameof(CanCancelBooking))]
         public async Task CancelBooking()
         {
@@ -100,7 +130,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
 
         public bool CanCancelBooking()
         {
-            return !IsBusy && SelectedBooking != null && SelectedBooking.State == Enums.BookingState.Confirmed;
+            return !IsBusy && SelectedBooking != null;
         }
     }
 }

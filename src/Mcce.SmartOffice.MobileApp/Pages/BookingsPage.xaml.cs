@@ -2,9 +2,9 @@ using Mcce.SmartOffice.MobileApp.ViewModels;
 
 namespace Mcce.SmartOffice.MobileApp.Pages;
 
-public partial class MyBookingsPage : ContentPage
+public partial class BookingsPage : ContentPage
 {
-    public MyBookingsPage(MyBookingsViewModel viewModel)
+    public BookingsPage(BookingsViewModel viewModel)
     {
         InitializeComponent();
 
@@ -15,6 +15,6 @@ public partial class MyBookingsPage : ContentPage
     {
         base.OnNavigatedTo(args);
 
-        await ((MyBookingsViewModel)BindingContext).LoadBookings();
+        await ((BookingsViewModel)BindingContext).LoadBookings();
     }
 }
