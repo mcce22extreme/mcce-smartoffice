@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
 COPY ["src/Mcce.SmartOffice.Accounts/.", "Mcce.SmartOffice.Accounts/"]
@@ -11,7 +11,7 @@ RUN dotnet build "Mcce.SmartOffice.Accounts/Mcce.SmartOffice.Accounts.csproj" -c
 
 RUN dotnet publish "Mcce.SmartOffice.Accounts/Mcce.SmartOffice.Accounts.csproj" -c Release -o /app/publish /p:Version="${BUILD_VERSION}" /p:InformationalVersion="${BUILD_VERSION}-${COMMIT_SHA}"
 
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 
 RUN addgroup --group serviceuser --gid 2000 \

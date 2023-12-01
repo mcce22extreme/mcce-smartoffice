@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mcce.SmartOffice.MobileApp.Pages.LoginPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="The Smart Office"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarHasShadow="True">
+    <ScrollView>
+        <VerticalStackLayout Padding="30,0">
+            <Image
+                Margin="50"
+                HeightRequest="200"
+                Source="/Resources/Images/logo512.png"
+                WidthRequest="200" />
+            <Label
+                FontAttributes="Bold"
+                FontSize="30"
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center"
+                Text="Welcome"
+                TextColor="{DynamicResource Primary}" />
+            <Label
+                FontAttributes="Bold"
+                FontSize="30"
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center"
+                Text="to the Smart Office!"
+                TextColor="{DynamicResource Primary}" />
+            <Label
+                Margin="0,50,0,0"
+                FontAttributes="Bold"
+                FontSize="15"
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center"
+                Text=" You are not logged in or your session has expired. Please sign in again."
+                TextColor="{DynamicResource PrimaryDark}" />
+
+            <Button
+                Margin="0,50,0,0"
+                Command="{Binding SignInCommand}"
+                Text="Sign In" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
