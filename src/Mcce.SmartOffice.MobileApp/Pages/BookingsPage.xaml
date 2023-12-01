@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
-    x:Class="Mcce.SmartOffice.MobileApp.Pages.MyBookingsPage"
+    x:Class="Mcce.SmartOffice.MobileApp.Pages.BookingsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
     Title="My Bookings">
     <ContentPage.ToolbarItems>
-        <!--<ToolbarItem
-            Command="{Binding CreateBookingCommand}"
-            IconImageSource="{mi:Fluent Icon=AddCircle12,
+        <ToolbarItem
+            Command="{Binding ActivateBookingCommand}"
+            IconImageSource="{mi:Fluent Icon=ApprovalsApp32,
                                         IconColor=White}"
-            Order="Secondary"
-            Text="New Booking" />-->
+            Order="Primary"
+            Text="Activate" />
         <ToolbarItem
             Command="{Binding LoadBookingsCommand}"
             IconImageSource="{mi:Fluent Icon=ArrowSync12,
                                         IconColor=White}"
-            Text="Reload Bookings" />
+            Order="Secondary"
+            Text="Reload" />
         <ToolbarItem
             Command="{Binding CancelBookingCommand}"
             IconImageSource="{mi:Fluent Icon=Delete12,
                                         IconColor=White}"
-            Text="Delete Booking" />
+            Order="Secondary"
+            Text="Delete" />
     </ContentPage.ToolbarItems>
     <!--<VerticalStackLayout>-->
     <Grid VerticalOptions="Fill">
@@ -63,10 +65,12 @@
                                 Margin="0,3,20,3"
                                 BorderColor="{DynamicResource Primary}"
                                 BorderWidth="1"
+                                Command="{Binding ActivateBookingCommand}"
                                 HorizontalOptions="End"
-                                IsEnabled="False"
-                                Text="Activate"
-                                WidthRequest="100" />-->
+                                ImageSource="{mi:Fluent Icon=ApprovalsApp32,
+                                                        IconColor=White,
+                                                        IconSize=30}"
+                                WidthRequest="50" />-->
                         </Grid>
                     </ViewCell>
                 </DataTemplate>

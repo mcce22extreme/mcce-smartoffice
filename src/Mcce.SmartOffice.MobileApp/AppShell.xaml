@@ -31,18 +31,9 @@
 
     <ShellContent
         Title="My Bookings"
-        ContentTemplate="{DataTemplate pages:MyBookingsPage}"
+        ContentTemplate="{DataTemplate pages:BookingsPage}"
         Icon="{mi:Fluent Icon=CalendarLtr48,
                          IconColor=#ac99ea}"
-        Route="MyBookingsPage"
+        Route="BookingsPage"
         Shell.FlyoutBehavior="Flyout" />
-
-    <!--<ShellContent
-        Title="New Bookings"
-        ContentTemplate="{DataTemplate pages:CreateBookingPage}"
-        Icon="{mi:Fluent Icon=CalendarAdd16,
-                         IconColor=#ac99ea}"
-        Route="CreateBookingPage"
-        Shell.FlyoutBehavior="Flyout"
-        Shell.FlyoutItemIsVisible="False" />-->
 </Shell>

@@ -10,6 +10,8 @@ namespace Mcce.SmartOffice.MobileApp.Managers
 
         Task CreateBooking(string workspaceNumber, DateTime startDateTime, DateTime endDateTime);
 
+        Task ActivateBooking(string bookingNumber);
+
         Task CancelBooking(string bookingNumber);
     }
 
@@ -54,6 +56,15 @@ namespace Mcce.SmartOffice.MobileApp.Managers
                     throw new Exception(error.ErrorMessage);
                 }
             }
+        }
+
+        public async Task ActivateBooking(string bookingNumber)
+        {
+            using var httpClient = await CreateHttpClient();
+
+            var url = $"{AppConfig.BaseAddress}booking/{bookingNumber}/activate";
+
+            await httpClient.GetAsync(url);
         }
 
         public async Task CancelBooking(string bookingNumber)
