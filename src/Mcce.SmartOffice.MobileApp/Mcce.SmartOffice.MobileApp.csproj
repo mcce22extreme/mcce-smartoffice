@@ -59,11 +59,11 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
         <PackageReference Include="AathifMahir.Maui.MauiIcons.Fluent" Version="2.0.0" />
         <PackageReference Include="AathifMahir.Maui.MauiIcons.Core" Version="2.0.0" />
         <PackageReference Include="IdentityModel.OidcClient" Version="5.2.1" />
