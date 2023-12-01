@@ -12,6 +12,7 @@ namespace Mcce.SmartOffice.MobileApp
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
             Routing.RegisterRoute(nameof(LoadingPage), typeof(LoadingPage));
             Routing.RegisterRoute(nameof(MyBookingsPage), typeof(MyBookingsPage));
+            Routing.RegisterRoute(nameof(CreateBookingPage), typeof(CreateBookingPage));
         }
     }
 }

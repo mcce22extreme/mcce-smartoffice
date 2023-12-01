@@ -6,16 +6,22 @@
     xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
     Title="My Bookings">
     <ContentPage.ToolbarItems>
+        <!--<ToolbarItem
+            Command="{Binding CreateBookingCommand}"
+            IconImageSource="{mi:Fluent Icon=AddCircle12,
+                                        IconColor=White}"
+            Order="Secondary"
+            Text="New Booking" />-->
         <ToolbarItem
             Command="{Binding LoadBookingsCommand}"
-            IconImageSource="{mi:Fluent Icon=ArrowSync24,
+            IconImageSource="{mi:Fluent Icon=ArrowSync12,
                                         IconColor=White}"
-            Text="Sync" />
+            Text="Reload Bookings" />
         <ToolbarItem
             Command="{Binding CancelBookingCommand}"
-            IconImageSource="{mi:Fluent Icon=Delete48,
+            IconImageSource="{mi:Fluent Icon=Delete12,
                                         IconColor=White}"
-            Text="Sync" />
+            Text="Delete Booking" />
     </ContentPage.ToolbarItems>
     <!--<VerticalStackLayout>-->
     <Grid VerticalOptions="Fill">

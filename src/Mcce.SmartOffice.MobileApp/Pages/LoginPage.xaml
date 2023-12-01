@@ -7,7 +7,7 @@
     Shell.FlyoutBehavior="Disabled"
     Shell.NavBarHasShadow="True">
     <ScrollView>
-        <VerticalStackLayout Padding="30,0" Spacing="10">
+        <VerticalStackLayout Padding="30,0">
             <Image
                 Margin="50"
                 HeightRequest="200"

@@ -11,13 +11,13 @@
     Shell.TitleColor="{DynamicResource White}">
 
     <ShellContent
-        Title="Home"
+        Title="Loading"
         ContentTemplate="{DataTemplate pages:LoadingPage}"
         Route="LoadingPage"
         Shell.FlyoutItemIsVisible="False" />
 
     <ShellContent
-        Title="Home"
+        Title="Login"
         ContentTemplate="{DataTemplate pages:LoginPage}"
         Route="LoginPage"
         Shell.FlyoutItemIsVisible="False" />
@@ -36,4 +36,13 @@
                          IconColor=#ac99ea}"
         Route="MyBookingsPage"
         Shell.FlyoutBehavior="Flyout" />
+
+    <!--<ShellContent
+        Title="New Bookings"
+        ContentTemplate="{DataTemplate pages:CreateBookingPage}"
+        Icon="{mi:Fluent Icon=CalendarAdd16,
+                         IconColor=#ac99ea}"
+        Route="CreateBookingPage"
+        Shell.FlyoutBehavior="Flyout"
+        Shell.FlyoutItemIsVisible="False" />-->
 </Shell>
