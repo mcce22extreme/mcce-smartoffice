@@ -1,4 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+
 WORKDIR /app
 
 COPY ["src/Mcce.SmartOffice.UserImages/.", "Mcce.SmartOffice.UserImages/"]
@@ -12,6 +13,11 @@ RUN dotnet build "Mcce.SmartOffice.UserImages/Mcce.SmartOffice.UserImages.csproj
 RUN dotnet publish "Mcce.SmartOffice.UserImages/Mcce.SmartOffice.UserImages.csproj" -c Release -o /app/publish /p:InformationalVersion="${BUILD_VERSION}-${COMMIT_SHA}"
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends libfontconfig1 \
+  && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 RUN addgroup --group serviceuser --gid 2000 \

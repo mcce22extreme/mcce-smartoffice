@@ -85,7 +85,7 @@ jobs:
     name: "Build docker images"
     runs-on: ubuntu-latest
     needs: analyse
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    # if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     defaults:
       run:
         shell: bash
@@ -234,7 +234,7 @@ jobs:
   deploy:
     name: "Deploy to aks"
     needs: builddockerimages
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    # if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
