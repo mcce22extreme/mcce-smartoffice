@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net8.0-android;net8.0-maccatalyst</TargetFrameworks>
@@ -116,6 +116,10 @@
         <PackageReference Include="AathifMahir.Maui.MauiIcons.Core" Version="2.0.0" />
         <PackageReference Include="IdentityModel.OidcClient" Version="5.2.1" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Mcce.SmartOffice.App\Mcce.SmartOffice.App.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
-﻿using Mcce.SmartOffice.MobileApp.Managers;
+﻿using Mcce.SmartOffice.App.Services;
+using Mcce.SmartOffice.App.ViewModels;
+using Mcce.SmartOffice.MobileApp.Managers;
 using Mcce.SmartOffice.MobileApp.Pages;
-using Mcce.SmartOffice.MobileApp.Services;
 
 namespace Mcce.SmartOffice.MobileApp.ViewModels
 {

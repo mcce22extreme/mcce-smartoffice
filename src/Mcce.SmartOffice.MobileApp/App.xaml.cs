@@ -2,7 +2,7 @@
 {
     public partial class App : Application
     {
-        public App(AppShell shell)
+        public App(Shell shell)
         {
             InitializeComponent();
 

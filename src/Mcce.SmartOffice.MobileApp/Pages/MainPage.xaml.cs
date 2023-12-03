@@ -1,4 +1,5 @@
 ﻿using MauiIcons.Core;
+using Mcce.SmartOffice.App.ViewModels;
 using Mcce.SmartOffice.MobileApp.ViewModels;
 
 namespace Mcce.SmartOffice.MobileApp.Pages
@@ -9,7 +10,7 @@ namespace Mcce.SmartOffice.MobileApp.Pages
         {
             InitializeComponent();
 
-            _ = new MauiIcon();
+            
 
             BindingContext = viewModel;
         }
