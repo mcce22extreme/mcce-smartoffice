@@ -56,6 +56,7 @@ namespace Mcce.SmartOffice.MobileApp
             // Register service
             builder.Services
                 .AddSingleton<INavigationService, NavigationService>()
+                .AddSingleton<IDialogService, DialogService>()
                 .AddSingleton<IAuthService, AuthService>();
 
             // Register managers

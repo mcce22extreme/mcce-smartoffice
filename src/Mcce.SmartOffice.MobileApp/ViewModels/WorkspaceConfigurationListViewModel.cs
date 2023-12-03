@@ -12,7 +12,6 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
     public partial class WorkspaceConfigurationListViewModel : ViewModelBase
     {
         private readonly IWorkspaceConfigurationManager _workspaceConfigurationManager;
-        private readonly INavigationService _navigationService;
 
         public override string Title
         {
@@ -35,14 +34,13 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         [ObservableProperty]
         private WorkspaceConfigurationModel _selectedWorkspaceConfiguration;
 
-        [ObservableProperty]
-        private bool _isBusy;
-
-        public WorkspaceConfigurationListViewModel(IWorkspaceConfigurationManager workspaceConfigurationManager, INavigationService navigationService)
-            : base(navigationService)
+        public WorkspaceConfigurationListViewModel(
+            IWorkspaceConfigurationManager workspaceConfigurationManager,
+            INavigationService navigationService,
+            IDialogService dialogService)
+            : base(navigationService, dialogService)
         {
             _workspaceConfigurationManager = workspaceConfigurationManager;
-            _navigationService = navigationService;
         }
 
         public override async Task Activate()
@@ -124,7 +122,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
                 IsBusy = true;
                 try
                 {
-                    var result = await Application.Current.MainPage.DisplayAlert("Delete Configuration?", "Do you really want to delete the selected workspace configuration?", "Yes", "No");
+                    var result = await DialogService.ShowConfirmationDialog("Delete Configuration?", "Do you really want to delete the selected workspace configuration?");
 
                     if (result)
                     {

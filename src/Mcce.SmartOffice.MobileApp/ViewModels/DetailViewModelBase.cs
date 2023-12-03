@@ -6,6 +6,8 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
     public interface IDetailViewModelBase
     {
         bool HasUnsavedData { get; }
+
+        Task<bool> CanGoBack();
     }
 
     public abstract class DetailViewModelBase : ViewModelBase, IDetailViewModelBase
@@ -14,8 +16,8 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
 
         public bool HasUnsavedData { get; protected set; } = false;
 
-        protected DetailViewModelBase(INavigationService navigationService)
-            : base(navigationService)
+        protected DetailViewModelBase(INavigationService navigationService, IDialogService dialogService)
+            : base(navigationService, dialogService)
         {
         }
 
@@ -26,6 +28,18 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             if (IsLoaded && e.PropertyName != nameof(IsBusy))
             {
                 HasUnsavedData = true;
+            }
+        }
+
+        public override async Task<bool> CanGoBack()
+        {
+            if (HasUnsavedData)
+            {
+                return await DialogService.ShowConfirmationDialog("Cancel?", "Do you really want to cancel?");
+            }
+            else
+            {
+                return await base.CanGoBack();
             }
         }
     }

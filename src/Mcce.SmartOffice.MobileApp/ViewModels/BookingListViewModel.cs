@@ -20,8 +20,11 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         [ObservableProperty]
         private BookingModel _selectedBooking;
 
-        public BookingListViewModel(IBookingManager bookingManager, INavigationService navigationService)
-            : base(navigationService)
+        public BookingListViewModel(
+            IBookingManager bookingManager,
+            INavigationService navigationService,
+            IDialogService dialogService)
+            : base(navigationService, dialogService)
         {
             _bookingManager = bookingManager;
         }
@@ -86,7 +89,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         {
             if (CanActivateBooking())
             {
-                var result = await Application.Current.MainPage.DisplayAlert("Activate Booking?", "Do you really want to activate this booking?", "Yes", "No");
+                var result = await DialogService.ShowConfirmationDialog("Activate Booking?", "Do you really want to activate this booking?");
 
                 if (result)
                 {
@@ -118,7 +121,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
                 IsBusy = true;
                 try
                 {
-                    var result = await Application.Current.MainPage.DisplayAlert("Cancel Booking?", "Do you really want to cancel your booking?", "Yes", "No");
+                    var result = await DialogService.ShowConfirmationDialog("Cancel Booking?", "Do you really want to cancel your booking?");
 
                     if (result)
                     {

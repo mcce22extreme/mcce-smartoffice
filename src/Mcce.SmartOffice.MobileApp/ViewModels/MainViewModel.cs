@@ -16,8 +16,12 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         [ObservableProperty]
         private string _fullName;
 
-        public MainViewModel(IAuthService authService, IAccountManager accountManager, INavigationService navigationService)
-            : base(navigationService)
+        public MainViewModel(
+            IAuthService authService,
+            IAccountManager accountManager,
+            INavigationService navigationService,
+            IDialogService dialogService)
+            : base(navigationService, dialogService)
         {
             _authService = authService;
             _accountManager = accountManager;
@@ -36,7 +40,6 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             catch (HttpRequestException)
             {
                 await _authService.SignIn();
-                //await NavigationService.GoToAsync($"//{nameof(LoginPage)}");
             }
             finally { IsBusy = false; }
         }
@@ -68,7 +71,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         [RelayCommand]
         public async Task SignOut()
         {
-            var result = await Application.Current.MainPage.DisplayAlert("Sign Out?", "Do you really want to sign out?", "Yes", "No");
+            var result = await DialogService.ShowConfirmationDialog("Sign Out?", "Do you really want to sign out?");
 
             if (result)
             {

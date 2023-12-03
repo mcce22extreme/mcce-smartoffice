@@ -1,5 +1,5 @@
+using Mcce.SmartOffice.MobileApp.Helpers;
 using Mcce.SmartOffice.MobileApp.ViewModels;
-using Microsoft.Maui.Platform;
 
 namespace Mcce.SmartOffice.MobileApp.Pages;
 
@@ -40,24 +40,17 @@ public partial class WorkspaceConfigurationDetailPage : ContentPage
 
     private async void OnNavigating(object sender, ShellNavigatingEventArgs e)
     {
-        if (((WorkspaceConfigurationDetailViewModel)BindingContext).HasUnsavedData)
+        var deferral = e.GetDeferral();
+
+        if (await ((IDetailViewModelBase)BindingContext).CanGoBack())
         {
-            var deferral = e.GetDeferral();
+            deferral.Complete();
 
-            var result = await Application.Current.MainPage.DisplayAlert("Cancel?", "Do you really want to cancel?", "Yes", "No");
-
-            if (result)
-            {
-                deferral.Complete();
-
-#if ANDROID
-                Platform.CurrentActivity.HideKeyboard(Platform.CurrentActivity.CurrentFocus);
-#endif
-            }
-            else
-            {
-                e.Cancel();
-            }
+            PlatformHelpers.HideKeyboard();
+        }
+        else
+        {
+            e.Cancel();
         }
     }
 }

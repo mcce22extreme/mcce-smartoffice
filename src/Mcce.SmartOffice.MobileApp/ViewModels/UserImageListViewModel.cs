@@ -31,8 +31,11 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         [ObservableProperty]
         private UserImageModel _selectedUserImage;
 
-        public UserImageListViewModel(IUserImageManager userImageManager, INavigationService navigationService)
-            : base(navigationService)
+        public UserImageListViewModel(
+            IUserImageManager userImageManager,
+            INavigationService navigationService,
+            IDialogService dialogService)
+            : base(navigationService, dialogService)
         {
             _userImageManager = userImageManager;
         }
@@ -151,7 +154,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         {
             if (CanDeleteUserImage())
             {
-                var result = await Application.Current.MainPage.DisplayAlert("Delete Image?", "Do you really want to delete the current image?", "Yes", "No");
+                var result = await DialogService.ShowConfirmationDialog("Delete Image?", "Do you really want to delete the current image?");
 
                 if (result)
                 {

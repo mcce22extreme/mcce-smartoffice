@@ -8,8 +8,11 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
     {
         private readonly IAuthService _authService;
 
-        public LoginViewModel(IAuthService authService, INavigationService navigationService)
-            : base(navigationService)
+        public LoginViewModel(
+            IAuthService authService,
+            INavigationService navigationService,
+            IDialogService dialogService)
+            : base(navigationService, dialogService)
         {
             _authService = authService;
         }

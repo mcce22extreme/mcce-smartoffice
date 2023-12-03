@@ -15,7 +15,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
 
         public override string Title => "New Booking";
 
-        [ObservableProperty]        
+        [ObservableProperty]
         private List<WorkspaceModel> _workspaces;
 
         [ObservableProperty]
@@ -33,8 +33,12 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         [ObservableProperty]
         private TimeSpan? _selectedEndTime;
 
-        public BookingDetailViewModel(IBookingManager bookingManager, IWorkspaceManager workspaceManager, INavigationService navigationService)
-            : base(navigationService)
+        public BookingDetailViewModel(
+            IBookingManager bookingManager,
+            IWorkspaceManager workspaceManager,
+            INavigationService navigationService,
+            IDialogService dialogService)
+            : base(navigationService, dialogService)
         {
             _bookingManager = bookingManager;
             _workspaceManager = workspaceManager;
@@ -100,7 +104,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Opps an error occurred!", ex.Message, "Close");
+                    await DialogService.ShowErrorMessage(ex.Message);
                 }
                 finally
                 {

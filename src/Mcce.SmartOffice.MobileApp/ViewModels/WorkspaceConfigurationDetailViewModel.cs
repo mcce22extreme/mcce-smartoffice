@@ -43,8 +43,9 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         public WorkspaceConfigurationDetailViewModel(
             IWorkspaceConfigurationManager workspaceConfigurationManager,
             IWorkspaceManager workspaceManager,
-            INavigationService navigationService)
-            : base(navigationService)
+            INavigationService navigationService,
+            IDialogService dialogService)
+            : base(navigationService, dialogService)
         {
             _workspaceConfigurationManager = workspaceConfigurationManager;
             _workspaceManager = workspaceManager;
@@ -108,7 +109,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Oops, something went wrong!", ex.Message, "Close");
+                    await DialogService.ShowErrorMessage(ex.Message);
                 }
                 finally
                 {
