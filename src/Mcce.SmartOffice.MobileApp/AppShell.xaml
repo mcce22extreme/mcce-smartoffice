@@ -40,7 +40,7 @@
     <ShellContent
         Title="My Images"
         ContentTemplate="{DataTemplate pages:UserImagesPage}"
-        Icon="{mi:Fluent Icon=CalendarLtr48,
+        Icon="{mi:Fluent Icon=ImageMultiple48,
                          IconColor=#ac99ea}"
         Route="UserImagesPage"
         Shell.FlyoutBehavior="Flyout" />

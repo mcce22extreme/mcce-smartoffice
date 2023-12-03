@@ -37,23 +37,17 @@ namespace Mcce.SmartOffice.MobileApp.Managers
         {
             using var httpClient = await CreateHttpClient();
 
-            using var content = new MultipartFormDataContent
+            var url = $"{AppConfig.BaseAddress}userimage?fileName={Path.GetFileName(filePath)}";
+            var streamContent = new StreamContent(stream)
             {
+                Headers =
                 {
-                    new StreamContent(stream)
-                    {
-                        Headers =
-                        {
-                            ContentLength = stream.Length,
-                            ContentType = new MediaTypeHeaderValue(contentType)
-                        }
-                    },
-                    "File",
-                    Path.GetFileName(filePath)
+                    ContentLength = stream.Length,
+                    ContentType = new MediaTypeHeaderValue(contentType)
                 }
-            };                        
+            };
 
-            var response = await httpClient.PostAsync($"{AppConfig.BaseAddress}userimage", content);
+            var response = await httpClient.PostAsync(url, streamContent);
         }
 
         public async Task DeleteUserImage(string imageKey)

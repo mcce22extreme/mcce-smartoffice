@@ -4,21 +4,8 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
-    Title="My Images">
+    Title="{Binding Title}">
     <ContentPage.ToolbarItems>
-
-        <ToolbarItem
-            Command="{Binding AddUserImageCommand}"
-            IconImageSource="{mi:Fluent Icon=AddCircle32,
-                                        IconColor=White}"
-            Order="Secondary"
-            Text="Add Image" />
-        <ToolbarItem
-            Command="{Binding TakePhotoCommand}"
-            IconImageSource="{mi:Fluent Icon=Camera28,
-                                        IconColor=White}"
-            Order="Secondary"
-            Text="Take Photo" />
         <ToolbarItem
             Command="{Binding LoadUserImagesCommand}"
             IconImageSource="{mi:Fluent Icon=ArrowSync12,
@@ -32,36 +19,52 @@
             Order="Secondary"
             Text="Delete" />
     </ContentPage.ToolbarItems>
-    <Grid VerticalOptions="Fill">
-        <CarouselView CurrentItem="{Binding SelectedUserImage}" ItemsSource="{Binding UserImages}">
-            <CarouselView.ItemTemplate>
-                <DataTemplate>
-                    <StackLayout>
-                        <Frame
-                            CornerRadius="0"
-                            HorizontalOptions="FillAndExpand"
-                            VerticalOptions="FillAndExpand">
-                            <Image
-                                Aspect="AspectFit"
-                                HorizontalOptions="Fill"
-                                Source="{Binding Url}" />
-                        </Frame>
-                    </StackLayout>
-                </DataTemplate>
-            </CarouselView.ItemTemplate>
-        </CarouselView>
-        <!--<ListView
+    <Grid Padding="5" VerticalOptions="Fill">
+        <CollectionView
             ItemsSource="{Binding UserImages}"
-            RowHeight="60"
-            SelectedItem="{Binding SelectedUserImage}">
-            <ListView.ItemTemplate>
+            SelectedItem="{Binding SelectedUserImage}"
+            SelectionMode="Single">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" Span="2" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <ViewCell>
-                        <Image Aspect="AspectFill" Source="{Binding Url}" />
-                    </ViewCell>
+                    <Image
+                        Margin="5"
+                        Aspect="AspectFit"
+                        HorizontalOptions="Fill"
+                        Source="{Binding ThumbnailUrl}" />
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>-->
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Button
+            Margin="0,0,10,80"
+            Command="{Binding TakePhotoCommand}"
+            CornerRadius="40"
+            FontFamily="fa-regular"
+            FontSize="18"
+            HeightRequest="60"
+            HorizontalOptions="End"
+            ImageSource="{mi:Fluent Icon=Camera28,
+                                    IconColor=White,
+                                    IconSize=40}"
+            Opacity="0.9"
+            VerticalOptions="End"
+            WidthRequest="60" />
+        <Button
+            Margin="0,0,10,10"
+            Command="{Binding AddUserImageCommand}"
+            CornerRadius="40"
+            FontFamily="fa-regular"
+            FontSize="18"
+            HeightRequest="60"
+            HorizontalOptions="End"
+            ImageSource="{mi:Fluent Icon=Add28,
+                                    IconColor=White,
+                                    IconSize=40}"
+            Opacity="0.9"
+            VerticalOptions="End"
+            WidthRequest="60" />
         <ActivityIndicator
             Grid.Row="4"
             HorizontalOptions="Center"

@@ -74,7 +74,7 @@
                 ContentLayout="Top"
                 FontAttributes="Bold"
                 FontSize="13"
-                ImageSource="{mi:Fluent Icon=Image32,
+                ImageSource="{mi:Fluent Icon=ImageMultiple48,
                                         IconColor=White,
                                         IconSize=50}"
                 Text="My Images"

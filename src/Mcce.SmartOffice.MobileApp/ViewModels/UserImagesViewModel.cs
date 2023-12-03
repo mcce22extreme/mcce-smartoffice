@@ -8,6 +8,21 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
 {
     public partial class UserImagesViewModel : ObservableObject
     {
+        public string Title
+        {
+            get
+            {
+                var title = "My Images";
+
+                if(UserImages?.Count > 0)
+                {
+                    title += $"  ({UserImages?.Count})";
+                }
+
+                return title;
+            }
+        }
+
         private readonly IUserImageManager _userImageManager;
         [ObservableProperty]
         private List<UserImageModel> _userImages;
@@ -44,6 +59,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
                     var userImages = await _userImageManager.GetUserImages();
 
                     UserImages = new List<UserImageModel>(userImages);
+                    OnPropertyChanged(nameof(Title));
                 }
                 finally
                 {
@@ -139,9 +155,11 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
                     {
                         IsBusy = true;
 
-                        var imageKey = SelectedUserImage.Url.Substring(SelectedUserImage.Url.LastIndexOf('/') + 1);
+                        await _userImageManager.DeleteUserImage(SelectedUserImage.ImageKey);
 
-                        await _userImageManager.DeleteUserImage(imageKey);
+                        UserImages.Remove(SelectedUserImage);
+                        SelectedUserImage = null;
+                        OnPropertyChanged(nameof(Title));
                     }
                     finally
                     {
