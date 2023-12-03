@@ -4,13 +4,22 @@ using Mcce.SmartOffice.MobileApp.Services;
 
 namespace Mcce.SmartOffice.MobileApp.ViewModels
 {
-    public partial class LoginViewModel
+    public partial class LoginViewModel : ViewModelBase
     {
         private readonly IAuthService _authService;
 
-        public LoginViewModel(IAuthService authService)
+        public LoginViewModel(
+            IAuthService authService,
+            INavigationService navigationService,
+            IDialogService dialogService)
+            : base(navigationService, dialogService)
         {
             _authService = authService;
+        }
+
+        public override Task Activate()
+        {
+            return Task.CompletedTask;
         }
 
         [RelayCommand]
@@ -18,7 +27,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         {
             if (await _authService.SignIn())
             {
-                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                await NavigationService.GoToAsync($"//{nameof(MainPage)}");
             }
         }
     }

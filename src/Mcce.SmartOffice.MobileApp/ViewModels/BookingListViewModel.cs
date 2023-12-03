@@ -4,12 +4,15 @@ using CommunityToolkit.Mvvm.Input;
 using Mcce.SmartOffice.MobileApp.Managers;
 using Mcce.SmartOffice.MobileApp.Models;
 using Mcce.SmartOffice.MobileApp.Pages;
+using Mcce.SmartOffice.MobileApp.Services;
 
 namespace Mcce.SmartOffice.MobileApp.ViewModels
 {
-    public partial class BookingsViewModel : ObservableObject
+    public partial class BookingListViewModel : ViewModelBase
     {
         private readonly IBookingManager _bookingManager;
+
+        public override string Title => "My Bookings";
 
         [ObservableProperty]
         private List<BookingModel> _bookings;
@@ -17,10 +20,11 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         [ObservableProperty]
         private BookingModel _selectedBooking;
 
-        [ObservableProperty]
-        private bool _isBusy;
-
-        public BookingsViewModel(IBookingManager bookingManager)
+        public BookingListViewModel(
+            IBookingManager bookingManager,
+            INavigationService navigationService,
+            IDialogService dialogService)
+            : base(navigationService, dialogService)
         {
             _bookingManager = bookingManager;
         }
@@ -35,22 +39,27 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             ActivateBookingCommand.NotifyCanExecuteChanged();
         }
 
+        public override async Task Activate()
+        {
+            await LoadBookings();
+        }
+
         [RelayCommand(CanExecute = nameof(CanCreateBooking))]
-        public async Task CreateBooking()
+        private async Task CreateBooking()
         {
             if (CanCreateBooking())
             {
-                await Shell.Current.GoToAsync($"{nameof(CreateBookingPage)}");
+                await NavigationService.GoToAsync($"{nameof(BookingDetailPage)}");
             }
         }
 
-        public bool CanCreateBooking()
+        private bool CanCreateBooking()
         {
             return !IsBusy;
         }
 
         [RelayCommand(CanExecute = nameof(CanLoadBookings))]
-        public async Task LoadBookings()
+        private async Task LoadBookings()
         {
             if (CanLoadBookings())
             {
@@ -70,32 +79,32 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             }
         }
 
-        public bool CanLoadBookings()
+        private bool CanLoadBookings()
         {
             return !IsBusy;
         }
 
         [RelayCommand(CanExecute = nameof(CanActivateBooking))]
-        public async Task ActivateBooking()
+        private async Task ActivateBooking()
         {
             if (CanActivateBooking())
             {
-                IsBusy = true;
-                try
-                {
-                    var result = await Application.Current.MainPage.DisplayAlert("Activate Booking?", "Do you really want to activate this booking?", "Yes", "No");
+                var result = await DialogService.ShowConfirmationDialog("Activate Booking?", "Do you really want to activate this booking?");
 
-                    if (result)
+                if (result)
+                {
+                    IsBusy = true;
+                    try
                     {
-                        await _bookingManager.ActivateBooking(SelectedBooking.BookingNumber);                        
-                    }
-                }
-                finally
-                {
-                    IsBusy = false;
-                }
+                        await _bookingManager.ActivateBooking(SelectedBooking.BookingNumber);
 
-                await LoadBookings();
+                        await LoadBookings();
+                    }
+                    finally
+                    {
+                        IsBusy = false;
+                    }
+                }                
             }
         }
 
@@ -105,14 +114,14 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanCancelBooking))]
-        public async Task CancelBooking()
+        private async Task CancelBooking()
         {
             if (CanCancelBooking())
             {
                 IsBusy = true;
                 try
                 {
-                    var result = await Application.Current.MainPage.DisplayAlert("Cancel Booking?", "Do you really want to cancel your booking?", "Yes", "No");
+                    var result = await DialogService.ShowConfirmationDialog("Cancel Booking?", "Do you really want to cancel your booking?");
 
                     if (result)
                     {
@@ -128,7 +137,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             }
         }
 
-        public bool CanCancelBooking()
+        private bool CanCancelBooking()
         {
             return !IsBusy && SelectedBooking != null;
         }

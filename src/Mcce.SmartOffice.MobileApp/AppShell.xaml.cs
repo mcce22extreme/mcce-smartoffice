@@ -7,13 +7,15 @@ namespace Mcce.SmartOffice.MobileApp
         public AppShell()
         {
             InitializeComponent();
-
-            Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
+                       
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
             Routing.RegisterRoute(nameof(LoadingPage), typeof(LoadingPage));
-            Routing.RegisterRoute(nameof(BookingsPage), typeof(BookingsPage));
-            Routing.RegisterRoute(nameof(CreateBookingPage), typeof(CreateBookingPage));
-            Routing.RegisterRoute(nameof(UserImagesPage), typeof(UserImagesPage));
+            Routing.RegisterRoute(nameof(BookingListPage), typeof(BookingListPage));
+            Routing.RegisterRoute(nameof(BookingDetailPage), typeof(BookingDetailPage));
+            Routing.RegisterRoute(nameof(UserImageListPage), typeof(UserImageListPage));
+            Routing.RegisterRoute(nameof(WorkspaceConfigurationListPage), typeof(WorkspaceConfigurationListPage));
+            Routing.RegisterRoute(nameof(WorkspaceConfigurationDetailPage), typeof(WorkspaceConfigurationDetailPage));
+            Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
         }
     }
 }

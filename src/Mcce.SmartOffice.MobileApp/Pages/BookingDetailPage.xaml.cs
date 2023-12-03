@@ -1,10 +1,11 @@
+using Mcce.SmartOffice.MobileApp.Helpers;
 using Mcce.SmartOffice.MobileApp.ViewModels;
 
 namespace Mcce.SmartOffice.MobileApp.Pages;
 
-public partial class CreateBookingPage : ContentPage
+public partial class BookingDetailPage : ContentPage
 {
-    public CreateBookingPage(CreateBookingViewModel viewModel)
+    public BookingDetailPage(BookingDetailViewModel viewModel)
     {
         InitializeComponent();
 
@@ -15,11 +16,11 @@ public partial class CreateBookingPage : ContentPage
     {
         base.OnNavigatedTo(args);
 
-        await ((CreateBookingViewModel)BindingContext).LoadWorkspaces();
+        await ((IViewModel)BindingContext).Activate();
     }
 
     protected override void OnAppearing()
-    {        
+    {
         base.OnAppearing();
 
         Shell.Current.Navigating += OnNavigating;
@@ -34,20 +35,17 @@ public partial class CreateBookingPage : ContentPage
 
     private async void OnNavigating(object sender, ShellNavigatingEventArgs e)
     {
-        if(((CreateBookingViewModel)BindingContext).HasUnsavedData)
+        var deferral = e.GetDeferral();
+
+        if (await ((IDetailViewModelBase)BindingContext).CanGoBack())
         {
-            var deferral = e.GetDeferral();
+            deferral.Complete();
 
-            var result = await Application.Current.MainPage.DisplayAlert("Cancel Booking?", "Do you really want to cancel the booking?", "Yes", "No");
-
-            if (result)
-            {
-                deferral.Complete();
-            }
-            else
-            {
-                e.Cancel();
-            }
-        }        
+            PlatformHelpers.HideKeyboard();
+        }
+        else
+        {
+            e.Cancel();
+        }
     }
 }

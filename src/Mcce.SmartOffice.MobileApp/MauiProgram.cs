@@ -7,6 +7,7 @@ using Mcce.SmartOffice.MobileApp.Services;
 using Mcce.SmartOffice.MobileApp.ViewModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using CommunityToolkit.Maui;
 
 namespace Mcce.SmartOffice.MobileApp
 {
@@ -20,6 +21,7 @@ namespace Mcce.SmartOffice.MobileApp
             builder
               .UseMauiApp<App>()
               .UseFluentMauiIcons()
+              .UseMauiCommunityToolkit()
               .ConfigureFonts(fonts =>
               {
                   fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -43,49 +45,81 @@ namespace Mcce.SmartOffice.MobileApp
                 Browser = sp.GetRequiredService<WebAuthenticatorBrowser>()
             }));
 
-            builder.Services.AddSingleton(config);
-
-            builder.Services.AddSingleton(Connectivity.Current);
-
-            builder.Services.AddSingleton(SecureStorage.Default);
-
             builder.Services.AddHttpClient();
 
-            builder.Services.AddSingleton<IAuthService, AuthService>();
+            builder.Services
+                .AddTransient<AppShell>()
+                .AddSingleton(config)
+                .AddSingleton(Connectivity.Current)
+                .AddSingleton(SecureStorage.Default);
 
-            builder.Services.AddSingleton<IAccountManager, AccountManager>();
+            // Register service
+            builder.Services
+                .AddSingleton<INavigationService, NavigationService>()
+                .AddSingleton<IDialogService, DialogService>()
+                .AddSingleton<IAuthService, AuthService>();
 
-            builder.Services.AddSingleton<IBookingManager, BookingManager>();
+            // Register managers
+            builder.Services
+                .AddSingleton<IAccountManager, AccountManager>()
+                .AddSingleton<IBookingManager, BookingManager>()
+                .AddSingleton<IWorkspaceManager, WorkspaceManager>()
+                .AddSingleton<IUserImageManager, UserImageManager>()
+                .AddSingleton<IWorkspaceConfigurationManager, WorkspaceConfigurationManager>();
 
-            builder.Services.AddSingleton<IWorkspaceManager, WorkspaceManager>();
+            // Register pages
+            builder.Services
+                .AddTransient<LoadingPage>()
+                .AddTransient<LoginPage>()
+                .AddTransient<MainPage>()
+                .AddTransient<BookingListPage>()
+                .AddTransient<BookingDetailPage>()
+                .AddTransient<UserImageListPage>()
+                .AddTransient<WorkspaceConfigurationListPage>()
+                .AddTransient<WorkspaceConfigurationDetailPage>();
 
-            builder.Services.AddSingleton<IUserImageManager, UserImageManager>();
+            // Register viewmodels
+            builder.Services
+                .AddTransient<LoadingViewModel>()
+                .AddTransient<LoginViewModel>()
+                .AddTransient<MainViewModel>()
+                .AddTransient<BookingListViewModel>()
+                .AddTransient<BookingDetailViewModel>()
+                .AddTransient<UserImageListViewModel>()
+                .AddTransient<WorkspaceConfigurationListViewModel>()
+                .AddTransient<WorkspaceConfigurationDetailViewModel>();
 
-            builder.Services.AddTransient<LoadingPage>();
+            //builder.Services.AddTransient<LoadingViewModel>();
 
-            builder.Services.AddTransient<LoadingViewModel>();
+            //builder.Services.AddTransient<LoginPage>();
 
-            builder.Services.AddTransient<LoginPage>();
+            //builder.Services.AddTransient<LoginViewModel>();
 
-            builder.Services.AddTransient<LoginViewModel>();
+            //builder.Services.AddTransient<LoginPage>();
 
-            builder.Services.AddTransient<LoginPage>();
+            //builder.Services.AddTransient<MainPage>();
 
-            builder.Services.AddTransient<MainPage>();
+            //builder.Services.AddTransient<MainViewModel>();
 
-            builder.Services.AddTransient<MainViewModel>();
+            //builder.Services.AddTransient<BookingsPage>();
 
-            builder.Services.AddTransient<BookingsPage>();
+            //builder.Services.AddTransient<BookingsViewModel>();
 
-            builder.Services.AddTransient<BookingsViewModel>();
+            //builder.Services.AddTransient<CreateBookingPage>();
 
-            builder.Services.AddTransient<CreateBookingPage>();
+            //builder.Services.AddTransient<CreateBookingViewModel>();
 
-            builder.Services.AddTransient<CreateBookingViewModel>();
+            //builder.Services.AddTransient<UserImagesPage>();
 
-            builder.Services.AddTransient<UserImagesPage>();
+            //builder.Services.AddTransient<UserImagesViewModel>();
 
-            builder.Services.AddTransient<UserImagesViewModel>();
+            //builder.Services.AddTransient<WorkspaceConfigurationsPage>();
+
+            //builder.Services.AddTransient<WorkspaceConfigurationsViewModel>();
+
+            //builder.Services.AddTransient<WorkspaceConfigurationDetailPage>();
+
+            //builder.Services.AddTransient<WorkspaceConfigurationDetailViewModel>();
 
             return builder.Build();
         }

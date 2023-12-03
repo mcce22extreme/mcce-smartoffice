@@ -3,18 +3,19 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Mcce.SmartOffice.MobileApp.Managers;
 using Mcce.SmartOffice.MobileApp.Models;
+using Mcce.SmartOffice.MobileApp.Services;
 
 namespace Mcce.SmartOffice.MobileApp.ViewModels
 {
-    public partial class UserImagesViewModel : ObservableObject
+    public partial class UserImageListViewModel : ViewModelBase
     {
-        public string Title
+        public override string Title
         {
             get
             {
                 var title = "My Images";
 
-                if(UserImages?.Count > 0)
+                if (UserImages?.Count > 0)
                 {
                     title += $"  ({UserImages?.Count})";
                 }
@@ -30,12 +31,18 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         [ObservableProperty]
         private UserImageModel _selectedUserImage;
 
-        [ObservableProperty]
-        private bool _isBusy;
-
-        public UserImagesViewModel(IUserImageManager userImageManager)
+        public UserImageListViewModel(
+            IUserImageManager userImageManager,
+            INavigationService navigationService,
+            IDialogService dialogService)
+            : base(navigationService, dialogService)
         {
             _userImageManager = userImageManager;
+        }
+
+        public override async Task Activate()
+        {
+            await LoadUserImages();
         }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -47,7 +54,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanLoadUserImages))]
-        public async Task LoadUserImages()
+        private async Task LoadUserImages()
         {
             if (CanLoadUserImages())
             {
@@ -68,13 +75,13 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             }
         }
 
-        public bool CanLoadUserImages()
+        private bool CanLoadUserImages()
         {
             return !IsBusy;
         }
 
         [RelayCommand(CanExecute = nameof(CanAddUserImage))]
-        public async Task AddUserImage()
+        private async Task AddUserImage()
         {
             if (CanAddUserImage())
             {
@@ -102,13 +109,13 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             }
         }
 
-        public bool CanAddUserImage()
+        private bool CanAddUserImage()
         {
             return !IsBusy && MediaPicker.Default.IsCaptureSupported;
         }
 
         [RelayCommand(CanExecute = nameof(CanTakePhoto))]
-        public async Task TakePhoto()
+        private async Task TakePhoto()
         {
             if (CanTakePhoto())
             {
@@ -137,17 +144,17 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             }
         }
 
-        public bool CanTakePhoto()
+        private bool CanTakePhoto()
         {
             return !IsBusy && MediaPicker.Default.IsCaptureSupported;
         }
 
         [RelayCommand(CanExecute = nameof(CanDeleteUserImage))]
-        public async Task DeleteUserImage()
+        private async Task DeleteUserImage()
         {
             if (CanDeleteUserImage())
             {
-                var result = await Application.Current.MainPage.DisplayAlert("Delete Image?", "Do you really want to delete the current image?", "Yes", "No");
+                var result = await DialogService.ShowConfirmationDialog("Delete Image?", "Do you really want to delete the current image?");
 
                 if (result)
                 {
@@ -171,7 +178,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             }
         }
 
-        public bool CanDeleteUserImage()
+        private bool CanDeleteUserImage()
         {
             return !IsBusy && SelectedUserImage != null;
         }

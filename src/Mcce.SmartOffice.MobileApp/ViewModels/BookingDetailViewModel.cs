@@ -4,15 +4,16 @@ using CommunityToolkit.Mvvm.Input;
 using Mcce.SmartOffice.MobileApp.Managers;
 using Mcce.SmartOffice.MobileApp.Models;
 using Mcce.SmartOffice.MobileApp.Pages;
+using Mcce.SmartOffice.MobileApp.Services;
 
 namespace Mcce.SmartOffice.MobileApp.ViewModels
 {
-    public partial class CreateBookingViewModel : ObservableObject
+    public partial class BookingDetailViewModel : DetailViewModelBase
     {
         private readonly IBookingManager _bookingManager;
         private readonly IWorkspaceManager _workspaceManager;
 
-        private bool _loaded;
+        public override string Title => "New Booking";
 
         [ObservableProperty]
         private List<WorkspaceModel> _workspaces;
@@ -32,12 +33,12 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         [ObservableProperty]
         private TimeSpan? _selectedEndTime;
 
-        [ObservableProperty]
-        private bool _isBusy;
-
-        public bool HasUnsavedData { get; private set; }
-
-        public CreateBookingViewModel(IBookingManager bookingManager, IWorkspaceManager workspaceManager)
+        public BookingDetailViewModel(
+            IBookingManager bookingManager,
+            IWorkspaceManager workspaceManager,
+            INavigationService navigationService,
+            IDialogService dialogService)
+            : base(navigationService, dialogService)
         {
             _bookingManager = bookingManager;
             _workspaceManager = workspaceManager;
@@ -48,19 +49,19 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             SelectedEndTime = DateTime.Now.AddMinutes(15).TimeOfDay;
         }
 
+        public override async Task Activate()
+        {
+            await LoadWorkspaces();
+        }
+
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
 
             CreateBookingCommand.NotifyCanExecuteChanged();
-
-            if (_loaded && e.PropertyName != nameof(IsBusy))
-            {
-                HasUnsavedData = true;
-            }
         }
 
-        public async Task LoadWorkspaces()
+        private async Task LoadWorkspaces()
         {
             IsBusy = true;
 
@@ -72,7 +73,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
 
                 Workspaces = new List<WorkspaceModel>(workspaces);
 
-                _loaded = true;
+                IsLoaded = true;
             }
             finally
             {
@@ -81,7 +82,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanCreateBooking))]
-        public async Task CreateBooking()
+        private async Task CreateBooking()
         {
             if (CanCreateBooking())
             {
@@ -99,11 +100,11 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
 
                     HasUnsavedData = false;
 
-                    await Shell.Current.GoToAsync($"///{nameof(MainPage)}/{nameof(BookingsPage)}");                    
+                    await NavigationService.GoToAsync($"///{nameof(MainPage)}/{nameof(BookingListPage)}");
                 }
                 catch (Exception ex)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Opps an error occurred!", ex.Message, "Close");
+                    await DialogService.ShowErrorMessage(ex.Message);
                 }
                 finally
                 {
@@ -112,7 +113,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             }
         }
 
-        public bool CanCreateBooking()
+        private bool CanCreateBooking()
         {
             return !IsBusy &&
                 SelectedWorkspace != null &&
@@ -120,12 +121,6 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
                 SelectedStartTime.HasValue &&
                 SelectedEndDate.HasValue &&
                 SelectedEndTime.HasValue;
-        }
-
-        [RelayCommand]
-        public async Task Cancel()
-        {
-            await Shell.Current.GoToAsync($"..");
         }
     }
 }

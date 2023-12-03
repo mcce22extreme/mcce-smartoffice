@@ -15,12 +15,14 @@ namespace Mcce.SmartOffice.MobileApp.Services
         private readonly OidcClient _client;
         private readonly IConnectivity _connectivity;
         private readonly ISecureStorage _secureStorage;
+        private readonly IDialogService _dialogService;
 
-        public AuthService(OidcClient client, IConnectivity connectivity, ISecureStorage secureStorage)
+        public AuthService(OidcClient client, IConnectivity connectivity, ISecureStorage secureStorage, IDialogService dialogService)
         {
             _client = client;
             _connectivity = connectivity;
             _secureStorage = secureStorage;
+            _dialogService = dialogService;
         }
 
         public async Task<bool> SignIn()
@@ -29,14 +31,14 @@ namespace Mcce.SmartOffice.MobileApp.Services
             {
                 if (_connectivity.NetworkAccess is not NetworkAccess.Internet)
                 {
-                    await Shell.Current.DisplayAlert("Internet Offline", "Check sua internet e tente novamente!", "Ok");
+                    await _dialogService.ShowDialog("Internet Offline", "You don't appear to be connected to the internet!");
                     return false;
                 }
 
                 var loginResult = await _client.LoginAsync(new LoginRequest());
                 if (loginResult.IsError)
                 {
-                    await Shell.Current.DisplayAlert("Error", "An unexpected error occurred during the login process!", "OK");
+                    await _dialogService.ShowErrorMessage(loginResult.Error);
                     return false;
                 }
 
@@ -47,7 +49,7 @@ namespace Mcce.SmartOffice.MobileApp.Services
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Error", ex.ToString(), "ok");
+                await _dialogService.ShowErrorMessage(ex.ToString());
                 return false;
             }
         }

@@ -7,20 +7,18 @@
     xmlns:pages="clr-namespace:Mcce.SmartOffice.MobileApp.Pages"
     Title="The Smart Office"
     Shell.BackgroundColor="{DynamicResource Primary}"
-    Shell.FlyoutBehavior="Flyout"
+    Shell.FlyoutBehavior="Disabled"
     Shell.TitleColor="{DynamicResource White}">
 
     <ShellContent
         Title="Loading"
         ContentTemplate="{DataTemplate pages:LoadingPage}"
-        Route="LoadingPage"
-        Shell.FlyoutItemIsVisible="False" />
+        Route="LoadingPage" />
 
     <ShellContent
         Title="Login"
         ContentTemplate="{DataTemplate pages:LoginPage}"
-        Route="LoginPage"
-        Shell.FlyoutItemIsVisible="False" />
+        Route="LoginPage" />
 
     <ShellContent
         Title="Home"
@@ -28,20 +26,4 @@
         Icon="{mi:Fluent Icon=Home48,
                          IconColor=#ac99ea}"
         Route="MainPage" />
-
-    <ShellContent
-        Title="My Bookings"
-        ContentTemplate="{DataTemplate pages:BookingsPage}"
-        Icon="{mi:Fluent Icon=CalendarLtr48,
-                         IconColor=#ac99ea}"
-        Route="BookingsPage"
-        Shell.FlyoutBehavior="Flyout" />
-
-    <ShellContent
-        Title="My Images"
-        ContentTemplate="{DataTemplate pages:UserImagesPage}"
-        Icon="{mi:Fluent Icon=ImageMultiple48,
-                         IconColor=#ac99ea}"
-        Route="UserImagesPage"
-        Shell.FlyoutBehavior="Flyout" />
 </Shell>

@@ -2,9 +2,9 @@ using Mcce.SmartOffice.MobileApp.ViewModels;
 
 namespace Mcce.SmartOffice.MobileApp.Pages;
 
-public partial class LoadingPage : ContentPage
+public partial class WorkspaceConfigurationListPage : ContentPage
 {
-    public LoadingPage(LoadingViewModel viewModel)
+    public WorkspaceConfigurationListPage(WorkspaceConfigurationListViewModel viewModel)
     {
         InitializeComponent();
 

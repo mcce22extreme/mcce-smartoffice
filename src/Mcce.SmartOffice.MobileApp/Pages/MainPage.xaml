@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
-    Title="The Smart Office">
+    Title="{Binding Title}">
     <ScrollView>
         <Grid Padding="0,0,0,0">
             <Grid.ColumnDefinitions>
@@ -84,6 +84,7 @@
                 Grid.Column="0"
                 Margin="5,0,0,5"
                 Background="{DynamicResource Primary}"
+                Command="{Binding WorkspaceConfigurationsCommand}"
                 ContentLayout="Top"
                 FontAttributes="Bold"
                 FontSize="13"
@@ -106,140 +107,6 @@
                                         IconSize=50}"
                 Text="Sign Out"
                 TextColor="White" />
-            <!--<Border
-                Grid.Row="0"
-                Grid.Column="0"
-                Margin="5,5,0,5"
-                Background="#333"
-                HeightRequest="180"
-                HorizontalOptions="Fill"
-                StrokeThickness="0"
-                VerticalOptions="Fill">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="5,5,5,5" />
-                </Border.StrokeShape>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Image
-                        Grid.Row="0"
-                        Margin="0,30,0,10"
-                        HeightRequest="80"
-                        HorizontalOptions="Center"
-                        Source="/Resources/Images/logo128.png"
-                        VerticalOptions="Center"
-                        WidthRequest="80" />
-                    <Label
-                        Grid.Row="1"
-                        FontAttributes="Bold"
-                        FontSize="18"
-                        HorizontalOptions="Center"
-                        HorizontalTextAlignment="Center"
-                        Text="Welcome"
-                        TextColor="{DynamicResource PrimaryDark}"
-                        VerticalOptions="Center" />
-                    <Label
-                        Grid.Row="2"
-                        FontAttributes="Bold"
-                        FontSize="18"
-                        HorizontalOptions="Center"
-                        HorizontalTextAlignment="Center"
-                        Text="{Binding FullName}"
-                        TextColor="{DynamicResource PrimaryDark}"
-                        VerticalOptions="Center" />
-                </Grid>
-            </Border>
-            <Border
-                Grid.Row="0"
-                Grid.Column="1"
-                Margin="5,5,5,5"
-                Padding="16,8"
-                Background="#333"
-                HeightRequest="180"
-                HorizontalOptions="Fill"
-                StrokeThickness="0"
-                VerticalOptions="Fill">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="5,5,5,5" />
-                </Border.StrokeShape>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <mi:MauiIcon
-                        Grid.Row="0"
-                        Margin="10,35,0,20"
-                        HorizontalOptions="Center"
-                        Icon="{mi:Fluent CalendarPerson24}"
-                        IconColor="{DynamicResource PrimaryDark}"
-                        IconSize="60"
-                        VerticalOptions="Center" />
-                    <Label
-                        Grid.Row="1"
-                        FontAttributes="Bold"
-                        FontSize="15"
-                        HorizontalOptions="Center"
-                        HorizontalTextAlignment="Center"
-                        Text="My Bookings"
-                        TextColor="{DynamicResource PrimaryDark}"
-                        VerticalOptions="Center" />
-                </Grid>
-            </Border>
-            <Button
-                Grid.Row="0"
-                Grid.Column="1"
-                Margin="5,5,5,5"
-                Background="Transparent"
-                Command="{Binding MyBookingsCommand}"
-                HeightRequest="180" />
-            <Border
-                Grid.Row="1"
-                Grid.Column="0"
-                Margin="5,0,0,5"
-                Padding="16,8"
-                Background="#333"
-                HeightRequest="180"
-                HorizontalOptions="Fill"
-                StrokeThickness="0"
-                VerticalOptions="Fill">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="5,5,5,5" />
-                </Border.StrokeShape>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <mi:MauiIcon
-                        Grid.Row="0"
-                        Margin="10,35,0,20"
-                        HorizontalOptions="Center"
-                        Icon="{mi:Fluent SignOut24}"
-                        IconColor="#861B2D"
-                        IconSize="60"
-                        VerticalOptions="Center" />
-                    <Label
-                        Grid.Row="1"
-                        FontAttributes="Bold"
-                        FontSize="15"
-                        HorizontalOptions="Center"
-                        HorizontalTextAlignment="Center"
-                        Text="Sign Out"
-                        TextColor="#861B2D"
-                        VerticalOptions="Center" />
-                </Grid>
-            </Border>
-            <Button
-                Grid.Row="1"
-                Grid.Column="0"
-                Margin="5,0,0,5"
-                Background="Transparent"
-                Command="{Binding SignOutCommand}"
-                HeightRequest="180" />-->
         </Grid>
     </ScrollView>
 </ContentPage>
