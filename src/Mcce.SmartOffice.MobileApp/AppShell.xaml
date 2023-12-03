@@ -36,4 +36,12 @@
                          IconColor=#ac99ea}"
         Route="BookingsPage"
         Shell.FlyoutBehavior="Flyout" />
+
+    <ShellContent
+        Title="My Images"
+        ContentTemplate="{DataTemplate pages:UserImagesPage}"
+        Icon="{mi:Fluent Icon=ImageMultiple48,
+                         IconColor=#ac99ea}"
+        Route="UserImagesPage"
+        Shell.FlyoutBehavior="Flyout" />
 </Shell>

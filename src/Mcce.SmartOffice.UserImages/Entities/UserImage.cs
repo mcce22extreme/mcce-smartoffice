@@ -9,6 +9,9 @@ namespace Mcce.SmartOffice.UserImages.Entities
         public string ImageKey { get; set; }
 
         [Required]
+        public string ThumbnailImageKey { get; set; }
+
+        [Required]
         public string UserName { get; set; }        
     }
 }

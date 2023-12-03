@@ -1,9 +1,11 @@
-﻿using Mcce.SmartOffice.Core.Accessors;
+﻿using HeyRed.Mime;
+using Mcce.SmartOffice.Core.Accessors;
 using Mcce.SmartOffice.Core.Exceptions;
 using Mcce.SmartOffice.UserImages.Entities;
 using Mcce.SmartOffice.UserImages.Models;
 using Mcce.SmartOffice.UserImages.Services;
 using Microsoft.EntityFrameworkCore;
+using SkiaSharp;
 
 namespace Mcce.SmartOffice.UserImages.Managers
 {
@@ -15,7 +17,7 @@ namespace Mcce.SmartOffice.UserImages.Managers
 
         Task<Stream> GetUserImage(string imageKey);
 
-        Task<UserImageModel> StoreUserImage(IFormFile file);
+        Task<UserImageModel> StoreUserImage(Stream stream, string mimeType);
 
         Task DeleteUserImage(string imageKey);
     }
@@ -56,14 +58,14 @@ namespace Mcce.SmartOffice.UserImages.Managers
             return userImages
                 .Select(x => new UserImageModel
                 {
+                    ImageKey = x.ImageKey,
                     Url = CreateImageUrl(x.ImageKey),
+                    ThumbnailUrl = CreateImageUrl(x.ThumbnailImageKey)
                 }).ToArray();
         }
 
         public async Task<Stream> GetUserImage(string imageKey)
         {
-            var currentUser = _contextAccessor.GetUserInfo();
-
             if (!await _storageService.FileExists(imageKey))
             {
                 throw new NotFoundException($"Could not find user image with key '{imageKey}'!");
@@ -72,28 +74,69 @@ namespace Mcce.SmartOffice.UserImages.Managers
             return await _storageService.GetContent(imageKey);
         }
 
-        public async Task<UserImageModel> StoreUserImage(IFormFile file)
+        public async Task<UserImageModel> StoreUserImage(Stream stream, string mimeType)
         {
             var currentUser = _contextAccessor.GetUserInfo();
 
-            var imageKey = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var fileExtension = MimeTypesMap.GetExtension(mimeType);
 
-            using var stream = file.OpenReadStream();
+            var imageKey = $"{Guid.NewGuid()}.{fileExtension}";
+            var thumbnailImageKey = $"{Guid.NewGuid()}_thumbnail.{fileExtension}";
 
             await _storageService.StoreContent(imageKey, stream);
+
+            // Generate thumbnail if neccessary
+            using var imageStream = await _storageService.GetContent(imageKey);
+            using var sourceBitmap = SKBitmap.Decode(imageStream);
+
+            if (sourceBitmap.Width > 800 || sourceBitmap.Height > 600)
+            {
+                var thumbnailSize = CalculateThumbnailSize(sourceBitmap.Width, sourceBitmap.Height, 800);
+
+                using var scaledBitmap = sourceBitmap.Resize(new SKImageInfo(thumbnailSize.Width, thumbnailSize.Height), SKFilterQuality.Medium);
+                using var scaledImage = SKImage.FromBitmap(scaledBitmap);
+                using var data = scaledImage.Encode();
+
+                using var thumbnailStream = new MemoryStream();
+
+                data.SaveTo(thumbnailStream);
+
+                thumbnailStream.Seek(0, SeekOrigin.Begin);
+
+                await _storageService.StoreContent(thumbnailImageKey, thumbnailStream);
+            }
+            else
+            {
+                // Image is already small enough => use same image for thumbnail
+                thumbnailImageKey = imageKey;
+            }
 
             await _dbContext.UserImages.AddAsync(new UserImage
             {
                 UserName = currentUser.UserName,
-                ImageKey = imageKey
+                ImageKey = imageKey,
+                ThumbnailImageKey = thumbnailImageKey,
             });
 
             await _dbContext.SaveChangesAsync();
 
             return new UserImageModel
             {
-                Url = CreateImageUrl(imageKey)
+                ImageKey = imageKey,
+                Url = CreateImageUrl(imageKey),
+                ThumbnailUrl = CreateImageUrl(thumbnailImageKey)
             };
+        }
+
+        private (int Width, int Height) CalculateThumbnailSize(int originalWidth, int originalHeight, int targetWidth)
+        {
+            // Calculate the aspect ratio
+            double aspectRatio = (double)originalWidth / originalHeight;
+
+            // Calculate the corresponding height based on the target width and aspect ratio
+            int targetHeight = (int)(targetWidth / aspectRatio);
+
+            return (targetWidth, targetHeight);
         }
 
         public async Task DeleteUserImage(string imageKey)
@@ -106,7 +149,8 @@ namespace Mcce.SmartOffice.UserImages.Managers
 
             foreach (var userImage in userImages)
             {
-                await _storageService.DeleteContent(imageKey);
+                await _storageService.DeleteContent(userImage.ImageKey);
+                await _storageService.DeleteContent(userImage.ThumbnailImageKey);
 
                 _dbContext.UserImages.Remove(userImage);
             }

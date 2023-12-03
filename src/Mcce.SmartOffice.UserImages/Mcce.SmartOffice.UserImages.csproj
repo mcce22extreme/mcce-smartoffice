@@ -12,6 +12,9 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="MimeTypesMap" Version="1.0.8" />
+        <PackageReference Include="SkiaSharp" Version="2.88.6" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.6" />
     </ItemGroup>
 
     <ItemGroup>

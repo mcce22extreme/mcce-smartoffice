@@ -41,9 +41,15 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         }
 
         [RelayCommand]
-        private async Task MyBookings()
+        private async Task Bookings()
         {
             await Shell.Current.GoToAsync($"{nameof(BookingsPage)}");
+        }
+
+        [RelayCommand]
+        public async Task UserImages()
+        {
+            await Shell.Current.GoToAsync($"{nameof(UserImagesPage)}");
         }
 
         [RelayCommand]

@@ -1,5 +1,4 @@
-﻿using Mcce.SmartOffice.Core.Extensions;
-using Mcce.SmartOffice.UserImages.Managers;
+﻿using Mcce.SmartOffice.UserImages.Managers;
 using Mcce.SmartOffice.UserImages.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,9 +30,9 @@ namespace Mcce.SmartOffice.UserImages.Controllers
         }
 
         [HttpPost]
-        public async Task<UserImageModel> StoreUserImage(IFormFile file)
+        public async Task<UserImageModel> StoreUserImage()
         {
-            return await _userImageManager.StoreUserImage(file);
+            return await _userImageManager.StoreUserImage(Request.Body, Request.Headers.ContentType);
         }
 
         [HttpDelete("{imageKey}")]
