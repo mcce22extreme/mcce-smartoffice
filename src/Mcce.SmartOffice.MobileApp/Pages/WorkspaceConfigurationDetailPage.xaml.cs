@@ -1,10 +1,14 @@
 using Mcce.SmartOffice.MobileApp.ViewModels;
+using Microsoft.Maui.Platform;
 
 namespace Mcce.SmartOffice.MobileApp.Pages;
 
-public partial class CreateBookingPage : ContentPage
+[QueryProperty(nameof(WorkspaceNumber), nameof(WorkspaceNumber))]
+public partial class WorkspaceConfigurationDetailPage : ContentPage
 {
-    public CreateBookingPage(CreateBookingViewModel viewModel)
+    public string WorkspaceNumber { get; set; }
+
+    public WorkspaceConfigurationDetailPage(WorkspaceConfigurationDetailViewModel viewModel)
     {
         InitializeComponent();
 
@@ -15,11 +19,13 @@ public partial class CreateBookingPage : ContentPage
     {
         base.OnNavigatedTo(args);
 
-        await ((CreateBookingViewModel)BindingContext).LoadWorkspaces();
+        ((WorkspaceConfigurationDetailViewModel)BindingContext).WorkspaceNumber = WorkspaceNumber;
+
+        await ((IViewModel)BindingContext).Activate();
     }
 
     protected override void OnAppearing()
-    {        
+    {
         base.OnAppearing();
 
         Shell.Current.Navigating += OnNavigating;
@@ -34,20 +40,24 @@ public partial class CreateBookingPage : ContentPage
 
     private async void OnNavigating(object sender, ShellNavigatingEventArgs e)
     {
-        if(((CreateBookingViewModel)BindingContext).HasUnsavedData)
+        if (((WorkspaceConfigurationDetailViewModel)BindingContext).HasUnsavedData)
         {
             var deferral = e.GetDeferral();
 
-            var result = await Application.Current.MainPage.DisplayAlert("Cancel Booking?", "Do you really want to cancel the booking?", "Yes", "No");
+            var result = await Application.Current.MainPage.DisplayAlert("Cancel?", "Do you really want to cancel?", "Yes", "No");
 
             if (result)
             {
                 deferral.Complete();
+
+#if ANDROID
+                Platform.CurrentActivity.HideKeyboard(Platform.CurrentActivity.CurrentFocus);
+#endif
             }
             else
             {
                 e.Cancel();
             }
-        }        
+        }
     }
 }
