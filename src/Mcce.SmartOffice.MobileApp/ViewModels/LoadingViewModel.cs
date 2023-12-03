@@ -4,30 +4,29 @@ using Mcce.SmartOffice.MobileApp.Services;
 
 namespace Mcce.SmartOffice.MobileApp.ViewModels
 {
-    public class LoadingViewModel
+    public class LoadingViewModel : ViewModelBase
     {
         private readonly IAuthService _authService;
         private readonly IAccountManager _accountManager;
 
-        public LoadingViewModel(IAuthService authService, IAccountManager accountManager)
+        public LoadingViewModel(IAuthService authService, IAccountManager accountManager, INavigationService navigationService)
+            : base(navigationService)
         {
             _authService = authService;
             _accountManager = accountManager;
         }
 
-        public async Task VerifySession()
+        public override async Task Activate()
         {
-            // try to load account info
-
             try
             {
                 await _accountManager.GetAccountInfo();
 
-                await Shell.Current.GoToAsync($"//{nameof(MainPage)}");
+                await NavigationService.GoToAsync($"//{nameof(MainPage)}");
             }
             catch (HttpRequestException)
             {
-                await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+                await NavigationService.GoToAsync($"//{nameof(LoginPage)}");
             }
         }
     }

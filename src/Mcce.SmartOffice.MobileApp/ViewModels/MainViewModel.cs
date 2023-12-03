@@ -6,50 +6,63 @@ using Mcce.SmartOffice.MobileApp.Services;
 
 namespace Mcce.SmartOffice.MobileApp.ViewModels
 {
-    public partial class MainViewModel : ObservableObject
+    public partial class MainViewModel : ViewModelBase
     {
         private readonly IAuthService _authService;
         private readonly IAccountManager _accountManager;
 
+        public override string Title => "The Smart Office";
+
         [ObservableProperty]
         private string _fullName;
 
-        public MainViewModel(IAuthService authService, IAccountManager accountManager)
+        public MainViewModel(IAuthService authService, IAccountManager accountManager, INavigationService navigationService)
+            : base(navigationService)
         {
             _authService = authService;
             _accountManager = accountManager;
         }
 
-        public async Task LoadAccountInfo()
+        public override async Task Activate()
         {
             try
             {
+                IsBusy = true;
+
                 var accountInfo = await _accountManager.GetAccountInfo();
 
                 FullName = $"{accountInfo.FirstName} {accountInfo.LastName}";
             }
             catch (HttpRequestException)
             {
-                await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+                await _authService.SignIn();
+                //await NavigationService.GoToAsync($"//{nameof(LoginPage)}");
             }
+            finally { IsBusy = false; }
         }
 
         [RelayCommand]
         private async Task CreateBooking()
         {
-            await Shell.Current.GoToAsync($"{nameof(CreateBookingPage)}");
+            await NavigationService.GoToAsync($"{nameof(BookingDetailPage)}");
         }
 
         [RelayCommand]
         private async Task Bookings()
         {
-            await Shell.Current.GoToAsync($"{nameof(BookingsPage)}");
+            await NavigationService.GoToAsync($"{nameof(BookingListPage)}");
         }
 
         [RelayCommand]
         public async Task UserImages()
         {
-            await Shell.Current.GoToAsync($"{nameof(UserImagesPage)}");
+            await NavigationService.GoToAsync($"{nameof(UserImageListPage)}");
+        }
+
+        [RelayCommand]
+        public async Task WorkspaceConfigurations()
+        {
+            await NavigationService.GoToAsync(nameof(WorkspaceConfigurationListPage));
         }
 
         [RelayCommand]
@@ -61,7 +74,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             {
                 await _authService.SignOut();
 
-                await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+                await NavigationService.GoToAsync($"//{nameof(LoginPage)}");
             }
         }
     }

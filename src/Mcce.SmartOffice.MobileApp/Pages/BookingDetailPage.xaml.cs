@@ -2,9 +2,9 @@ using Mcce.SmartOffice.MobileApp.ViewModels;
 
 namespace Mcce.SmartOffice.MobileApp.Pages;
 
-public partial class UserImagesPage : ContentPage
+public partial class BookingDetailPage : ContentPage
 {
-    public UserImagesPage(UserImagesViewModel viewModel)
+    public BookingDetailPage(BookingDetailViewModel viewModel)
     {
         InitializeComponent();
 
@@ -15,6 +15,6 @@ public partial class UserImagesPage : ContentPage
     {
         base.OnNavigatedTo(args);
 
-        await ((UserImagesViewModel)BindingContext).LoadUserImages();
-    }
+        await ((IViewModel)BindingContext).Activate();
+    }    
 }

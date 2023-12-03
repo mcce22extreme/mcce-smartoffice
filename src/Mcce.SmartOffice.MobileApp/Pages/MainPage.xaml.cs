@@ -18,7 +18,7 @@ namespace Mcce.SmartOffice.MobileApp.Pages
         {
             base.OnNavigatedTo(args);
 
-            await ((MainViewModel)BindingContext).LoadAccountInfo();
+            await ((IViewModel)BindingContext).Activate();
         }
     }
 }
