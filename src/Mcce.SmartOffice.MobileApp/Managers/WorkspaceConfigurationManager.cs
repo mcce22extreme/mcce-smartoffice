@@ -1,4 +1,6 @@
 ﻿using System.Net.Http.Json;
+using Mcce.SmartOffice.App;
+using Mcce.SmartOffice.App.Managers;
 using Mcce.SmartOffice.MobileApp.Models;
 using Newtonsoft.Json;
 

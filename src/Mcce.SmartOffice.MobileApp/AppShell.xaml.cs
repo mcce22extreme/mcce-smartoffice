@@ -1,4 +1,5 @@
-﻿using Mcce.SmartOffice.MobileApp.Pages;
+﻿using MauiIcons.Core;
+using Mcce.SmartOffice.MobileApp.Pages;
 
 namespace Mcce.SmartOffice.MobileApp
 {
@@ -7,7 +8,9 @@ namespace Mcce.SmartOffice.MobileApp
         public AppShell()
         {
             InitializeComponent();
-                       
+
+            _ = new MauiIcon();
+
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
             Routing.RegisterRoute(nameof(LoadingPage), typeof(LoadingPage));
             Routing.RegisterRoute(nameof(BookingListPage), typeof(BookingListPage));

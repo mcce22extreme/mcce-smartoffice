@@ -1,4 +1,6 @@
-﻿using Mcce.SmartOffice.MobileApp.Models;
+﻿using Mcce.SmartOffice.App;
+using Mcce.SmartOffice.App.Managers;
+using Mcce.SmartOffice.MobileApp.Models;
 using Newtonsoft.Json;
 
 namespace Mcce.SmartOffice.MobileApp.Managers

@@ -370,3 +370,5 @@ src/Mcce22.SmartOffice.Simulator/Certificates/
 *.ps1
 
 k8s/mosquitto/mosquitto-password.yaml
+
+.VSCodeCounter/

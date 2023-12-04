@@ -1,3 +1,4 @@
+using Mcce.SmartOffice.App.ViewModels;
 using Mcce.SmartOffice.MobileApp.ViewModels;
 
 namespace Mcce.SmartOffice.MobileApp.Pages;

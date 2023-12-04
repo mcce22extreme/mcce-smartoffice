@@ -19,14 +19,16 @@
                 HorizontalOptions="Center"
                 HorizontalTextAlignment="Center"
                 Text="Welcome"
-                TextColor="{DynamicResource Primary}" />
+                TextColor="{AppThemeBinding Light={DynamicResource Primary},
+                                            Dark={DynamicResource White}}" />
             <Label
                 FontAttributes="Bold"
                 FontSize="30"
                 HorizontalOptions="Center"
                 HorizontalTextAlignment="Center"
                 Text="to the Smart Office!"
-                TextColor="{DynamicResource Primary}" />
+                TextColor="{AppThemeBinding Light={DynamicResource Primary},
+                                            Dark={DynamicResource White}}" />
             <ActivityIndicator
                 Grid.Row="4"
                 IsRunning="True"
@@ -34,7 +36,9 @@
             <Label
                 Grid.Row="5"
                 HorizontalOptions="Center"
-                Text="Checking authentication state..." />
+                Text="Checking authentication state..."
+                TextColor="{AppThemeBinding Light={DynamicResource Primary},
+                                            Dark={DynamicResource White}}" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

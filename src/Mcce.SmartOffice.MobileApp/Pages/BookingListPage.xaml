@@ -42,16 +42,16 @@
                                 FontAttributes="Bold"
                                 FontSize="16"
                                 Text="{Binding BookingTitle}"
-                                TextColor="{AppThemeBinding Light={DynamicResource ListItemColorLight},
-                                                            Dark={DynamicResource ListItemColorDark}}" />
+                                TextColor="{AppThemeBinding Light={DynamicResource PrimaryDark},
+                                                            Dark={DynamicResource White}}" />
                             <Label
                                 Grid.Row="1"
                                 Margin="5,0,0,3"
                                 FontAttributes="Bold"
                                 FontSize="12"
                                 Text="{Binding BookingSubTitle}"
-                                TextColor="{AppThemeBinding Light={DynamicResource ListItemColorLight},
-                                                            Dark={DynamicResource ListItemColorDark}}" />
+                                TextColor="{AppThemeBinding Light={DynamicResource PrimaryDark},
+                                                            Dark={DynamicResource White}}" />
                         </Grid>
                     </ViewCell>
                 </DataTemplate>
