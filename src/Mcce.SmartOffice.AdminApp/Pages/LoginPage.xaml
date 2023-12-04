@@ -6,6 +6,15 @@
     Title="The Smart Office (Admin)"
     Shell.FlyoutBehavior="Disabled"
     Shell.NavBarHasShadow="True">
+    <ContentPage.Resources>
+        <Style TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="30" />
+            <Setter Property="HorizontalOptions" Value="Center" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource Primary}, Dark={DynamicResource White}}" />
+        </Style>
+    </ContentPage.Resources>
     <ScrollView>
         <VerticalStackLayout Padding="30,0">
             <Image
@@ -13,41 +22,19 @@
                 HeightRequest="200"
                 Source="/Resources/Images/logo512.png"
                 WidthRequest="200" />
-            <Label
-                FontAttributes="Bold"
-                FontSize="30"
-                HorizontalOptions="Center"
-                HorizontalTextAlignment="Center"
-                Text="Welcome"
-                TextColor="{DynamicResource Primary}" />
-            <Label
-                FontAttributes="Bold"
-                FontSize="30"
-                HorizontalOptions="Center"
-                HorizontalTextAlignment="Center"
-                Text="to the Smart Office"
-                TextColor="{DynamicResource Primary}" />
-            <Label
-                FontAttributes="Bold"
-                FontSize="30"
-                HorizontalOptions="Center"
-                HorizontalTextAlignment="Center"
-                Text="Administration!"
-                TextColor="{DynamicResource Primary}" />
+            <Label Text="Welcome" />
+            <Label Text="to the Smart Office" />
+            <Label Text="Administration!" />
             <Label
                 Margin="0,50,0,0"
-                FontAttributes="Bold"
                 FontSize="15"
-                HorizontalOptions="Center"
-                HorizontalTextAlignment="Center"
-                Text=" You are not logged in or your session has expired. Please sign in again."
-                TextColor="{DynamicResource PrimaryDark}" />
-
+                Text=" You are not logged in or your session has expired. Please sign in again." />
             <Button
                 Margin="0,50,0,0"
                 Command="{Binding SignInCommand}"
                 MaximumWidthRequest="300"
-                Text="Sign In" />
+                Text="Sign In"
+                TextColor="WHite" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

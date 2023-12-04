@@ -13,9 +13,18 @@
                 <Setter Property="FontSize" Value="15" />
                 <Setter Property="FontAttributes" Value="Bold" />
                 <Setter Property="ContentLayout" Value="Top" />
-                <Setter Property="HeightRequest" Value="120" />
+                <Setter Property="HeightRequest" Value="110" />
                 <Setter Property="WidthRequest" Value="120" />
                 <Setter Property="TextColor" Value="White" />
+            </Style.Setters>
+        </Style>
+        <Style TargetType="Label">
+            <Style.Setters>
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="30" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource Primary}, Dark={DynamicResource White}}" />
             </Style.Setters>
         </Style>
     </ContentPage.Resources>
@@ -31,21 +40,11 @@
             <Label
                 Grid.Row="1"
                 Grid.ColumnSpan="3"
-                FontAttributes="Bold"
-                FontSize="30"
-                HorizontalOptions="Center"
-                HorizontalTextAlignment="Center"
-                Text="The Smart Office"
-                TextColor="{DynamicResource Primary}" />
+                Text="The Smart Office" />
             <Label
                 Grid.Row="2"
                 Grid.ColumnSpan="3"
-                FontAttributes="Bold"
-                FontSize="30"
-                HorizontalOptions="Center"
-                HorizontalTextAlignment="Center"
-                Text="Administration"
-                TextColor="{DynamicResource Primary}" />
+                Text="Administration" />
             <FlexLayout
                 Grid.Row="3"
                 Margin="0,40,0,0"
@@ -57,7 +56,12 @@
                 <Button ImageSource="{mi:Fluent Icon=Desktop32, IconColor=White, IconSize=50}" Text="Workspaces" />
                 <Button ImageSource="{mi:Fluent Icon=CalendarLtr48, IconColor=White, IconSize=50}" Text="Bookings" />
                 <Button ImageSource="{mi:Fluent Icon=DataBarVertical32, IconColor=White, IconSize=50}" Text="Analytics" />
-                <Button ImageSource="{mi:Fluent Icon=SignOut24, IconColor=White, IconSize=50}" Text="Sign Out" />
+                <Button
+                    Command="{Binding SignOutCommand}"
+                    ImageSource="{mi:Fluent Icon=SignOut24,
+                                            IconColor=White,
+                                            IconSize=50}"
+                    Text="Sign Out" />
             </FlexLayout>
         </VerticalStackLayout>
     </ScrollView>
