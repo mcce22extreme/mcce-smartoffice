@@ -1,8 +1,8 @@
-﻿using Mcce.SmartOffice.App;
-using MauiIcons.Fluent;
+﻿using MauiIcons.Fluent;
 using Mcce.SmartOffice.AdminApp.Managers;
 using Mcce.SmartOffice.AdminApp.Pages;
 using Mcce.SmartOffice.AdminApp.ViewModels;
+using Mcce.SmartOffice.App;
 
 namespace Mcce.SmartOffice.AdminApp
 {
@@ -23,19 +23,24 @@ namespace Mcce.SmartOffice.AdminApp
 
             // Register managers
             builder.Services
-                .AddSingleton<IAccountManager, AccountManager>();
+                .AddSingleton<IAccountManager, AccountManager>()
+                .AddSingleton<IWorkspaceManager, WorkspaceManager>();
 
             // Register pages
             builder.Services
                 .AddTransient<LoadingPage>()
                 .AddTransient<LoginPage>()
-                .AddTransient<MainPage>();
+                .AddTransient<MainPage>()
+                .AddTransient<WorkspaceListPage>()
+                .AddTransient<WorkspaceDetailPage>();
 
             // Register viewmodels
             builder.Services
                 .AddTransient<LoadingViewModel>()
                 .AddTransient<LoginViewModel>()
-                .AddTransient<MainViewModel>();
+                .AddTransient<MainViewModel>()
+                .AddTransient<WorkspaceListViewModel>()
+                .AddTransient<WorkspaceDetailViewModel>();
             ;
         }
     }

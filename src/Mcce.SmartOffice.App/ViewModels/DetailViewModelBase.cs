@@ -3,14 +3,14 @@ using Mcce.SmartOffice.App.Services;
 
 namespace Mcce.SmartOffice.App.ViewModels
 {
-    public interface IDetailViewModelBase
+    public interface IDetailViewModel : IViewModel
     {
         bool HasUnsavedData { get; }
 
         Task<bool> CanGoBack();
     }
 
-    public abstract class DetailViewModelBase : ViewModelBase, IDetailViewModelBase
+    public abstract class DetailViewModelBase : ViewModelBase, IDetailViewModel
     {
         protected bool IsLoaded { get; set; } = false;
 

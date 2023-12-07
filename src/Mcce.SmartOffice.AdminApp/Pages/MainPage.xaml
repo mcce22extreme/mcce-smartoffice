@@ -53,7 +53,12 @@
                 HorizontalOptions="Center"
                 JustifyContent="Center"
                 Wrap="Wrap">
-                <Button ImageSource="{mi:Fluent Icon=Desktop32, IconColor=White, IconSize=50}" Text="Workspaces" />
+                <Button
+                    Command="{Binding WorkspacesCommand}"
+                    ImageSource="{mi:Fluent Icon=Desktop32,
+                                            IconColor=White,
+                                            IconSize=50}"
+                    Text="Workspaces" />
                 <Button ImageSource="{mi:Fluent Icon=CalendarLtr48, IconColor=White, IconSize=50}" Text="Bookings" />
                 <Button ImageSource="{mi:Fluent Icon=DataBarVertical32, IconColor=White, IconSize=50}" Text="Analytics" />
                 <Button
