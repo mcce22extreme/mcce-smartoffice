@@ -1,6 +1,7 @@
 ﻿using Mcce.SmartOffice.Core;
+using Mcce.SmartOffice.Core.Accessors;
+using Mcce.SmartOffice.Core.Extensions;
 using Mcce.SmartOffice.UserImages.Configs;
-using Mcce.SmartOffice.UserImages.Enums;
 using Mcce.SmartOffice.UserImages.Managers;
 using Mcce.SmartOffice.UserImages.Services;
 
@@ -10,16 +11,20 @@ namespace Mcce.SmartOffice.UserImages
     {
         protected override void OnConfigureBuilder(WebApplicationBuilder builder)
         {
-            builder.Services.AddScoped<IUserImageManager, UserImageManager>();
+            builder.Services.AddDbContext<AppDbContext>(AppConfig.DbConfig, AppDbContext.DATABASE_SCHEMA);
 
-            switch (AppConfig.StorageConfig.StorageType)
-            {
-                case StorageType.FileSystem:
-                    builder.Services.AddScoped<IStorageService, FileSystemStorageService>(s => new FileSystemStorageService(AppConfig.StorageConfig.Path));
-                    break;
-                default:
-                    throw new InvalidOperationException($"The storage type '{AppConfig.StorageConfig.StorageType}' is not supported!");
-            }
+            builder.Services.AddScoped<IUserImageManager>(s => new UserImageManager(
+                AppConfig.FrontendUrl?.TrimEnd('/'),
+                s.GetRequiredService<AppDbContext>(),
+                s.GetRequiredService<IAuthContextAccessor>(),
+                s.GetRequiredService<IStorageService>()));
+
+            builder.Services.AddScoped<IStorageService, FileSystemStorageService>(s => new FileSystemStorageService(AppConfig.StoragePath));
+        }
+
+        protected override async Task OnConfigureApp(WebApplication app)
+        {
+            await app.Services.InitializeDatabase<AppDbContext>();
         }
     }
 }

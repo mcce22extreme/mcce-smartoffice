@@ -14,10 +14,10 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Entities
         [Required]
         public int Wei { get; set; }
 
-        public double Temperature { get; set; }
+        public float Temperature { get; set; }
 
-        public double Co2Level { get; set; }
+        public float Co2Level { get; set; }
 
-        public double Humidity { get; set; }
+        public float Humidity { get; set; }
     }
 }

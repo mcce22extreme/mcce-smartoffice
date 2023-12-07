@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FakeItEasy;
 using Mcce.SmartOffice.Bookings.Entities;
+using Mcce.SmartOffice.Core.Accessors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,9 +9,9 @@ namespace Mcce.SmartOffice.Bookings.Tests
 {
     public abstract class TestBase
     {
-        private const string DBNAME = "Data Source=test.db";
-
         protected static IMapper Mapper { get; }
+
+        protected AppDbContext DbContext { get; private set; }
 
         static TestBase()
         {
@@ -24,38 +25,25 @@ namespace Mcce.SmartOffice.Bookings.Tests
         }
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
-            DeleteTestDb();
+            var dbOptionsBuilder = new DbContextOptionsBuilder();
+
+            dbOptionsBuilder.UseInMemoryDatabase("smartoffice");
+
+            DbContext = new AppDbContext(dbOptionsBuilder.Options, A.Fake<IAuthContextAccessor>());
         }
 
         [TearDown]
-        public void TearDown()
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
         {
-            DeleteTestDb();
-        }
-
-        private void DeleteTestDb()
-        {
-            if (File.Exists(DBNAME))
+            if (DbContext != null)
             {
-                File.Delete(DBNAME);
+                DbContext.Database.EnsureDeleted();
+                DbContext.Dispose();
+                DbContext = null;
             }
-        }
-
-        protected AppDbContext CreateDbContext()
-        {
-            var dbOptionsBuilder = new DbContextOptionsBuilder();
-            dbOptionsBuilder.UseSqlite(DBNAME);
-
-            var dbContext = new AppDbContext(dbOptionsBuilder.Options, A.Fake<IHttpContextAccessor>());
-
-            if (!File.Exists(DBNAME))
-            {
-                dbContext.Database.Migrate();
-            }
-
-            return dbContext;
         }
     }
 }

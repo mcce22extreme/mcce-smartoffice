@@ -2,6 +2,6 @@
 {
     public class AppConfig : Core.Configs.AppConfig
     {
-        public StorageConfig StorageConfig { get; set; }
+        public string StoragePath { get; set; }
     }
 }

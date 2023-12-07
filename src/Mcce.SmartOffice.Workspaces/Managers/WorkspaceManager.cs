@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Mcce.SmartOffice.Core.Enums;
 using Mcce.SmartOffice.Core.Exceptions;
 using Mcce.SmartOffice.Workspaces.Entities;
 using Mcce.SmartOffice.Workspaces.Models;
@@ -15,6 +16,10 @@ namespace Mcce.SmartOffice.Workspaces.Managers
         Task<WorkspaceModel> CreateWorkspace(SaveWorkspaceModel model);
 
         Task<WorkspaceModel> UpdateWorkspace(string workspaceNumber, SaveWorkspaceModel model);
+
+        Task<WorkspaceModel> UpdateWorkspaceWei(string workspaceNumber, int wei);
+
+        Task<bool> WorkspaceExists(string workspaceNumber);
 
         Task DeleteWorkspace(string workspaceNumber);
     }
@@ -55,21 +60,16 @@ namespace Mcce.SmartOffice.Workspaces.Managers
         {
             var workspace = _mapper.Map<Workspace>(model);
 
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
-
             await _dbContext.Workspaces.AddAsync(workspace);
 
             await _dbContext.SaveChangesAsync();
-
-            await tx.CommitAsync();
 
             return await GetWorkspace(workspace.WorkspaceNumber);
         }
 
         public async Task<WorkspaceModel> UpdateWorkspace(string workspaceNumber, SaveWorkspaceModel model)
         {
-            var workspace = await _dbContext.Workspaces
-                .FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber);
+            var workspace = await _dbContext.Workspaces.FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber);
 
             if (workspace == null)
             {
@@ -78,24 +78,42 @@ namespace Mcce.SmartOffice.Workspaces.Managers
 
             _mapper.Map(model, workspace);
 
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
-
             await _dbContext.SaveChangesAsync();
-
-            await tx.CommitAsync();
 
             return await GetWorkspace(workspaceNumber);
         }
 
         public async Task DeleteWorkspace(string workspaceNumber)
         {
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
+            var workspace = await _dbContext.Workspaces.FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber);
 
-            await _dbContext.Workspaces
-                .Where(x => x.WorkspaceNumber == workspaceNumber)
-                .ExecuteDeleteAsync();
+            if (workspace != null)
+            {
+                _dbContext.Workspaces.Remove(workspace);
 
-            await tx.CommitAsync();
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
+        public async Task<WorkspaceModel> UpdateWorkspaceWei(string workspaceNumber, int wei)
+        {
+            var workspace = await _dbContext.Workspaces.FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber);
+
+            if (workspace == null)
+            {
+                throw new NotFoundException($"Could not find workspace '{workspaceNumber}'!");
+            }
+
+            workspace.Wei = wei;
+
+            await _dbContext.SaveChangesAsync(auditInfoUpdateMode: AuditInfoUpdateMode.Suppress);
+
+            return await GetWorkspace(workspaceNumber);
+        }
+
+        public async Task<bool> WorkspaceExists(string workspaceNumber)
+        {
+            return await _dbContext.Workspaces.AnyAsync(x => x.WorkspaceNumber == workspaceNumber);
         }
     }
 }

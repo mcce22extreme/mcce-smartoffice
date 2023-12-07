@@ -1,6 +1,6 @@
-﻿using Mcce.SmartOffice.Core.Extensions;
-using Mcce.SmartOffice.UserImages.Managers;
+﻿using Mcce.SmartOffice.UserImages.Managers;
 using Mcce.SmartOffice.UserImages.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mcce.SmartOffice.UserImages.Controllers
@@ -19,9 +19,10 @@ namespace Mcce.SmartOffice.UserImages.Controllers
         [HttpGet]
         public async Task<UserImageModel[]> GetUserImages()
         {
-            return await _userImageManager.GetUserImages(CreateUrl);
+            return await _userImageManager.GetUserImages();
         }
 
+        [AllowAnonymous]
         [HttpGet("{imageKey}", Name = nameof(GetUserImage))]
         public async Task<Stream> GetUserImage(string imageKey)
         {
@@ -29,31 +30,15 @@ namespace Mcce.SmartOffice.UserImages.Controllers
         }
 
         [HttpPost]
-        public async Task<UserImageModel> StoreUserImage(IFormFile file)
+        public async Task<UserImageModel> StoreUserImage()
         {
-            return await _userImageManager.StoreUserImage(file, CreateUrl);
+            return await _userImageManager.StoreUserImage(Request.Body, Request.Headers.ContentType);
         }
 
         [HttpDelete("{imageKey}")]
         public async Task DeleteUserImage(string imageKey)
         {
             await _userImageManager.DeleteUserImage(imageKey);
-        }
-
-        private string CreateUrl(string imageKey)
-        {
-            string referer = Request.Headers["Referer"];
-
-            if (referer.HasValue())
-            {
-                var builder = new UriBuilder(referer);
-
-                return $"{builder.Scheme}://{builder.Host}:{builder.Port}{Url.RouteUrl(nameof(GetUserImage), new { imageKey })}";
-            }
-            else
-            {
-                return $"{Request.Scheme}://{Request.Host}{Url.RouteUrl(nameof(GetUserImage), new { imageKey })}";
-            }
         }
     }
 }

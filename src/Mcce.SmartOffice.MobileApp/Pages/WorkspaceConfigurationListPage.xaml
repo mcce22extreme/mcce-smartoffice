@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mcce.SmartOffice.MobileApp.Pages.WorkspaceConfigurationListPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
+    Title="{Binding Title}">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Command="{Binding LoadWorkspaceConfigurationsCommand}"
+            IconImageSource="{mi:Fluent Icon=ArrowSync12,
+                                        IconColor=White}"
+            Order="Primary"
+            Text="Reload" />
+        <ToolbarItem
+            Command="{Binding DeleteWorkspaceConfigurationCommand}"
+            IconImageSource="{mi:Fluent Icon=Delete48,
+                                        IconColor=White}"
+            Order="Primary"
+            Text="Delete" />
+    </ContentPage.ToolbarItems>
+    <Grid VerticalOptions="Fill">
+        <ListView
+            ItemsSource="{Binding WorkspaceConfigurations}"
+            RowHeight="60"
+            SelectedItem="{Binding SelectedWorkspaceConfiguration}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid VerticalOptions="Center">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Label
+                                Grid.Row="0"
+                                Margin="5,5,0,3"
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="{Binding WorkspaceNumber}"
+                                TextColor="{AppThemeBinding Light={DynamicResource ListItemColorLight},
+                                                            Dark={DynamicResource ListItemColorDark}}" />
+                            <Label
+                                Grid.Row="1"
+                                Margin="5,0,0,3"
+                                FontAttributes="Bold"
+                                FontSize="12"
+                                Text="{Binding DeskHeight, StringFormat='Desk Height: {0:F2} cm'}"
+                                TextColor="{AppThemeBinding Light={DynamicResource ListItemColorLight},
+                                                            Dark={DynamicResource ListItemColorDark}}" />
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button
+            Margin="0,0,10,80"
+            Command="{Binding CreateWorkspaceConfigurationCommand}"
+            CornerRadius="40"
+            FontFamily="fa-regular"
+            FontSize="18"
+            HeightRequest="60"
+            HorizontalOptions="End"
+            ImageSource="{mi:Fluent Icon=Add28,
+                                    IconColor=White,
+                                    IconSize=40}"
+            Opacity="0.9"
+            VerticalOptions="End"
+            WidthRequest="60" />
+        <Button
+            Margin="0,0,10,10"
+            Command="{Binding EditWorkspaceConfigurationCommand}"
+            CornerRadius="40"
+            FontFamily="fa-regular"
+            FontSize="18"
+            HeightRequest="60"
+            HorizontalOptions="End"
+            ImageSource="{mi:Fluent Icon=Edit32,
+                                    IconColor=White,
+                                    IconSize=40}"
+            Opacity="0.9"
+            VerticalOptions="End"
+            WidthRequest="60" />
+        <ActivityIndicator
+            Grid.Row="4"
+            HorizontalOptions="Center"
+            IsRunning="True"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Center"
+            WidthRequest="64" />
+    </Grid>
+</ContentPage>

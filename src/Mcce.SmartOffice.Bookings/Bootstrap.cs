@@ -1,9 +1,10 @@
-﻿using Mcce.SmartOffice.Bookings.Configs;
+﻿using AutoMapper;
 using Mcce.SmartOffice.Bookings.Managers;
-using Mcce.SmartOffice.Bookings.Services;
 using Mcce.SmartOffice.Core;
-using Mcce.SmartOffice.Core.Enums;
-using Microsoft.EntityFrameworkCore;
+using Mcce.SmartOffice.Core.Accessors;
+using Mcce.SmartOffice.Core.Configs;
+using Mcce.SmartOffice.Core.Extensions;
+using Mcce.SmartOffice.Core.Services;
 
 namespace Mcce.SmartOffice.Bookings
 {
@@ -11,28 +12,19 @@ namespace Mcce.SmartOffice.Bookings
     {
         protected override void OnConfigureBuilder(WebApplicationBuilder builder)
         {
-            switch (AppConfig.DbConfig.DbType)
-            {
-                case DbType.SQLite:
-                    builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(AppConfig.DbConfig.ConnectionString));
-                    break;
-                default:
-                    throw new InvalidOperationException($"The database type '{AppConfig.DbConfig.DbType}' is not supported!");
-            }
+            builder.Services.AddDbContext<AppDbContext>(AppConfig.DbConfig, AppDbContext.DATABASE_SCHEMA);
 
-            builder.Services.AddScoped<IBookingManager, BookingManager>();
-
-            builder.Services.AddScoped<IEmailService>(s => new EmailService(AppConfig.EmailConfig));
-
+            builder.Services.AddScoped<IBookingManager>(s => new BookingManager(
+                AppConfig.FrontendUrl?.TrimEnd('/'),
+                s.GetRequiredService<AppDbContext>(),
+                s.GetRequiredService<IMapper>(),
+                s.GetRequiredService<IAuthContextAccessor>(),
+                s.GetRequiredService<IMessageService>()));
         }
 
         protected override async Task OnConfigureApp(WebApplication app)
         {
-            using var scope = app.Services.CreateScope();
-
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-            await db.Database.MigrateAsync();
+            await app.Services.InitializeDatabase<AppDbContext>();
         }
     }
 }

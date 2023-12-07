@@ -9,3 +9,5 @@ docker push domih/mcce-smart-office-workspaceconfiguration-api
 docker push domih/mcce-smart-office-booking-api
 
 docker push domih/mcce-smart-office-workspacedataentry-api
+
+docker push domih/mcce-smart-office-account-api

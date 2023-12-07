@@ -1,8 +1,8 @@
 using System.Reflection;
-using Mcce.SmartOffice.ApiGateway.Constants;
-using Mcce.SmartOffice.ApiGateway.Extensions;
 using Mcce.SmartOffice.Core;
+using MMLib.SwaggerForOcelot.Configuration;
 using Newtonsoft.Json;
+using Ocelot.Configuration.File;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Serilog;
@@ -15,8 +15,12 @@ namespace Mcce.SmartOffice.ApiGateway
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
-                .AddEnvironmentVariables(EnvironmentVariables.PREFIX);
+            builder.Configuration
+                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"config/appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables("SMARTOFFICE_");
 
             // Configure serilog
             Log.Logger = new LoggerConfiguration()
@@ -25,17 +29,11 @@ namespace Mcce.SmartOffice.ApiGateway
                 .CreateLogger();
 
             var appInfo = new AppInfo(Assembly.GetEntryAssembly().GetName());
+            var appConfig = builder.Configuration.Get<AppConfig>();
 
             Log.Information($"Starting {appInfo.AppName} v{appInfo.AppVersion}...");
 
-            Log.Debug($"Configuration: \n" + JsonConvert.SerializeObject(
-                Environment.GetEnvironmentVariables()
-                .Keys
-                .OfType<string>()
-                .Where(x => x.StartsWith(EnvironmentVariables.PREFIX))
-                .ToDictionary(x => x, x => Environment.GetEnvironmentVariable(x)), Formatting.Indented));
-
-            var baseAddress = Environment.GetEnvironmentVariable(EnvironmentVariables.BASEADDRESS);
+            Log.Debug($"AppConfig: \n" + JsonConvert.SerializeObject(appConfig, Formatting.Indented));
 
             builder.Services.AddLogging(cfg =>
             {
@@ -43,7 +41,7 @@ namespace Mcce.SmartOffice.ApiGateway
                 cfg.AddSerilog(Log.Logger);
             });
 
-            builder.WebHost.UseUrls(baseAddress);
+            builder.WebHost.UseUrls(appConfig.BaseAddress);
 
             builder.Services.AddSwaggerForOcelot(builder.Configuration);
 
@@ -53,10 +51,10 @@ namespace Mcce.SmartOffice.ApiGateway
 
             builder.Services.AddMvcCore();
 
-            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddEndpointsApiExplorer();            
 
-
-            builder.Services.ConfigureRoutePlaceholders();
+            var ocelotConfiguration = builder.Configuration.Get<FileConfiguration>();
+            var swaggerConfiguration = builder.Configuration.Get<SwaggerFileConfiguration>();
 
             var app = builder.Build();
 
@@ -69,7 +67,14 @@ namespace Mcce.SmartOffice.ApiGateway
 
             app.UseOcelot();
 
+            //app.MapWhen((ctx) => ctx.Request.Path != "/", (app) =>
+            //{
+            //    app.UseOcelot();
+            //});
+
+            //app.Map("/", () => "Hello from Smart Office!");
+
             app.Run();
         }
-    }
+    }   
 }

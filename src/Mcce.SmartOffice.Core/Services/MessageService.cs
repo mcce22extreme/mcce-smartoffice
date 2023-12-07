@@ -1,7 +1,11 @@
 ﻿using Mcce.SmartOffice.Core.Configs;
 using MQTTnet;
 using MQTTnet.Client;
+using MQTTnet.Exceptions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Polly;
+using Polly.CircuitBreaker;
 using Serilog;
 
 namespace Mcce.SmartOffice.Core.Services
@@ -17,7 +21,13 @@ namespace Mcce.SmartOffice.Core.Services
 
     public class MessageService : IMessageService
     {
+        private static readonly string SenderIdentifier = Guid.NewGuid().ToString();
+
         private static readonly MqttFactory Factory = new MqttFactory();
+
+        private static readonly AsyncPolicy CircuitBreakerPolicy = Policy
+            .Handle<MqttCommunicationException>()
+            .CircuitBreakerAsync(3, TimeSpan.FromSeconds(30));
 
         private readonly IMqttClient _mqttClient;
         private readonly IDictionary<string, List<IMessageHandler>> _handlers = new Dictionary<string, List<IMessageHandler>>();
@@ -33,9 +43,12 @@ namespace Mcce.SmartOffice.Core.Services
         {
             if (await Connect())
             {
+                var jObject = JObject.FromObject(payload);
+                jObject["Sender"] = SenderIdentifier;
+
                 var msg = new MqttApplicationMessageBuilder()
                     .WithTopic(topic)
-                    .WithPayload(JsonConvert.SerializeObject(payload))
+                    .WithPayload(JsonConvert.SerializeObject(jObject))
                     .Build();
 
                 await _mqttClient.PublishAsync(msg, CancellationToken.None);
@@ -61,20 +74,23 @@ namespace Mcce.SmartOffice.Core.Services
 
         public async Task Unsubscribe(string topic)
         {
-            await _mqttClient.UnsubscribeAsync(topic);
+            if (await Connect())
+            {
+                await _mqttClient.UnsubscribeAsync(topic);
 
-            _handlers.Remove(topic);
+                _handlers.Remove(topic);
+            }
         }
 
         private async Task OnMqttMessageReceived(MqttApplicationMessageReceivedEventArgs args)
         {
             var payload = args.ApplicationMessage.ConvertPayloadToString();
 
-            if (_handlers.ContainsKey(args.ClientId))
+            if (_handlers.ContainsKey(args.ApplicationMessage.Topic))
             {
-                foreach (var handler in _handlers[args.ClientId])
+                foreach (var handler in _handlers[args.ApplicationMessage.Topic])
                 {
-                    await handler.Handle(args.ClientId, payload);
+                    await handler.Handle(args.ApplicationMessage.Topic, payload);
                 }
             }
         }
@@ -85,24 +101,33 @@ namespace Mcce.SmartOffice.Core.Services
             {
                 try
                 {
-                    var options = new MqttClientOptionsBuilder()
-                        .WithCredentials(_mqttConfig.UserName, _mqttConfig.Password)
-                        .WithTcpServer(_mqttConfig.HostName, _mqttConfig.Port)
-                        .Build();
+                    await CircuitBreakerPolicy.ExecuteAsync(async () =>
+                    {
+                        var options = new MqttClientOptionsBuilder()
+                            .WithCredentials(_mqttConfig.UserName, _mqttConfig.Password)
+                            .WithTcpServer(_mqttConfig.HostName, _mqttConfig.Port)
+                            .Build();
 
-                    _mqttClient.ApplicationMessageReceivedAsync += OnMqttMessageReceived;
+                        _mqttClient.ApplicationMessageReceivedAsync += OnMqttMessageReceived;
 
-                    await _mqttClient.ConnectAsync(options, CancellationToken.None);
+                        await _mqttClient.ConnectAsync(options, CancellationToken.None);
 
-                    Log.Information($"Connection to message broker '{_mqttConfig.HostName}:{_mqttConfig.Port}' was successful!");
-
+                        Log.Information($"Connection to message broker '{_mqttConfig.HostName}:{_mqttConfig.Port}' was successful!");
+                    });
                 }
-                catch (Exception ex)
+                catch (BrokenCircuitException ex)
                 {
-                    Log.Error(ex.Message, ex);
+                    Log.Error(ex, ex.Message);
 
-                    await Task.Delay(5000);
-                    await Connect();
+                    // Circuit is broken => return
+                    return false;
+                }
+                catch (MqttCommunicationException ex)
+                {
+                    Log.Error(ex, ex.Message);
+
+                    // Try to reconnect unitl circuit is broken
+                    return await Connect();
                 }
             }
 

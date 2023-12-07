@@ -2,11 +2,11 @@
   "profiles": {
     "Mcce.SmartOffice.UserImages": {
       "commandName": "Project",
-        "environmentVariables": {
-            "SMARTOFFICE_BASEADDRESS": "http://localhost:5001",
-            "SMARTOFFICE_STORAGECONFIG__PATH": "C:\\Temp\\SmartOfficeStorage\\UserImage",
-            "SMARTOFFICE_STORAGECONFIG__TYPE": "FileSystem"
-        }      
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:52997;http://localhost:52998"
     }
   }
 }

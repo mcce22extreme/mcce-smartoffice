@@ -1,5 +1,7 @@
-﻿using Mcce.SmartOffice.WorkspaceDataEntries.Managers;
+﻿using Mcce.SmartOffice.Core.Constants;
+using Mcce.SmartOffice.WorkspaceDataEntries.Managers;
 using Mcce.SmartOffice.WorkspaceDataEntries.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mcce.SmartOffice.WorkspaceDataEntries.Controllers
@@ -15,28 +17,24 @@ namespace Mcce.SmartOffice.WorkspaceDataEntries.Controllers
             _dataEntryManager = dataEntryManager;
         }
 
-        [HttpGet]
-        public async Task<WorkspaceDataEntryModel[]> GetWorkspaceDataEntries([FromQuery] WorkspaceDataEntryQuery query)
+        [HttpGet("{workspaceNumber}")]
+        public async Task<WorkspaceDataEntryModel[]> GetWorkspaceDataEntries(string workspaceNumber, DateTime? startDate, DateTime? endDate)
         {
-            return await _dataEntryManager.GetWorkspaceDataEntries(query);
+            return await _dataEntryManager.GetWorkspaceDataEntries(workspaceNumber, startDate, endDate);
         }
 
-        [HttpPost]
-        public async Task<WorkspaceDataEntryModel> CreateWorkspaceDataEntry([FromBody] SaveWorkspaceDataEntryModel model)
+        [HttpPost("{workspaceNumber}")]
+        [Authorize(AuthConstants.APP_ROLE_ADMINS)]
+        public async Task<WorkspaceDataEntryModel> CreateWorkspaceDataEntry(string workspaceNumber, [FromBody] SaveWorkspaceDataEntryModel model)
         {
-            return await _dataEntryManager.CreateWorkspaceDataEntry(model);
+            return await _dataEntryManager.CreateWorkspaceDataEntry(workspaceNumber, model);
         }
 
-        [HttpDelete("{entryId}")]
-        public async Task DeleteWorkspaceDataEntry(int entryId)
+        [HttpDelete("{workspaceNumber}")]
+        [Authorize(AuthConstants.APP_ROLE_ADMINS)]
+        public async Task DeleteWorkspaceDataEntry(string workspaceNumber)
         {
-            await _dataEntryManager.DeleteWorkspaceDataEntry(entryId);
-        }
-
-        [HttpDelete("deleteall")]
-        public async Task DeleteAllEntries()
-        {
-            await _dataEntryManager.DeleteAllEntries();
+            await _dataEntryManager.DeleteWorkspaceDataEntries(workspaceNumber);
         }
     }
 }

@@ -1,0 +1,63 @@
+namespace: smartoffice
+
+deployment: azure
+
+configUrl: https://cfg-smartoffice-xlbt.azconfig.io
+
+authConfig:
+  authUrl: https://keycloak.gruber.info:8943
+  clientId: smartoffice
+
+registryName: acrsmartofficexlbt.azurecr.io
+
+imageTag: latest
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "125m"
+  limits:
+    memory: "512Mi"
+    cpu: "250m"
+
+accountApi:
+  appName: account-api
+  image:
+    name: mcce-smart-office-account-api
+
+apiGateway:
+  appName: apigateway
+  dnsLabel: smartoffice-mcce22extreme
+  image:
+    name: mcce-smart-office-apigateway
+
+bookingApi:
+  appName: booking-api
+  image:
+    name: mcce-smart-office-booking-api
+
+userimageApi:
+  appName: userimage-api
+  image:
+    name: mcce-smart-office-userimage-api
+  shareName: userimages
+  secretName: azure-secret
+
+workspaceApi:
+  appName: workspace-api
+  image:
+    name: mcce-smart-office-workspace-api
+
+workspaceconfigurationApi:
+  appName: workspaceconfiguration-api
+  image:
+    name: mcce-smart-office-workspaceconfiguration-api
+
+workspacedataentryApi:
+  appName: workspacedataentry-api
+  image:
+    name: mcce-smart-office-workspacedataentry-api
+
+webapp:
+  appName: webapp
+  image: tederer/apeni-smartoffice-web-app:0.33.0

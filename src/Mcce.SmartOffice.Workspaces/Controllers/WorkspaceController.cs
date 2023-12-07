@@ -1,5 +1,7 @@
-﻿using Mcce.SmartOffice.Workspaces.Managers;
+﻿using Mcce.SmartOffice.Core.Constants;
+using Mcce.SmartOffice.Workspaces.Managers;
 using Mcce.SmartOffice.Workspaces.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mcce.SmartOffice.Workspaces.Controllers
@@ -28,18 +30,21 @@ namespace Mcce.SmartOffice.Workspaces.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthConstants.APP_ROLE_ADMINS)]
         public async Task<WorkspaceModel> CreateWorkspace([FromBody] SaveWorkspaceModel model)
         {
             return await _workspaceManager.CreateWorkspace(model);
         }
 
         [HttpPut("{workspaceNumber}")]
+        [Authorize(AuthConstants.APP_ROLE_ADMINS)]
         public async Task<WorkspaceModel> UpdateWorkspace(string workspaceNumber, [FromBody] SaveWorkspaceModel model)
         {
             return await _workspaceManager.UpdateWorkspace(workspaceNumber, model);
         }
 
         [HttpDelete("{workspaceNumber}")]
+        [Authorize(AuthConstants.APP_ROLE_ADMINS)]
         public async Task DeleteWorkspace(string workspaceNumber)
         {
             await _workspaceManager.DeleteWorkspace(workspaceNumber);

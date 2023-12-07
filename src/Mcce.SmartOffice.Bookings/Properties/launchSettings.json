@@ -1,17 +1,12 @@
 {
   "profiles": {
     "Mcce.SmartOffice.Bookings": {
-        "commandName": "Project",
-        "environmentVariables": {
-            "SMARTOFFICE_BASEADDRESS": "http://localhost:5004",
-            "SMARTOFFICE_DBCONFIG__CONNECTIONSTRING": "Data Source=C:\\Temp\\SmartOfficeStorage\\bookings.db",
-            "SMARTOFFICE_DBCONFIG__TYPE": "SQLite",
-            "SMARTOFFICE_EMAILCONFIG__HOSTAME": "",
-            "SMARTOFFICE_EMAILCONFIG__PASSWORD": "",
-            "SMARTOFFICE_EMAILCONFIG__PORT": "",
-            "SMARTOFFICE_EMAILCONFIG__SENDENAME": "",
-            "SMARTOFFICE_EMAILCONFIG__USERNAME": ""
-        }
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:52999;http://localhost:53000"
     }
   }
 }

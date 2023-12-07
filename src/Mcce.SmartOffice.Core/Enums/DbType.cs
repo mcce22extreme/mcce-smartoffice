@@ -1,8 +1,9 @@
-﻿namespace Mcce.SmartOffice.Core.Enums
+namespace Mcce.SmartOffice.Core.Enums
 {
     public enum DbType
     {
-        SQLite,
-        MSSqlServer
+        None = 0,
+        SqlServer = 1,
+        InMemory = 2
     }
 }

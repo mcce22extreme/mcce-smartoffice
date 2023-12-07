@@ -1,4 +1,5 @@
 ﻿using Mcce.SmartOffice.Core.Exceptions;
+using Serilog;
 
 namespace Mcce.SmartOffice.UserImages.Services
 {
@@ -26,6 +27,8 @@ namespace Mcce.SmartOffice.UserImages.Services
         public async Task<bool> FileExists(string path)
         {
             var filePath = Path.Combine(_basePath, path);
+
+            Log.Debug($"Checking if file '{filePath}' exists...");
 
             return await Task.FromResult(File.Exists(filePath));
         }
@@ -64,24 +67,20 @@ namespace Mcce.SmartOffice.UserImages.Services
         {
             var filePath = Path.Combine(_basePath, path);
 
-            if (!File.Exists(filePath))
+            if (File.Exists(filePath))
             {
-                throw new NotFoundException($"The file '{path}' could not be found!");
-            }
-
-            await Task.Run(() => File.Delete(filePath));
+                await Task.Run(() => File.Delete(filePath));
+            }            
         }
 
         public async Task DeleteDirectory(string path)
         {
             var directoryPath = Path.Combine(_basePath, path);
 
-            if (!Directory.Exists(directoryPath))
+            if (Directory.Exists(directoryPath))
             {
-                throw new NotFoundException($"The directory '{path}' could not be found!");
-            }
-
-            await Task.Run(() => Directory.Delete(directoryPath, true));
+                await Task.Run(() => Directory.Delete(directoryPath, true));
+            }            
         }
     }
 }

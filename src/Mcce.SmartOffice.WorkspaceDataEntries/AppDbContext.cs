@@ -1,16 +1,25 @@
-﻿using Mcce.SmartOffice.Core;
-using Mcce.SmartOffice.WorkspaceDataEntries.Entities;
+﻿using Mcce.SmartOffice.WorkspaceDataEntries.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Mcce.SmartOffice.WorkspaceDataEntries
 {
-    public class AppDbContext : AppDbContextBase
+    public class AppDbContext : DbContext
     {
-        public DbSet<WorkspaceDataEntry> Entries { get; set; }
+        internal const string DATABASE_SCHEMA = "sowd";
 
-        public AppDbContext(DbContextOptions options, IHttpContextAccessor contextAccessor)
-            : base(options, contextAccessor)
+        public DbSet<WorkspaceDataEntry> WorkspaceDataEntries { get; set; }
+
+        public AppDbContext(DbContextOptions options)
+            : base(options)
         {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasDefaultSchema(DATABASE_SCHEMA);
+
+            modelBuilder.Entity<WorkspaceDataEntry>()
+                .HasIndex(x => x.WorkspaceNumber);
         }
     }
 }

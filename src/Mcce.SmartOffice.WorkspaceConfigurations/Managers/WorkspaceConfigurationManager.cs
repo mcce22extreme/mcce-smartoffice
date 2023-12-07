@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Mcce.SmartOffice.Core.Accessors;
 using Mcce.SmartOffice.Core.Exceptions;
 using Mcce.SmartOffice.Core.Extensions;
 using Mcce.SmartOffice.WorkspaceConfigurations.Entities;
@@ -13,9 +14,9 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
 
         Task<WorkspaceConfigurationModel> GetWorkspaceConfiguration(string workspaceNumber);
 
-        Task<WorkspaceConfigurationModel> CreateWorkspaceConfiguration(SaveWorkspaceConfigurationModel model);
+        Task<WorkspaceConfigurationModel> GetWorkspaceConfigurationByUserName(string workspaceNumber, string userName);
 
-        Task<WorkspaceConfigurationModel> UpdateWorkspaceConfiguration(SaveWorkspaceConfigurationModel model);
+        Task<WorkspaceConfigurationModel> SaveWorkspaceConfiguration(string workspaceNumber, SaveWorkspaceConfigurationModel model);
 
         Task DeleteWorkspaceConfiguration(string workspaceNumber);
     }
@@ -24,9 +25,9 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
     {
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IAuthContextAccessor _contextAccessor;
 
-        public WorkspaceConfigurationManager(AppDbContext dbContext, IMapper mapper, IHttpContextAccessor contextAccessor)
+        public WorkspaceConfigurationManager(AppDbContext dbContext, IMapper mapper, IAuthContextAccessor contextAccessor)
         {
             _dbContext = dbContext;
             _mapper = mapper;
@@ -59,60 +60,51 @@ namespace Mcce.SmartOffice.WorkspaceConfigurations.Managers
                 : _mapper.Map<WorkspaceConfigurationModel>(configuration);
         }
 
-        public async Task<WorkspaceConfigurationModel> CreateWorkspaceConfiguration(SaveWorkspaceConfigurationModel model)
+        public async Task<WorkspaceConfigurationModel> GetWorkspaceConfigurationByUserName(string workspaceNumber, string userName)
         {
-            var currentUser = _contextAccessor.GetUserInfo();
+            var configuration = await _dbContext.WorkspaceConfigurations
+                .FirstOrDefaultAsync(x => x.UserName == userName && x.WorkspaceNumber == workspaceNumber);
 
-            var configuration = _mapper.Map(model, new WorkspaceConfiguration
-            {
-                UserName = currentUser.UserName,
-            });
-
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
-
-            await _dbContext.WorkspaceConfigurations.AddAsync(configuration);
-
-            await _dbContext.SaveChangesAsync();
-
-            await tx.CommitAsync();
-
-            return await GetWorkspaceConfiguration(model.WorkspaceNumber);
+            return configuration == null ? null : _mapper.Map<WorkspaceConfigurationModel>(configuration);
         }
 
-        public async Task<WorkspaceConfigurationModel> UpdateWorkspaceConfiguration(SaveWorkspaceConfigurationModel model)
+        public async Task<WorkspaceConfigurationModel> SaveWorkspaceConfiguration(string workspaceNumber, SaveWorkspaceConfigurationModel model)
         {
             var currentUser = _contextAccessor.GetUserInfo();
 
             var configuration = await _dbContext.WorkspaceConfigurations
-                .FirstOrDefaultAsync(x => x.UserName == currentUser.UserName && x.WorkspaceNumber == model.WorkspaceNumber);
+                .FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber && x.UserName == currentUser.UserName);
 
             if (configuration == null)
             {
-                throw new NotFoundException($"Could not find configuration for user '{currentUser.UserName}' and workspace '{model.WorkspaceNumber}'!");
+                configuration = new WorkspaceConfiguration
+                {
+                    WorkspaceNumber = workspaceNumber,
+                    UserName = currentUser.UserName,
+                };
+
+                await _dbContext.WorkspaceConfigurations.AddAsync(configuration);
             }
 
             _mapper.Map(model, configuration);
 
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
-
             await _dbContext.SaveChangesAsync();
 
-            await tx.CommitAsync();
-
-            return await GetWorkspaceConfiguration(model.WorkspaceNumber);
+            return await GetWorkspaceConfiguration(workspaceNumber);
         }
 
         public async Task DeleteWorkspaceConfiguration(string workspaceNumber)
         {
             var currentUser = _contextAccessor.GetUserInfo();
 
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
+            var configuration = await _dbContext.WorkspaceConfigurations.FirstOrDefaultAsync(x => x.WorkspaceNumber == workspaceNumber &&  x.UserName == currentUser.UserName);
 
-            await _dbContext.WorkspaceConfigurations
-                .Where(x => x.UserName == currentUser.UserName && x.WorkspaceNumber == workspaceNumber)
-                .ExecuteDeleteAsync();
+            if (configuration != null)
+            {
+                _dbContext.WorkspaceConfigurations.Remove(configuration);
 
-            await tx.CommitAsync();
+                await _dbContext.SaveChangesAsync();
+            }
         }
     }
 }

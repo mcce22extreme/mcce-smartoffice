@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.workspaceconfigurationApi.appName }}-depl
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.workspaceconfigurationApi.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.workspaceconfigurationApi.appName }}
+    spec:
+      containers:
+        - name: {{ .Values.workspaceconfigurationApi.appName }}
+          image: "{{ .Values.registryName }}/{{ .Values.workspaceconfigurationApi.image.name }}:{{ .Values.imageTag }}"
+          imagePullPolicy: Always
+          env:
+            - name: SMARTOFFICE_BASEADDRESS
+              value: http://{{ .Values.workspaceconfigurationApi.appName }}-clusterip-srv:8080
+            {{ if eq .Values.deployment "azure" }}
+            - name: SMARTOFFICE_APPCONFIGURL
+              value: {{ .Values.configUrl }}
+            {{ else if eq .Values.deployment "local"}}
+            - name: SMARTOFFICE_AUTHCONFIG__AUTHURL
+              value: {{ .Values.authConfig.authUrl }}
+            - name: SMARTOFFICE_AUTHCONFIG__CLIENTID
+              value: {{ .Values.authConfig.clientId }}
+            - name: SMARTOFFICE_DBCONFIG__DATABASETYPE
+              value: {{ .Values.dbConfig.databaseType }}
+            - name: SMARTOFFICE_MQTTCONFIG__HOSTNAME
+              value: {{ .Values.mqttConfig.hostname }}
+            - name: SMARTOFFICE_MQTTCONFIG__PORT
+              value: "{{ .Values.mqttConfig.port }}"
+            - name: SMARTOFFICE_MQTTCONFIG__USERNAME
+              value: {{ .Values.mqttConfig.username }}
+            - name: SMARTOFFICE_MQTTCONFIG__PASSWORD
+              value: {{ .Values.mqttConfig.password }}
+            {{ end }}
+          resources:
+            requests:
+              memory: {{ .Values.resources.requests.memory }}
+              cpu: {{ .Values.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.resources.limits.memory }}
+              cpu: {{ .Values.resources.limits.cpu }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.workspaceconfigurationApi.appName }}-clusterip-srv
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Values.workspaceconfigurationApi.appName }}
+  ports:
+    - name: {{ .Values.workspaceconfigurationApi.appName }}
+      protocol: TCP
+      port: 80
+      targetPort: 8080

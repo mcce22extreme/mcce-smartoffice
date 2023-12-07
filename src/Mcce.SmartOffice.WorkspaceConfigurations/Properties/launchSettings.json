@@ -1,12 +1,12 @@
 {
   "profiles": {
     "Mcce.SmartOffice.WorkspaceConfigurations": {
-        "commandName": "Project",
-        "environmentVariables": {
-            "SMARTOFFICE_BASEADDRESS": "http://localhost:5003",
-            "SMARTOFFICE_DBCONFIG__TYPE": "SQLite",
-            "SMARTOFFICE_DBCONFIG__CONNECTIONSTRING": "Data Source=C:\\Temp\\SmartOfficeStorage\\workspaceconfigurations.db"
-        }
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:53001;http://localhost:53002"
     }
   }
 }

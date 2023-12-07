@@ -1,24 +1,35 @@
-﻿using AutoMapper;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using FluentValidation;
 using Mcce.SmartOffice.Bookings.Entities;
+using Mcce.SmartOffice.Bookings.Enums;
+using Mcce.SmartOffice.Bookings.Messages;
 using Mcce.SmartOffice.Bookings.Models;
-using Mcce.SmartOffice.Bookings.Services;
+using Mcce.SmartOffice.Core.Accessors;
+using Mcce.SmartOffice.Core.Constants;
+using Mcce.SmartOffice.Core.Enums;
 using Mcce.SmartOffice.Core.Exceptions;
-using Mcce.SmartOffice.Core.Extensions;
+using Mcce.SmartOffice.Core.Services;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace Mcce.SmartOffice.Bookings.Managers
 {
     public interface IBookingManager
     {
-        Task<BookingModel[]> GetBookings();
+        Task<BookingModel[]> GetBookings(bool onlyMyBookings = false, DateTime? startDateTime = null, DateTime? endDateTime = null);
 
-        Task<BookingModel> GetBooking(int bookingId);
+        Task<BookingModel> GetBooking(string bookingNumber);
 
-        Task<BookingModel> CreateBooking(SaveBookingModel model, string activationLink);
+        Task<BookingModel> CreateBooking(SaveBookingModel model);
 
-        Task DeleteBooking(int bookingId);
+        Task<BookingModel> ConfirmBooking(string bookingNumber);
+
+        Task<BookingModel> RejectBooking(string bookingNumber);
+
+        Task DeleteBooking(string bookingNumber);
+
+        Task ActivateBooking(string bookingNumber);
     }
 
     public class BookingManager : IBookingManager
@@ -27,24 +38,27 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
         private static readonly Random _random = new Random();
 
+        private readonly string _frontendUrl;
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
-        private readonly IEmailService _emailService;
-        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IAuthContextAccessor _contextAccessor;
+        private readonly IMessageService _messageService;
 
         public BookingManager(
+            string frontendUrl,
             AppDbContext dbContext,
             IMapper mapper,
-            IEmailService emailService,
-            IHttpContextAccessor contextAccessor)
+            IAuthContextAccessor contextAccessor,
+            IMessageService messageService)
         {
+            _frontendUrl = frontendUrl;
             _dbContext = dbContext;
             _mapper = mapper;
-            _emailService = emailService;
             _contextAccessor = contextAccessor;
+            _messageService = messageService;
         }
 
-        public async Task<BookingModel[]> GetBookings()
+        public async Task<BookingModel[]> GetBookings(bool onlyMyBookings = false, DateTime? startDateTime = null, DateTime? endDateTime = null)
         {
             var currentUser = _contextAccessor.GetUserInfo();
 
@@ -52,25 +66,57 @@ namespace Mcce.SmartOffice.Bookings.Managers
                 .OrderBy(x => x.StartDateTime)
                 .AsQueryable();
 
+            if (startDateTime.HasValue)
+            {
+                bookingsQuery = bookingsQuery.Where(x => x.StartDateTime >= startDateTime.Value);
+            }
+
+            if (endDateTime.HasValue)
+            {
+                bookingsQuery = bookingsQuery.Where(x => x.EndDateTime <= endDateTime.Value);
+            }
+
+            if (onlyMyBookings == true)
+            {
+                bookingsQuery = bookingsQuery.Where(x => x.UserName == currentUser.UserName);
+            }
+
             var bookings = await bookingsQuery
                 .ProjectTo<BookingModel>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
+            // Suppress user information for other users if user is not admin
+            if (!currentUser.IsAdmin)
+            {
+                foreach (var booking in bookings.Where(x => x.UserName != currentUser.UserName))
+                {
+                    booking.UserName = booking.FirstName = booking.LastName = booking.Creator = booking.Modifier = null;
+                }
+            }
+
             return bookings.ToArray();
         }
 
-        public async Task<BookingModel> GetBooking(int bookingId)
+        public async Task<BookingModel> GetBooking(string bookingNumber)
         {
             var currentUser = _contextAccessor.GetUserInfo();
 
-            var booking = await _dbContext.Bookings
-                .ProjectTo<BookingModel>(_mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync(x => x.Id == bookingId) ?? throw new EntityNotFoundException<Booking>(bookingId);
+            var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.BookingNumber == bookingNumber);
 
-            return booking;
+            if (booking == null)
+            {
+                throw new NotFoundException($"Could not find booking '{bookingNumber}'.");
+            }
+
+            if (!currentUser.IsAdmin && booking.UserName != currentUser.UserName)
+            {
+                throw new ForbiddenException("You are not allowed to perform this action!");
+            }
+
+            return _mapper.Map<BookingModel>(booking);
         }
 
-        public async Task<BookingModel> CreateBooking(SaveBookingModel model, string activationLink)
+        public async Task<BookingModel> CreateBooking(SaveBookingModel model)
         {
             var currentUser = _contextAccessor.GetUserInfo();
 
@@ -80,12 +126,7 @@ namespace Mcce.SmartOffice.Bookings.Managers
                 throw new ValidationException("End date of booking must not be before start date of booking!");
             }
 
-            if (model.StartDateTime.Date != model.EndDateTime.Date)
-            {
-                throw new ValidationException("Stard date and end date must not span multiple days!");
-            }
-
-            var collision = await CheckAvailability(model.WorkspaceNumber, model.StartDateTime, model.EndDateTime);
+            var collision = await HasCollision(model.WorkspaceNumber, model.StartDateTime, model.EndDateTime);
 
             if (collision)
             {
@@ -94,107 +135,59 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
             var booking = _mapper.Map<Booking>(model);
 
+            booking.BookingNumber = GenerateBookingNumber();
+            booking.FirstName = currentUser.FirstName;
+            booking.LastName = currentUser.LastName;
             booking.UserName = currentUser.UserName;
-            booking.ActivationCode = GenerateActivationCode();
-
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
+            booking.State = BookingState.Pending;
 
             await _dbContext.Bookings.AddAsync(booking);
 
             await _dbContext.SaveChangesAsync();
 
-            await tx.CommitAsync();
+            Log.Debug($"Created booking '{booking.BookingNumber}' for workspace '{booking.WorkspaceNumber}' and user '{booking.UserName}' with booking number '{booking.BookingNumber}'.");
 
-            // send confirmation email
-            await _emailService.SendMail(
-                new BookingConfirmationModel
+            await _messageService.Publish(
+                MessageTopics.TOPIC_BOOKING_CREATED,
+                new
                 {
-                    FirstName = currentUser.FirstName,
-                    LastName = currentUser.LastName,
-                    UserName = currentUser.UserName,
-                    Email = currentUser.Email,
-                    StartDateTime = booking.StartDateTime,
-                    EndDateTime = booking.EndDateTime,
-                    ActivationCode = booking.ActivationCode,
-                    WorkspaceNumber = model.WorkspaceNumber,
-                }, activationLink);
+                    currentUser.UserName,
+                    booking.BookingNumber,
+                    booking.WorkspaceNumber,
+                });
 
-            return await GetBooking(booking.Id);
+            return _mapper.Map<BookingModel>(booking);
         }
 
-        public async Task DeleteBooking(int bookingId)
+        public async Task DeleteBooking(string bookingNumber)
         {
-            using var tx = await _dbContext.Database.BeginTransactionAsync();
+            var currentUser = _contextAccessor.GetUserInfo();
 
-            await _dbContext.Bookings
-                .Where(x => x.Id == bookingId)
-                .ExecuteDeleteAsync();
+            var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.BookingNumber == bookingNumber);
 
-            await _dbContext.SaveChangesAsync();
+            if (booking != null)
+            {
+                if (!currentUser.IsAdmin && booking.UserName != currentUser.UserName)
+                {
+                    throw new ForbiddenException("You are not allowed to perform this action!");
+                }
 
-            await tx.CommitAsync();
-        }        
+                _dbContext.Bookings.Remove(booking);
 
-        private async Task<bool> CheckAvailability(string workspaceNumber, DateTime startDateTime, DateTime endDateTime)
-        {
-            var bookings = await _dbContext.Bookings
-                .Where(x => x.WorkspaceNumber == workspaceNumber &&
-                            ((x.StartDateTime >= startDateTime || x.EndDateTime <= endDateTime) ||
-                             (x.StartDateTime <= startDateTime && x.EndDateTime >= endDateTime)))
-                .ToListAsync();
-
-            return bookings.Any();
+                await _dbContext.SaveChangesAsync();
+            }
         }
 
-        //public async Task ActivateBooking(string activationCode, Func<int, string> imageUrlFunc)
-        //{
-        //    await Semaphore.WaitAsync();
+        private async Task<bool> HasCollision(string workspaceNumber, DateTime startDateTime, DateTime endDateTime)
+        {
+            return await _dbContext.Bookings
+                .AnyAsync(x =>
+                    x.WorkspaceNumber == workspaceNumber &&
+                    startDateTime < x.EndDateTime &&
+                    endDateTime > x.StartDateTime);
+        }
 
-        //    try
-        //    {
-        //        var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.ActivationCode == activationCode);
-
-        //        if (booking == null)
-        //        {
-        //            throw new ValidationException($"Could not find booking for activationcode '{activationCode}'!");
-        //        }
-
-        //        var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == booking.UserId);
-        //        var configuration = await _dbContext.WorkspaceConfigurations.FirstOrDefaultAsync(x => x.WorkspaceId == booking.WorkspaceId && x.UserId == booking.UserId);
-        //        var workspace = await _dbContext.Workspaces.FirstOrDefaultAsync(x => x.Id == booking.WorkspaceId);
-        //        var userImages = await _dbContext.UserImages
-        //        .Where(x => x.UserId == booking.UserId)
-        //        .ToListAsync();
-
-        //        var model = new WorkspaceActivationModel
-        //        {
-        //            BookingId = booking.Id,
-        //            WorkspaceId = booking.WorkspaceId,
-        //            WorkspaceNumber = workspace.WorkspaceNumber,
-        //            UserId = booking.UserId,
-        //            FirstName = user.FirstName,
-        //            LastName = user.LastName,
-        //            DeskHeight = configuration.DeskHeight,
-        //            UserImageUrls = userImages.Select(x => imageUrlFunc(x.Id)).ToArray(),
-        //        };
-
-        //        await _messageService.Publish(Topics.DEVICE_ACTIVATED, model);
-
-        //        booking.Activated = true;
-
-        //        using var tx = await _dbContext.Database.BeginTransactionAsync();
-
-        //        await _dbContext.SaveChangesAsync();
-
-        //        await tx.CommitAsync();
-        //    }
-        //    finally
-        //    {
-        //        Semaphore.Release();
-        //    }
-        //}
-
-        private string GenerateActivationCode()
+        private string GenerateBookingNumber()
         {
             var bitCount = 6 * ACTIVATION_CODE_LENGTH;
             var byteCount = (int)Math.Ceiling(bitCount / 8f);
@@ -208,6 +201,80 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
             // Trim characters to fit the count
             return guid.Substring(0, ACTIVATION_CODE_LENGTH);
+        }
+
+        public async Task ActivateBooking(string bookingNumber)
+        {
+            var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.BookingNumber == bookingNumber);
+
+            if (booking == null)
+            {
+                throw new NotFoundException($"Could not find booking '{bookingNumber}'.");
+            }
+
+            if (booking.State != BookingState.Confirmed && booking.State != BookingState.Activated)
+            {
+                throw new ValidationException($"The booking '{booking.BookingNumber}' has not yet been confirmed and therefore cannot be activated!");
+            }
+
+            booking.State = BookingState.Activated;
+
+            await _dbContext.SaveChangesAsync();
+
+            await _messageService.Publish(
+                MessageTopics.TOPIC_BOOKING_ACTIVATED.Replace("{0}", booking.UserName),
+                new BookingActivatedMessage(booking.BookingNumber, booking.WorkspaceNumber, booking.UserName));
+        }
+
+        public async Task<BookingModel> ConfirmBooking(string bookingNumber)
+        {
+            var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.BookingNumber == bookingNumber);
+
+            if (booking == null)
+            {
+                throw new NotFoundException($"Could not find booking '{bookingNumber}'.");
+            }
+
+            booking.State = BookingState.Confirmed;
+
+            await _dbContext.SaveChangesAsync(auditInfoUpdateMode: AuditInfoUpdateMode.Suppress);
+
+            await _messageService.Publish(
+                string.Format(MessageTopics.TOPIC_BOOKING_CONFIRMED, booking.UserName),
+                new
+                {
+                    booking.UserName,
+                    booking.BookingNumber,
+                    booking.WorkspaceNumber,
+                    ActivationUrl = $"{_frontendUrl}/booking/{booking.BookingNumber}/activate"
+                });
+
+            return await GetBooking(bookingNumber);
+        }
+
+        public async Task<BookingModel> RejectBooking(string bookingNumber)
+        {
+            var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.BookingNumber == bookingNumber);
+
+            if (booking == null)
+            {
+                throw new NotFoundException($"Could not find booking '{bookingNumber}'.");
+            }
+
+            booking.State = BookingState.Rejected;
+
+            await _dbContext.SaveChangesAsync(auditInfoUpdateMode: AuditInfoUpdateMode.Suppress);
+
+            await _messageService.Publish(
+                string.Format(MessageTopics.TOPIC_BOOKING_REJECTED, booking.UserName),
+                new
+                {
+                    booking.UserName,
+                    booking.BookingNumber,
+                    booking.WorkspaceNumber,
+                });
+
+            return await GetBooking(bookingNumber);
         }
     }
 }

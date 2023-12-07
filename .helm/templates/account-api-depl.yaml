@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.accountApi.appName }}-depl
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.accountApi.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.accountApi.appName }}
+    spec:
+      containers:
+        - name: {{ .Values.accountApi.appName }}
+          image: "{{ .Values.registryName }}/{{ .Values.accountApi.image.name }}:{{ .Values.imageTag }}"
+          imagePullPolicy: Always
+          env:
+            - name: SMARTOFFICE_BASEADDRESS
+              value: http://{{ .Values.accountApi.appName }}-clusterip-srv:8080
+            {{ if eq .Values.deployment "azure" }}
+            - name: SMARTOFFICE_APPCONFIGURL
+              value: {{ .Values.configUrl }}
+            {{ else if eq .Values.deployment "local"}}
+            - name: SMARTOFFICE_AUTHCONFIG__AUTHURL
+              value: {{ .Values.authConfig.authUrl }}
+            - name: SMARTOFFICE_AUTHCONFIG__CLIENTID
+              value: {{ .Values.authConfig.clientId }}            
+            {{ end }}
+          resources:
+            requests:
+              memory: {{ .Values.resources.requests.memory }}
+              cpu: {{ .Values.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.resources.limits.memory }}
+              cpu: {{ .Values.resources.limits.cpu }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.accountApi.appName }}-clusterip-srv
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Values.accountApi.appName }}
+  ports:
+    - name: {{ .Values.accountApi.appName }}
+      protocol: TCP
+      port: 80
+      targetPort: 8080

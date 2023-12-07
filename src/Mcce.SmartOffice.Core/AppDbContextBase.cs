@@ -1,4 +1,6 @@
-﻿using Mcce.SmartOffice.Core.Entities;
+﻿using Mcce.SmartOffice.Core.Accessors;
+using Mcce.SmartOffice.Core.Entities;
+using Mcce.SmartOffice.Core.Enums;
 using Mcce.SmartOffice.Core.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -7,28 +9,44 @@ namespace Mcce.SmartOffice.Core
 {
     public abstract class AppDbContextBase : DbContext
     {
-        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IAuthContextAccessor _contextAccessor;
 
-        public AppDbContextBase(DbContextOptions options, IHttpContextAccessor contextAccessor)
+        public AppDbContextBase(DbContextOptions options, IAuthContextAccessor contextAccessor)
             : base(options)
         {
             _contextAccessor = contextAccessor;
         }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default, AuditInfoUpdateMode auditInfoUpdateMode = AuditInfoUpdateMode.Update)
         {
-            AddAuditInfo();
+            if(auditInfoUpdateMode == AuditInfoUpdateMode.Update)
+            {
+                AddAuditInfo();
+            }
 
             return base.SaveChangesAsync(cancellationToken);
         }
 
-        public override int SaveChanges()
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            AddAuditInfo();
+            return SaveChangesAsync(cancellationToken, AuditInfoUpdateMode.Update);
+        }
+
+        public int SaveChanges(AuditInfoUpdateMode auditInfoUpdateMode = AuditInfoUpdateMode.Update)
+        {
+            if (auditInfoUpdateMode == AuditInfoUpdateMode.Update)
+            {
+                AddAuditInfo();
+            }
 
             return base.SaveChanges();
         }
-        
+
+        public override int SaveChanges()
+        {
+            return SaveChanges(AuditInfoUpdateMode.Update);
+        }
+
         private void AddAuditInfo()
         {
             var dateTimeNow = DateTime.UtcNow;

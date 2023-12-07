@@ -1,5 +1,6 @@
 ﻿using Mcce.SmartOffice.Bookings.Managers;
 using Mcce.SmartOffice.Bookings.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mcce.SmartOffice.Bookings.Controllers
@@ -16,41 +17,30 @@ namespace Mcce.SmartOffice.Bookings.Controllers
         }
 
         [HttpGet]
-        public async Task<BookingModel[]> GetBookings()
+        public async Task<BookingModel[]> GetBookings(bool onlyMyBookings = false, DateTime? startDateTime = null, DateTime? endDateTime = null)
         {
-            return await _bookingManager.GetBookings();
-        }
-
-        [HttpGet("{bookingId}")]
-        public async Task<BookingModel> GetBooking(int bookingId)
-        {
-            return await _bookingManager.GetBooking(bookingId);
+            return await _bookingManager.GetBookings(onlyMyBookings, startDateTime, endDateTime);
         }
 
         [HttpPost]
         public async Task<BookingModel> CreateBooking([FromBody] SaveBookingModel model)
         {
-            return await _bookingManager.CreateBooking(model, Url.ActionLink(nameof(ActivateBooking)));
+            return await _bookingManager.CreateBooking(model);
         }
 
-        [HttpDelete("{bookingId}")]
-        public async Task DeleteBooking(int bookingId)
+        [HttpDelete("{bookingNumber}")]
+        public async Task DeleteBooking(string bookingNumber)
         {
-            await _bookingManager.DeleteBooking(bookingId);
+            await _bookingManager.DeleteBooking(bookingNumber);
         }
 
-        [HttpGet("activate")]
-        public Task ActivateBooking([FromQuery] string activationCode)
+        [AllowAnonymous]
+        [HttpGet("{bookingNumber}/activate")]
+        public async Task<IActionResult> ActivateBooking(string bookingNumber)
         {
-            return Task.CompletedTask;
+            await _bookingManager.ActivateBooking(bookingNumber);
 
-            //await _bookingManager.ActivateBooking(activationCode, CreateUrl);
-        }
-
-        private string CreateUrl(int userImageId)
-        {
-            var url = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/userimage/{userImageId}/content";
-            return url;
+            return Ok();
         }
     }
 }
