@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <pages:DetailContentPage
-    x:Class="Mcce.SmartOffice.MobileApp.Pages.WorkspaceConfigurationDetailPage"
+    x:Class="Mcce.SmartOffice.AdminApp.Pages.WorkspaceDetailPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
@@ -32,13 +32,7 @@
                             Icon="{mi:Fluent Icon=Desktop32,
                                              IconSize=20}"
                             VerticalOptions="Center" />
-                        <Picker
-                            Grid.Column="1"
-                            Margin="0,0,5,0"
-                            IsEnabled="{Binding IsNew}"
-                            ItemDisplayBinding="{Binding WorkspaceNumber}"
-                            ItemsSource="{Binding Workspaces}"
-                            SelectedItem="{Binding SelectedWorkspace, Mode=TwoWay}" />
+                        <Entry Grid.Column="1" Text="{Binding WorkspaceNumber}" />
                     </Grid>
                 </Border>
                 <Label
@@ -46,45 +40,13 @@
                     Background="White"
                     FontSize="12"
                     HorizontalOptions="Start"
-                    Text=" Workspace "
-                    VerticalOptions="Start" />
-            </Grid>
-            <Grid Grid.Row="1" Margin="0,0,0,10">
-                <Border
-                    Margin="0,8,0,0"
-                    Stroke="Black"
-                    StrokeShape="RoundRectangle 5"
-                    StrokeThickness="1">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <mi:MauiIcon
-                            Grid.Column="0"
-                            Margin="5,5,5,0"
-                            Icon="{mi:Fluent Icon=AutoFitHeight24,
-                                             IconSize=20}"
-                            VerticalOptions="Center" />
-                        <Entry
-                            Grid.Row="3"
-                            Grid.Column="1"
-                            Text="{Binding DeskHeight}" />
-                    </Grid>
-                </Border>
-                <Label
-                    Margin="10,0,0,0"
-                    Background="White"
-                    FontSize="12"
-                    HorizontalOptions="Start"
-                    Text=" Desk Height (cm) "
+                    Text=" Workspace Number "
                     VerticalOptions="Start" />
             </Grid>
             <Button
                 Grid.Row="4"
                 Margin="0,0,10,10"
-                Command="{Binding SaveWorkspaceConfigurationCommand}"
+                Command="{Binding SaveWorkspaceCommand}"
                 CornerRadius="40"
                 FontFamily="fa-regular"
                 FontSize="18"

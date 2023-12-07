@@ -1,11 +1,11 @@
+using Mcce.SmartOffice.AdminApp.ViewModels;
 using Mcce.SmartOffice.App.ViewModels;
-using Mcce.SmartOffice.MobileApp.ViewModels;
 
-namespace Mcce.SmartOffice.MobileApp.Pages;
+namespace Mcce.SmartOffice.AdminApp.Pages;
 
-public partial class WorkspaceConfigurationListPage
+public partial class WorkspaceListPage : ContentPage
 {
-    public WorkspaceConfigurationListPage(WorkspaceConfigurationListViewModel viewModel)
+    public WorkspaceListPage(WorkspaceListViewModel viewModel)
     {
         InitializeComponent();
 

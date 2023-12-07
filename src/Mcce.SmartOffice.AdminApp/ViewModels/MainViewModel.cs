@@ -12,7 +12,7 @@ namespace Mcce.SmartOffice.AdminApp.ViewModels
         private readonly IAuthService _authService;
         private readonly IAccountManager _accountManager;
 
-        public override string Title => "The Smart Office";
+        public override string Title => "The Smart Office (Admin)";
 
         [ObservableProperty]
         private string _fullName;
@@ -43,7 +43,13 @@ namespace Mcce.SmartOffice.AdminApp.ViewModels
                 await _authService.SignIn();
             }
             finally { IsBusy = false; }
-        }        
+        }
+
+        [RelayCommand]
+        public async Task Workspaces()
+        {
+            await NavigationService.GoToAsync(nameof(WorkspaceListPage));
+        }
 
         [RelayCommand]
         public async Task SignOut()

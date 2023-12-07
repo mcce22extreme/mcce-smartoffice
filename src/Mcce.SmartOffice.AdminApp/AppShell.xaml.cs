@@ -13,7 +13,9 @@ namespace Mcce.SmartOffice.AdminApp
 
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
             Routing.RegisterRoute(nameof(LoadingPage), typeof(LoadingPage));
-            Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
+            Routing.RegisterRoute(nameof(WorkspaceListPage), typeof(WorkspaceListPage));
+            Routing.RegisterRoute(nameof(WorkspaceDetailPage), typeof(WorkspaceDetailPage));
+            Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));            
         }
     }
 }
