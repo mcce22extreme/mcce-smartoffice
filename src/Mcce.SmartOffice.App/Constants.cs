@@ -5,5 +5,7 @@
         public static string IDENTITY_TOKEN = "identitytoken";
 
         public static string ACCESS_TOKEN = "accesstoken";
+
+        public static string REFRESH_TOKEN = "refreshtoken";
     }
 }

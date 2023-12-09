@@ -60,7 +60,12 @@
                                             IconSize=50}"
                     Text="Workspaces" />
                 <Button ImageSource="{mi:Fluent Icon=CalendarLtr48, IconColor=White, IconSize=50}" Text="Bookings" />
-                <Button ImageSource="{mi:Fluent Icon=DataBarVertical32, IconColor=White, IconSize=50}" Text="Analytics" />
+                <Button
+                    Command="{Binding WorkspaceDataCommand}"
+                    ImageSource="{mi:Fluent Icon=DataBarVertical32,
+                                            IconColor=White,
+                                            IconSize=50}"
+                    Text="Analytics" />
                 <Button
                     Command="{Binding SignOutCommand}"
                     ImageSource="{mi:Fluent Icon=SignOut24,

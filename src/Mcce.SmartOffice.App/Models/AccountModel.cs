@@ -1,4 +1,4 @@
-﻿namespace Mcce.SmartOffice.MobileApp.Models
+﻿namespace Mcce.SmartOffice.App.Models
 {
     public class AccountModel
     {
@@ -7,5 +7,7 @@
         public string LastName { get; set; }
 
         public string UserName { get; set; }
+
+        public bool IsAdmin { get; set; }
     }
 }

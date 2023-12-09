@@ -1,5 +1,6 @@
 ﻿using Mcce.SmartOffice.App;
 using Mcce.SmartOffice.App.Managers;
+using Mcce.SmartOffice.App.Services;
 using Mcce.SmartOffice.MobileApp.Models;
 using Newtonsoft.Json;
 
@@ -12,22 +13,27 @@ namespace Mcce.SmartOffice.MobileApp.Managers
 
     public class WorkspaceManager : ManagerBase, IWorkspaceManager
     {
-        public WorkspaceManager(IAppConfig appConfig, IHttpClientFactory httpClientFactory, ISecureStorage secureStorage)
-            : base(appConfig, httpClientFactory, secureStorage)
+        public WorkspaceManager(
+            IAppConfig appConfig,
+            IHttpClientFactory httpClientFactory,
+            ISecureStorage secureStorage,
+            IAuthService authService)
+            : base(appConfig, httpClientFactory, secureStorage, authService )
         {
         }
 
-        public async Task<WorkspaceModel[]> GetWorkspaces()
+        public Task<WorkspaceModel[]> GetWorkspaces()
         {
-            using var httpClient = await CreateHttpClient();
+            return ExecuteRequest(async httpClient =>
+            {
+                var url = $"{AppConfig.BaseAddress}workspace";
 
-            var url = $"{AppConfig.BaseAddress}workspace";
+                var json = await httpClient.GetStringAsync(url);
 
-            var json = await httpClient.GetStringAsync(url);
+                var workspaces = JsonConvert.DeserializeObject<WorkspaceModel[]>(json);
 
-            var workspaces = JsonConvert.DeserializeObject<WorkspaceModel[]>(json);
-
-            return workspaces;
+                return workspaces;
+            });
         }
     }
 }
