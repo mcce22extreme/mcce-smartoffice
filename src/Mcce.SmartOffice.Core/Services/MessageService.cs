@@ -126,6 +126,8 @@ namespace Mcce.SmartOffice.Core.Services
                 {
                     Log.Error(ex, ex.Message);
 
+                    await Task.Delay(5000);
+
                     // Try to reconnect unitl circuit is broken
                     return await Connect();
                 }

@@ -16,7 +16,7 @@
 
         public static string TOPIC_BOOKING_CONFIRMED { get; } = TOPIC_PREFIX + "booking/confirmed";
 
-        public static string TOPIC_BOOKING_ACTIVATED { get; } = TOPIC_PREFIX + "booking/{0}/activated";
+        public static string TOPIC_BOOKING_ACTIVATED { get; } = TOPIC_PREFIX + "booking/activated";
 
         public static string TOPIC_WORKSPACE_ACTIVATE_USERIMAGES { get; } = TOPIC_PREFIX + "workspace/{0}/activate/userimages";
 

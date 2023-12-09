@@ -461,7 +461,7 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
 
             // Assert
             A.CallTo(() => messagService.Publish(
-                MessageTopics.TOPIC_BOOKING_ACTIVATED.Replace("{0}", user.UserName),
+                MessageTopics.TOPIC_BOOKING_ACTIVATED,
                 A<BookingActivatedMessage>.That.Matches(msg => msg.BookingNumber == expectedBooking.BookingNumber && msg.WorkspaceNumber == expectedBooking.WorkspaceNumber && msg.UserName == user.UserName)))
                 .MustHaveHappened();
         }
