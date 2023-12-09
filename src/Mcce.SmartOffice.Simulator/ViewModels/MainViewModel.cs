@@ -28,12 +28,18 @@ namespace Mcce.SmartOffice.Simulator.ViewModels
         private const double DEFAULT_LEG_HEIGHT = 80;
         private const double DEFAULT_IMAGEFRAME_CANVAS_TOP = 336;
         private const double DEFAULT_WIFI_CANVAS_TOP = 315;
+        private const double DEFAULT_TEMPERATURE = 20;
+        private const double DEFAULT_HUMIDITY = 20;
+        private const double DEFAULT_CO2LEVEL = 700;
 
+        private readonly Random _random = new Random();
         private readonly Timer _delayTimer;
         private readonly Timer _imageTimer;
         private readonly IWorkspaceManager _workspaceManager;
         private readonly IMessageService _messageService;
         private readonly IAuthService _authService;
+        private readonly Timer _simulationTimer;
+
         private List<string> _imageUrls = new List<string>();
         private int _currentImageIndex;
         private bool _updateSendInProgress;
@@ -60,19 +66,22 @@ namespace Mcce.SmartOffice.Simulator.ViewModels
         private double _wifiCanvasTop = DEFAULT_WIFI_CANVAS_TOP;
 
         [ObservableProperty]
-        private double _temperature = 20;
+        private double _temperature = DEFAULT_TEMPERATURE;
 
         [ObservableProperty]
-        private double _humidity = 20;
+        private double _humidity = DEFAULT_HUMIDITY;
 
         [ObservableProperty]
-        private double _co2Level = 700;
+        private double _co2Level = DEFAULT_CO2LEVEL;
 
         [ObservableProperty]
         private string _messageLog;
 
         [ObservableProperty]
         private string[] _workspaces;
+
+        [ObservableProperty]
+        private bool _simulationRunning;
 
         private string _selectedWorkspace;
         public string SelectedWorkspace
@@ -135,6 +144,10 @@ namespace Mcce.SmartOffice.Simulator.ViewModels
             _imageTimer.Interval = 5000;
             _imageTimer.Elapsed += OnImageTimerElapsed;
 
+            _simulationTimer = new Timer();
+            _simulationTimer.Interval = 5000;
+            _simulationTimer.Elapsed += OnSimulationTimerElapsed;
+
             UpdateImageSource();
 
             LoadWorkspaces();
@@ -167,6 +180,13 @@ namespace Mcce.SmartOffice.Simulator.ViewModels
             }
 
             base.OnPropertyChanged(e);
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                StartSimulationCommand.NotifyCanExecuteChanged();
+                StopSimulationCommand.NotifyCanExecuteChanged();
+
+            });
         }
 
         private void OnDelayTimerElapsed(object sender, ElapsedEventArgs e)
@@ -288,10 +308,47 @@ namespace Mcce.SmartOffice.Simulator.ViewModels
             DeskCanvasTop = DEFAULT_DESK_CANVAS_TOP - (deskHeight - MIN_DESK_HEIGHT) * 2;
         }
 
+        private void OnSimulationTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            Temperature = _random.Next((int)DEFAULT_TEMPERATURE - 2, (int)DEFAULT_TEMPERATURE + 2) + _random.NextDouble();
+            Humidity = _random.Next((int)DEFAULT_HUMIDITY - 5, (int)DEFAULT_HUMIDITY + 5) + _random.NextDouble();
+            Co2Level = _random.Next((int)DEFAULT_CO2LEVEL - 10, (int)DEFAULT_CO2LEVEL + 15) + _random.NextDouble();
+        }
+
         [RelayCommand]
         private void ClearMessageLog()
         {
             MessageLog = string.Empty;
+        }
+
+        [RelayCommand(CanExecute = nameof(CanStartSimulation))]
+        private void StartSimulation()
+        {
+            if (CanStartSimulation())
+            {
+                _simulationTimer.Start();
+                SimulationRunning = true;
+            }
+        }
+
+        private bool CanStartSimulation()
+        {
+            return !SimulationRunning;
+        }
+
+        [RelayCommand(CanExecute = nameof(CanStopSimulation))]
+        private void StopSimulation()
+        {
+            if (CanStopSimulation())
+            {
+                _simulationTimer.Stop();
+                SimulationRunning = false;
+            }
+        }
+
+        private bool CanStopSimulation()
+        {
+            return SimulationRunning;
         }
     }
 }

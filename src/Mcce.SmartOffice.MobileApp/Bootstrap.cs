@@ -1,8 +1,9 @@
-﻿using Mcce.SmartOffice.App;
+﻿using MauiIcons.Fluent;
+using Mcce.SmartOffice.App;
+using Mcce.SmartOffice.App.Managers;
 using Mcce.SmartOffice.MobileApp.Managers;
 using Mcce.SmartOffice.MobileApp.Pages;
 using Mcce.SmartOffice.MobileApp.ViewModels;
-using MauiIcons.Fluent;
 
 namespace Mcce.SmartOffice.MobileApp
 {

@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using Mcce.SmartOffice.App;
 using Mcce.SmartOffice.App.Managers;
+using Mcce.SmartOffice.App.Services;
 using Mcce.SmartOffice.MobileApp.Models;
 using Newtonsoft.Json;
 
@@ -17,48 +18,63 @@ namespace Mcce.SmartOffice.MobileApp.Managers
 
     public class UserImageManager : ManagerBase, IUserImageManager
     {
-        public UserImageManager(IAppConfig appConfig, IHttpClientFactory httpClientFactory, ISecureStorage secureStorage)
-            : base(appConfig, httpClientFactory, secureStorage)
+        public UserImageManager(
+            IAppConfig appConfig,
+            IHttpClientFactory httpClientFactory,
+            ISecureStorage secureStorage,
+            IAuthService authService)
+            : base(appConfig, httpClientFactory, secureStorage, authService )
         {
         }
 
-        public async Task<UserImageModel[]> GetUserImages()
+        public Task<UserImageModel[]> GetUserImages()
         {
-            using var httpClient = await CreateHttpClient();
-
-            var url = $"{AppConfig.BaseAddress}userimage";
-
-            var json = await httpClient.GetStringAsync(url);
-
-            var userImages = JsonConvert.DeserializeObject<UserImageModel[]>(json);
-
-            return userImages;
-        }
-
-        public async Task AddUserImage(Stream stream, string filePath, string contentType)
-        {
-            using var httpClient = await CreateHttpClient();
-
-            var url = $"{AppConfig.BaseAddress}userimage?fileName={Path.GetFileName(filePath)}";
-            var streamContent = new StreamContent(stream)
+            return ExecuteRequest(async httpClient =>
             {
-                Headers =
+                var url = $"{AppConfig.BaseAddress}userimage";
+
+                var json = await httpClient.GetStringAsync(url);
+
+                var userImages = JsonConvert.DeserializeObject<UserImageModel[]>(json);
+
+                return userImages;
+            });
+        }
+
+        public Task AddUserImage(Stream stream, string filePath, string contentType)
+        {
+            return ExecuteRequest(async httpClient =>
+            {
+                var url = $"{AppConfig.BaseAddress}userimage?fileName={Path.GetFileName(filePath)}";
+                var streamContent = new StreamContent(stream)
+                {
+                    Headers =
                 {
                     ContentLength = stream.Length,
                     ContentType = new MediaTypeHeaderValue(contentType)
                 }
-            };
+                };
 
-            var response = await httpClient.PostAsync(url, streamContent);
+                var response = await httpClient.PostAsync(url, streamContent);
+
+                response.EnsureSuccessStatusCode();
+
+                return Task.CompletedTask;
+            });
         }
 
-        public async Task DeleteUserImage(string imageKey)
+        public Task DeleteUserImage(string imageKey)
         {
-            using var httpClient = await CreateHttpClient();
+            return ExecuteRequest(async httpClient =>
+            {
+                var url = $"{AppConfig.BaseAddress}userimage/{imageKey}";
 
-            var url = $"{AppConfig.BaseAddress}userimage/{imageKey}";
+                var response = await httpClient.DeleteAsync(url);
 
-            var response = await httpClient.DeleteAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                return Task.CompletedTask;
+            });
         }
     }
 }

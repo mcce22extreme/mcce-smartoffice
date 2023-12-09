@@ -1,5 +1,5 @@
-﻿using Mcce.SmartOffice.AdminApp.Managers;
-using Mcce.SmartOffice.AdminApp.Pages;
+﻿using Mcce.SmartOffice.AdminApp.Pages;
+using Mcce.SmartOffice.App.Managers;
 using Mcce.SmartOffice.App.Services;
 using Mcce.SmartOffice.App.ViewModels;
 

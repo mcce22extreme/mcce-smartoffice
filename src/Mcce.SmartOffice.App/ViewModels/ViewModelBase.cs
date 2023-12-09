@@ -29,7 +29,15 @@ namespace Mcce.SmartOffice.App.ViewModels
             DialogService = dialogService;
         }
 
-        public abstract Task Activate();
+        public virtual Task Activate()
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task Deactivate()
+        {
+            return Task.CompletedTask;
+        }
 
         public virtual Task<bool> CanGoBack()
         {
