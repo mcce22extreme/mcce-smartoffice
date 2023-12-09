@@ -222,7 +222,7 @@ namespace Mcce.SmartOffice.Bookings.Managers
             await _dbContext.SaveChangesAsync();
 
             await _messageService.Publish(
-                MessageTopics.TOPIC_BOOKING_ACTIVATED.Replace("{0}", booking.UserName),
+                MessageTopics.TOPIC_BOOKING_ACTIVATED,
                 new BookingActivatedMessage(booking.BookingNumber, booking.WorkspaceNumber, booking.UserName));
         }
 

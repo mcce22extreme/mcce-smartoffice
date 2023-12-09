@@ -43,7 +43,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcce.SmartOffice.MobileApp"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcce.SmartOffice.App", "src\Mcce.SmartOffice.App\Mcce.SmartOffice.App.csproj", "{98B19B47-AE1C-46FC-B889-6FD93296AFCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mcce.SmartOffice.AdminApp", "src\Mcce.SmartOffice.AdminApp\Mcce.SmartOffice.AdminApp.csproj", "{43FB3F59-E986-4A3F-86B1-E2072E3E3038}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcce.SmartOffice.AdminApp", "src\Mcce.SmartOffice.AdminApp\Mcce.SmartOffice.AdminApp.csproj", "{43FB3F59-E986-4A3F-86B1-E2072E3E3038}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
