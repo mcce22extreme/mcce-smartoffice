@@ -1,6 +1,6 @@
 ﻿using Mcce.SmartOffice.Bookings.Managers;
-using Mcce.SmartOffice.Core.Constants;
-using Mcce.SmartOffice.Core.Services;
+using Mcce.SmartOffice.Common.Constants;
+using Mcce.SmartOffice.Common.Services;
 using Newtonsoft.Json;
 
 namespace Mcce.SmartOffice.Bookings.Handlers

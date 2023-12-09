@@ -1,5 +1,5 @@
-﻿using Mcce.SmartOffice.Core.Constants;
-using Mcce.SmartOffice.Core.Services;
+﻿using Mcce.SmartOffice.Common.Constants;
+using Mcce.SmartOffice.Common.Services;
 using Mcce.SmartOffice.UserImages.Managers;
 using Newtonsoft.Json;
 
