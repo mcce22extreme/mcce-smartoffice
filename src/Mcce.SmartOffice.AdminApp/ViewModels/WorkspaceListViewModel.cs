@@ -14,6 +14,21 @@ namespace Mcce.SmartOffice.AdminApp.ViewModels
     {
         private readonly IWorkspaceManager _workspaceManager;
 
+        public override string Title
+        {
+            get
+            {
+                var title = "Workspaces";
+
+                if (Workspaces?.Count > 0)
+                {
+                    title += $"  ({Workspaces?.Count})";
+                }
+
+                return title;
+            }
+        }
+
         [ObservableProperty]
         private ObservableCollection<WorkspaceModel> _workspaces;
 
@@ -23,8 +38,9 @@ namespace Mcce.SmartOffice.AdminApp.ViewModels
         public WorkspaceListViewModel(
             IWorkspaceManager workspaceManager,
             INavigationService navigationService,
-            IDialogService dialogService)
-            : base(navigationService, dialogService)
+            IDialogService dialogService,
+            IAuthService authService)
+            : base(navigationService, dialogService, authService)
         {
             _workspaceManager = workspaceManager;
         }
@@ -51,13 +67,18 @@ namespace Mcce.SmartOffice.AdminApp.ViewModels
             {
                 try
                 {
-                    IsBusy = true;
+                    await HandleException(async () =>
+                    {
+                        IsBusy = true;
 
-                    SelectedWorkspace = null;
+                        SelectedWorkspace = null;
 
-                    var workspaces = await _workspaceManager.GetWorkspaces();
+                        var workspaces = await _workspaceManager.GetWorkspaces();
 
-                    Workspaces = new ObservableCollection<WorkspaceModel>(workspaces);
+                        Workspaces = new ObservableCollection<WorkspaceModel>(workspaces);
+
+                        OnPropertyChanged(nameof(Title));
+                    });
                 }
                 finally
                 {
@@ -126,13 +147,16 @@ namespace Mcce.SmartOffice.AdminApp.ViewModels
                 {
                     try
                     {
-                        IsBusy = true;
+                        await HandleException(async () =>
+                        {
+                            IsBusy = true;
 
+                            await _workspaceManager.DeleteWorkspaces(SelectedWorkspace.WorkspaceNumber);
 
-
-                        await _workspaceManager.DeleteWorkspaces(SelectedWorkspace.WorkspaceNumber);
-                        Workspaces.Remove(SelectedWorkspace);
-                        SelectedWorkspace = null;
+                            Workspaces.Remove(SelectedWorkspace);
+                            SelectedWorkspace = null;
+                            OnPropertyChanged(nameof(Title));
+                        });
                     }
                     finally
                     {

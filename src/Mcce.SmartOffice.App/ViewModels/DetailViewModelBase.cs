@@ -16,8 +16,8 @@ namespace Mcce.SmartOffice.App.ViewModels
 
         public bool HasUnsavedData { get; protected set; } = false;
 
-        protected DetailViewModelBase(INavigationService navigationService, IDialogService dialogService)
-            : base(navigationService, dialogService)
+        protected DetailViewModelBase(INavigationService navigationService, IDialogService dialogService, IAuthService authService)
+            : base(navigationService, dialogService, authService)
         {
         }
 

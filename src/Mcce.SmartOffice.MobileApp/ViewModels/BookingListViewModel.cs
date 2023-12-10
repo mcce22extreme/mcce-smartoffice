@@ -24,8 +24,9 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         public BookingListViewModel(
             IBookingManager bookingManager,
             INavigationService navigationService,
-            IDialogService dialogService)
-            : base(navigationService, dialogService)
+            IDialogService dialogService,
+            IAuthService authService)
+            : base(navigationService, dialogService, authService)
         {
             _bookingManager = bookingManager;
         }
@@ -68,10 +69,13 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
 
                 try
                 {
-                    SelectedBooking = null;
-                    var bookings = await _bookingManager.GetMyBookings();
+                    await HandleException(async () =>
+                    {
+                        SelectedBooking = null;
+                        var bookings = await _bookingManager.GetMyBookings();
 
-                    Bookings = new List<BookingModel>(bookings);
+                        Bookings = new List<BookingModel>(bookings);
+                    });
                 }
                 finally
                 {
@@ -94,18 +98,22 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
 
                 if (result)
                 {
-                    IsBusy = true;
                     try
                     {
-                        await _bookingManager.ActivateBooking(SelectedBooking.BookingNumber);
+                        await HandleException(async () =>
+                        {
+                            IsBusy = true;
 
-                        await LoadBookings();
+                            await _bookingManager.ActivateBooking(SelectedBooking.BookingNumber);
+
+                            await LoadBookings();
+                        });
                     }
                     finally
                     {
                         IsBusy = false;
                     }
-                }                
+                }
             }
         }
 
@@ -119,14 +127,18 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         {
             if (CanCancelBooking())
             {
-                IsBusy = true;
                 try
                 {
                     var result = await DialogService.ShowConfirmationDialog("Cancel Booking?", "Do you really want to cancel your booking?");
 
                     if (result)
                     {
-                        await _bookingManager.CancelBooking(SelectedBooking.BookingNumber);
+                        await HandleException(async () =>
+                        {
+                            IsBusy = true;
+
+                            await _bookingManager.CancelBooking(SelectedBooking.BookingNumber);
+                        });                        
                     }
                 }
                 finally

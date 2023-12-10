@@ -2,7 +2,6 @@
 using Mcce.SmartOffice.App;
 using Mcce.SmartOffice.App.Managers;
 using Mcce.SmartOffice.App.Models;
-using Mcce.SmartOffice.App.Services;
 using Mcce.SmartOffice.MobileApp.Models;
 using Newtonsoft.Json;
 
@@ -24,79 +23,67 @@ namespace Mcce.SmartOffice.MobileApp.Managers
         public BookingManager(
             IAppConfig appConfig,
             IHttpClientFactory httpClientFactory,
-            ISecureStorage secureStorage,
-            IAuthService authService)
-            : base(appConfig, httpClientFactory, secureStorage, authService)
+            ISecureStorage secureStorage)
+            : base(appConfig, httpClientFactory, secureStorage)
         {
         }
 
-        public Task<BookingModel[]> GetMyBookings()
+        public async Task<BookingModel[]> GetMyBookings()
         {
-            return ExecuteRequest(async httpClient =>
+            using var httpClient = await CreateHttpClient();
+
+            var url = $"{AppConfig.BaseAddress}booking?onlyMyBookings=true";
+
+            var json = await httpClient.GetStringAsync(url);
+
+            var bookings = JsonConvert.DeserializeObject<BookingModel[]>(json);
+
+            return bookings;
+        }
+
+        public async Task CreateBooking(string workspaceNumber, DateTime startDateTime, DateTime endDateTime)
+        {
+            using var httpClient = await CreateHttpClient();
+
+            var url = $"{AppConfig.BaseAddress}booking";
+
+            var response = await httpClient.PostAsJsonAsync(url, new
             {
-
-                var url = $"{AppConfig.BaseAddress}booking?onlyMyBookings=true";
-
-                var json = await httpClient.GetStringAsync(url);
-
-                var bookings = JsonConvert.DeserializeObject<BookingModel[]>(json);
-
-                return bookings;
+                WorkspaceNumber = workspaceNumber,
+                StartDateTime = startDateTime,
+                EndDateTime = endDateTime
             });
-        }
 
-        public Task CreateBooking(string workspaceNumber, DateTime startDateTime, DateTime endDateTime)
-        {
-            return ExecuteRequest(async httpClient =>
+            if (!response.IsSuccessStatusCode)
             {
-                var url = $"{AppConfig.BaseAddress}booking";
-
-                var response = await httpClient.PostAsJsonAsync(url, new
+                var error = await response.Content.ReadFromJsonAsync<ErrorModel>();
+                if (error != null)
                 {
-                    WorkspaceNumber = workspaceNumber,
-                    StartDateTime = startDateTime,
-                    EndDateTime = endDateTime
-                });
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var error = await response.Content.ReadFromJsonAsync<ErrorModel>();
-                    if (error != null)
-                    {
-                        throw new Exception(error.ErrorMessage);
-                    }
+                    throw new Exception(error.ErrorMessage);
                 }
-
-                return Task.CompletedTask;
-            });
+            }
         }
 
-        public Task ActivateBooking(string bookingNumber)
+        public async Task ActivateBooking(string bookingNumber)
         {
-            return ExecuteRequest(async httpClient =>
-            {
-                var url = $"{AppConfig.BaseAddress}booking/{bookingNumber}/activate";
+            using var httpClient = await CreateHttpClient();
 
-                var response = await httpClient.GetAsync(url);
+            var url = $"{AppConfig.BaseAddress}booking/{bookingNumber}/activate";
 
-                response.EnsureSuccessStatusCode();
+            var response = await httpClient.GetAsync(url);
 
-                return Task.CompletedTask;
-            });
+            response.EnsureSuccessStatusCode();
         }
 
-        public Task CancelBooking(string bookingNumber)
+        public async Task CancelBooking(string bookingNumber)
         {
-            return ExecuteRequest(async httpClient =>
-            {
-                var url = $"{AppConfig.BaseAddress}booking/{bookingNumber}";
+            using var httpClient = await CreateHttpClient();
 
-                var response =  await httpClient.DeleteAsync(url);
+            var url = $"{AppConfig.BaseAddress}booking/{bookingNumber}";
 
-                response.EnsureSuccessStatusCode();
+            var response =  await httpClient.DeleteAsync(url);
 
-                return Task.CompletedTask;
-            });
+            response.EnsureSuccessStatusCode();
         }
     }
 }

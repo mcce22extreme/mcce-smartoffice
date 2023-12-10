@@ -30,7 +30,8 @@ namespace Mcce.SmartOffice.AdminApp
             builder.Services
                 .AddSingleton<IAccountManager, AccountManager>()
                 .AddSingleton<IWorkspaceManager, WorkspaceManager>()
-                .AddSingleton<IWorkspaceDataManager, WorkspaceDataManager>();
+                .AddSingleton<IWorkspaceDataManager, WorkspaceDataManager>()
+                .AddSingleton<IBookingManager, BookingManager>();
 
             // Register pages
             builder.Services
@@ -39,7 +40,8 @@ namespace Mcce.SmartOffice.AdminApp
                 .AddTransient<MainPage>()
                 .AddTransient<WorkspaceListPage>()
                 .AddTransient<WorkspaceDetailPage>()
-                .AddTransient<WorkspaceDataPage>();
+                .AddTransient<WorkspaceDataPage>()
+                .AddTransient<BookingListPage>();
 
             // Register viewmodels
             builder.Services
@@ -48,7 +50,8 @@ namespace Mcce.SmartOffice.AdminApp
                 .AddTransient<MainViewModel>()
                 .AddTransient<WorkspaceListViewModel>()
                 .AddTransient<WorkspaceDetailViewModel>()
-                .AddTransient<WorkspaceDataViewModel>();
+                .AddTransient<WorkspaceDataViewModel>()
+                .AddTransient<BookingListViewModel>();
             ;
         }
     }

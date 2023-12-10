@@ -35,8 +35,9 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         public UserImageListViewModel(
             IUserImageManager userImageManager,
             INavigationService navigationService,
-            IDialogService dialogService)
-            : base(navigationService, dialogService)
+            IDialogService dialogService,
+            IAuthService authService)
+            : base(navigationService, dialogService, authService)
         {
             _userImageManager = userImageManager;
         }
@@ -59,15 +60,18 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         {
             if (CanLoadUserImages())
             {
-                IsBusy = true;
-
                 try
                 {
-                    SelectedUserImage = null;
-                    var userImages = await _userImageManager.GetUserImages();
+                    await HandleException(async () =>
+                    {
+                        IsBusy = true;
+                        SelectedUserImage = null;
 
-                    UserImages = new List<UserImageModel>(userImages);
-                    OnPropertyChanged(nameof(Title));
+                        var userImages = await _userImageManager.GetUserImages();
+
+                        UserImages = new List<UserImageModel>(userImages);
+                        OnPropertyChanged(nameof(Title));
+                    });
                 }
                 finally
                 {
@@ -95,16 +99,20 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
                 {
                     try
                     {
-                        using var stream = await result.OpenReadAsync();
+                        await HandleException(async () =>
+                        {
+                            IsBusy = true;
 
-                        IsBusy = true;
+                            using var stream = await result.OpenReadAsync();                            
 
-                        await _userImageManager.AddUserImage(stream, result.FileName, result.ContentType);
+                            await _userImageManager.AddUserImage(stream, result.FileName, result.ContentType);
+                        });
                     }
                     finally
                     {
                         IsBusy = false;
                     }
+
                     await LoadUserImages();
                 }
             }
@@ -128,11 +136,14 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
                     {
                         try
                         {
-                            using var stream = await photo.OpenReadAsync();
+                            await HandleException(async () =>
+                            {
+                                IsBusy = true;
 
-                            IsBusy = true;
+                                using var stream = await photo.OpenReadAsync();                                
 
-                            await _userImageManager.AddUserImage(stream, photo.FileName, photo.ContentType);
+                                await _userImageManager.AddUserImage(stream, photo.FileName, photo.ContentType);
+                            });
                         }
                         finally
                         {
@@ -161,13 +172,18 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
                 {
                     try
                     {
-                        IsBusy = true;
+                        await HandleException(async () =>
+                        {
+                            IsBusy = true;
 
-                        await _userImageManager.DeleteUserImage(SelectedUserImage.ImageKey);
+                            await _userImageManager.DeleteUserImage(SelectedUserImage.ImageKey);
 
-                        UserImages.Remove(SelectedUserImage);
-                        SelectedUserImage = null;
-                        OnPropertyChanged(nameof(Title));
+                            UserImages.Remove(SelectedUserImage);
+
+                            SelectedUserImage = null;
+
+                            OnPropertyChanged(nameof(Title));
+                        });
                     }
                     finally
                     {

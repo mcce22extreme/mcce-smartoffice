@@ -5,7 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
     xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
-    xmlns:pages="clr-namespace:Mcce.SmartOffice.AdminApp.Pages">
+    xmlns:pages="clr-namespace:Mcce.SmartOffice.AdminApp.Pages"
+    Title="{Binding Title}">
     <ContentPage.ToolbarItems>
         <ToolbarItem
             Command="{Binding DeleteWorkspaceDataCommand}"

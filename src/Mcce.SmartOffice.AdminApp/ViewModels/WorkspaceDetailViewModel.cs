@@ -22,8 +22,9 @@ namespace Mcce.SmartOffice.AdminApp.ViewModels
         public WorkspaceDetailViewModel(
             IWorkspaceManager workspaceManager,
             INavigationService navigationService,
-            IDialogService dialogService)
-            : base(navigationService, dialogService)
+            IDialogService dialogService,
+            IAuthService authService)
+            : base(navigationService, dialogService, authService)
         {
             _workspaceManager = workspaceManager;
         }
@@ -49,28 +50,27 @@ namespace Mcce.SmartOffice.AdminApp.ViewModels
             {
                 try
                 {
-                    if (!_regex.IsMatch(WorkspaceNumber))
+                    await HandleException(async () =>
                     {
-                        await DialogService.ShowDialog("Validation error", "The workspace number must only contain alphanumeric characters or the special character '-'!");
-                        return;
-                    }
+                        if (!_regex.IsMatch(WorkspaceNumber))
+                        {
+                            await DialogService.ShowDialog("Validation error", "The workspace number must only contain alphanumeric characters or the special character '-'!");
+                            return;
+                        }
 
-                    IsBusy = true;
+                        IsBusy = true;
 
-                    var model = new WorkspaceModel
-                    {
-                        WorkspaceNumber = WorkspaceNumber
-                    };
+                        var model = new WorkspaceModel
+                        {
+                            WorkspaceNumber = WorkspaceNumber
+                        };
 
-                    await _workspaceManager.CreateWorkspaces(model);
+                        await _workspaceManager.CreateWorkspaces(model);
 
-                    HasUnsavedData = false;
+                        HasUnsavedData = false;
 
-                    await NavigationService.GoBackAsync();
-                }
-                catch (Exception ex)
-                {
-                    await DialogService.ShowErrorMessage(ex.Message);
+                        await NavigationService.GoBackAsync();
+                    });
                 }
                 finally
                 {

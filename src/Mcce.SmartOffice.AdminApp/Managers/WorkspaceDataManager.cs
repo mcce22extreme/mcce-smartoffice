@@ -2,7 +2,6 @@
 using Mcce.SmartOffice.AdminApp.Models;
 using Mcce.SmartOffice.App;
 using Mcce.SmartOffice.App.Managers;
-using Mcce.SmartOffice.App.Services;
 
 namespace Mcce.SmartOffice.AdminApp.Managers
 {
@@ -18,34 +17,30 @@ namespace Mcce.SmartOffice.AdminApp.Managers
         public WorkspaceDataManager(
             IAppConfig appConfig,
             IHttpClientFactory httpClientFactory,
-            ISecureStorage secureStorage,
-            IAuthService authService)
-            : base(appConfig, httpClientFactory, secureStorage, authService)
+            ISecureStorage secureStorage)
+            : base(appConfig, httpClientFactory, secureStorage)
         {
         }
 
-        public Task<WorkspaceDataModel[]> GetWorkspaceData(string workspaceNumber, DateTime startDate, DateTime endDate)
+        public async Task<WorkspaceDataModel[]> GetWorkspaceData(string workspaceNumber, DateTime startDate, DateTime endDate)
         {
-            return ExecuteRequest(async httpClient =>
-            {
-                var url = $"{AppConfig.BaseAddress}workspacedataentry/{workspaceNumber}?startDate={startDate:s}&endDate={endDate:s}";
+            using var httpClient = await CreateHttpClient();
 
-                var entries = await httpClient.GetFromJsonAsync<WorkspaceDataModel[]>(url);
+            var url = $"{AppConfig.BaseAddress}workspacedataentry/{workspaceNumber}?startDate={startDate:s}&endDate={endDate:s}";
 
-                return entries;
-            });
+            var entries = await httpClient.GetFromJsonAsync<WorkspaceDataModel[]>(url);
+
+            return entries;
+
         }
 
         public async Task DeleteWorkspaceData(string workspaceNumber)
         {
-            await ExecuteRequest(async httpClient =>
-            {
-                var url = $"{AppConfig.BaseAddress}workspacedataentry/{workspaceNumber}";
+            using var httpClient = await CreateHttpClient();
 
-                var response = await httpClient.DeleteAsync(url);
+            var url = $"{AppConfig.BaseAddress}workspacedataentry/{workspaceNumber}";
 
-                return Task.CompletedTask;
-            });
+            var response = await httpClient.DeleteAsync(url);
         }
     }
 }

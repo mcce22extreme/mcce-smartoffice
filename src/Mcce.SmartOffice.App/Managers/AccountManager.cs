@@ -1,5 +1,4 @@
 ﻿using Mcce.SmartOffice.App.Models;
-using Mcce.SmartOffice.App.Services;
 using Newtonsoft.Json;
 
 namespace Mcce.SmartOffice.App.Managers
@@ -14,24 +13,23 @@ namespace Mcce.SmartOffice.App.Managers
         public AccountManager(
             IAppConfig appConfig,
             IHttpClientFactory httpClientFactory,
-            ISecureStorage secureStorage,
-            IAuthService authService)
-            : base(appConfig, httpClientFactory, secureStorage, authService)
+            ISecureStorage secureStorage)
+            : base(appConfig, httpClientFactory, secureStorage)
         {
         }
 
-        public Task<AccountModel> GetAccountInfo()
+        public async Task<AccountModel> GetAccountInfo()
         {
-            return ExecuteRequest(async httpClient =>
-            {
-                var url = $"{AppConfig.BaseAddress}account";
+            using var httpClient = await CreateHttpClient();
 
-                var json = await httpClient.GetStringAsync(url);
+            var url = $"{AppConfig.BaseAddress}account";
 
-                var accountInfo = JsonConvert.DeserializeObject<AccountModel>(json);
+            var json = await httpClient.GetStringAsync(url);
 
-                return accountInfo;
-            });            
+            var accountInfo = JsonConvert.DeserializeObject<AccountModel>(json);
+
+            return accountInfo;
+
         }
     }
 }
