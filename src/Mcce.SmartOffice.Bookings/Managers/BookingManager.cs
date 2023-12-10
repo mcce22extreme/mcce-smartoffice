@@ -207,11 +207,13 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
         public async Task ActivateBooking(string bookingNumber)
         {
-            var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.BookingNumber == bookingNumber);
+            var currentUser = _contextAccessor.GetUserInfo();
+
+            var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.BookingNumber == bookingNumber && x.UserName == currentUser.UserName);
 
             if (booking == null)
             {
-                throw new NotFoundException($"Could not find booking '{bookingNumber}'.");
+                throw new NotFoundException($"Could not find booking '{bookingNumber}' for user '{currentUser.UserName}'.");
             }
 
             if (booking.State != BookingState.Confirmed && booking.State != BookingState.Activated)

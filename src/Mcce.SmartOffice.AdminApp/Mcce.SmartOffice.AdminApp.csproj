@@ -11,7 +11,7 @@
         <Nullable>disable</Nullable>
 
         <!-- Display name -->
-        <ApplicationTitle>The Smart Office</ApplicationTitle>
+        <ApplicationTitle>Smart Office Administration</ApplicationTitle>
 
         <!-- App Identifier -->
         <ApplicationId>com.mcce22extrem.mcce.smartoffice.adminapp</ApplicationId>
@@ -22,6 +22,10 @@
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
+      <AndroidPackageFormat>apk</AndroidPackageFormat>
     </PropertyGroup>
 
     <ItemGroup>

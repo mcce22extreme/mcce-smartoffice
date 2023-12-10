@@ -383,12 +383,16 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
         public async Task ActivateBooking_UpdatesState()
         {
             // Arrange
-            var expectedBooking = CreateBooking(state: BookingState.Confirmed);
+            var user = CreateUserInfo(Make.String());
+            var expectedBooking = CreateBooking(user: user, state: BookingState.Confirmed);
             await DbContext.Bookings.AddAsync(expectedBooking);
             await DbContext.SaveChangesAsync();
 
             // Act
-            var manager = new BookingManager(Make.String(), DbContext, Mapper, A.Fake<IAuthContextAccessor>(), A.Fake<IMessageService>());
+            var auchAccessor = A.Fake<IAuthContextAccessor>();
+            A.CallTo(() => auchAccessor.GetUserInfo()).Returns(user);
+
+            var manager = new BookingManager(Make.String(), DbContext, Mapper, auchAccessor, A.Fake<IMessageService>());
             await manager.ActivateBooking(expectedBooking.BookingNumber);
 
             // Assert
@@ -421,12 +425,16 @@ namespace Mcce.SmartOffice.Bookings.Tests.Managers
         public async Task ActivateBooking_WithValidState_UpdatesState(BookingState state, bool valid)
         {
             // Arrange
-            var expectedBooking = CreateBooking(state: state);
+            var user = CreateUserInfo();
+            var expectedBooking = CreateBooking(user: user, state: state);
             await DbContext.Bookings.AddAsync(expectedBooking);
             await DbContext.SaveChangesAsync();
 
             // Act
-            var manager = new BookingManager(Make.String(), DbContext, Mapper, A.Fake<IAuthContextAccessor>(), A.Fake<IMessageService>());
+            var auchAccessor = A.Fake<IAuthContextAccessor>();
+            A.CallTo(() => auchAccessor.GetUserInfo()).Returns(user);
+
+            var manager = new BookingManager(Make.String(), DbContext, Mapper, auchAccessor, A.Fake<IMessageService>());
 
             if (valid)
             {
