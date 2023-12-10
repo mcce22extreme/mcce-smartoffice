@@ -1,4 +1,4 @@
-﻿namespace Mcce.SmartOffice.Core.Constants
+﻿namespace Mcce.SmartOffice.Common.Constants
 {
     public static class MessageTopics
     {

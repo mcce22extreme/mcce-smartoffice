@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mcce.SmartOffice.DigitalFrameApp.Pages.SlideshowPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
+    Title="SlideshowPage">
+    <Grid>
+        <CarouselView
+            x:Name="UserImageCarousel"
+            Grid.Row="0"
+            Grid.RowSpan="3"
+            EmptyView="No images to display."
+            ItemsSource="{Binding UserImages}"
+            ItemsUpdatingScrollMode="KeepScrollOffset"
+            Loop="True">
+            <CarouselView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout>
+                        <Frame
+                            Margin="5"
+                            BackgroundColor="{DynamicResource Gray600}"
+                            BorderColor="DarkGray"
+                            CornerRadius="5"
+                            HasShadow="True"
+                            VerticalOptions="CenterAndExpand">
+                            <StackLayout>
+                                <Image
+                                    Aspect="AspectFit"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center">
+                                    <Image.Source>
+                                        <UriImageSource CacheValidity="10" Uri="{Binding .}" />
+                                    </Image.Source>
+                                </Image>
+                            </StackLayout>
+                        </Frame>
+                    </StackLayout>
+                </DataTemplate>
+            </CarouselView.ItemTemplate>
+        </CarouselView>
+        <Image
+            Margin="10"
+            VerticalOptions="End"
+            Opacity="0.3"
+            HorizontalOptions="Start"
+            HeightRequest="60"
+            Source="/Resources/Images/logo512.png"
+            WidthRequest="60" />
+        <Button
+            Margin="0,0,10,10"
+            Command="{Binding EndSessionCommand}"
+            CornerRadius="40"
+            FontSize="18"
+            HeightRequest="60"
+            HorizontalOptions="End"
+            ImageSource="{mi:Fluent Icon=ShareScreenStop48,
+                                    IconColor=White,
+                                    IconSize=40}"
+            Opacity="0.8"
+            VerticalOptions="End"
+            WidthRequest="60" />
+    </Grid>
+</ContentPage>

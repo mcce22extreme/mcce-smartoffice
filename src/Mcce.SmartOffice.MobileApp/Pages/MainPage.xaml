@@ -10,11 +10,11 @@
             <Style.Setters>
                 <Setter Property="Margin" Value="3" />
                 <Setter Property="Background" Value="{DynamicResource Primary}" />
-                <Setter Property="FontSize" Value="13" />
+                <Setter Property="FontSize" Value="12" />
                 <Setter Property="FontAttributes" Value="Bold" />
                 <Setter Property="ContentLayout" Value="Top" />
                 <Setter Property="HeightRequest" Value="100" />
-                <Setter Property="WidthRequest" Value="110" />
+                <Setter Property="WidthRequest" Value="105" />
                 <Setter Property="TextColor" Value="White" />
             </Style.Setters>
         </Style>

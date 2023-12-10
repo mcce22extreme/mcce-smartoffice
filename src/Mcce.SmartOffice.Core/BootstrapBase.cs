@@ -1,6 +1,7 @@
 using System.Reflection;
 using Azure.Identity;
 using FluentValidation;
+using Mcce.SmartOffice.Common.Services;
 using Mcce.SmartOffice.Core.Accessors;
 using Mcce.SmartOffice.Core.Attributes;
 using Mcce.SmartOffice.Core.Configs;
@@ -202,7 +203,7 @@ namespace Mcce.SmartOffice.Core
 
                 builder.Services.AddHostedService<MessageHandlerService>();
 
-                builder.Services.RegisterAllTypes<IMessageHandler>(new[] { Assembly });
+                builder.Services.RegisterAllTypes<IMessageHandler>([Assembly]);
             }
 
             OnConfigureBuilder(builder);

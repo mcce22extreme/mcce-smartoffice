@@ -5,6 +5,8 @@ using Mcce.SmartOffice.Bookings.Entities;
 using Mcce.SmartOffice.Bookings.Enums;
 using Mcce.SmartOffice.Bookings.Messages;
 using Mcce.SmartOffice.Bookings.Models;
+using Mcce.SmartOffice.Common.Constants;
+using Mcce.SmartOffice.Common.Services;
 using Mcce.SmartOffice.Core.Accessors;
 using Mcce.SmartOffice.Core.Constants;
 using Mcce.SmartOffice.Core.Enums;
@@ -205,11 +207,13 @@ namespace Mcce.SmartOffice.Bookings.Managers
 
         public async Task ActivateBooking(string bookingNumber)
         {
-            var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.BookingNumber == bookingNumber);
+            var currentUser = _contextAccessor.GetUserInfo();
+
+            var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.BookingNumber == bookingNumber && x.UserName == currentUser.UserName);
 
             if (booking == null)
             {
-                throw new NotFoundException($"Could not find booking '{bookingNumber}'.");
+                throw new NotFoundException($"Could not find booking '{bookingNumber}' for user '{currentUser.UserName}'.");
             }
 
             if (booking.State != BookingState.Confirmed && booking.State != BookingState.Activated)
