@@ -26,7 +26,8 @@ namespace Mcce.SmartOffice.DigitalFrameApp
 
             // Register managers
             builder.Services
-                .AddSingleton<ISessionManager, SessionManager>();
+                .AddSingleton<ISessionManager, SessionManager>()
+                .AddSingleton<IWorkspaceDataManager, WorkspaceDataManager>();
 
             // Register pages
             builder.Services

@@ -4,7 +4,11 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
+    xmlns:vc="clr-namespace:Mcce.SmartOffice.DigitalFrameApp.ValueConverters"
     Title="SlideshowPage">
+    <ContentPage.Resources>
+        <vc:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+    </ContentPage.Resources>
     <Grid>
         <CarouselView
             x:Name="UserImageCarousel"
@@ -41,11 +45,39 @@
         </CarouselView>
         <Image
             Margin="10"
-            VerticalOptions="End"
-            Opacity="0.3"
-            HorizontalOptions="Start"
             HeightRequest="60"
+            HorizontalOptions="Start"
+            Opacity="0.3"
             Source="/Resources/Images/logo512.png"
+            VerticalOptions="End"
+            WidthRequest="60" />
+        <Button
+            Margin="0,0,10,80"
+            Command="{Binding StartWorkspaceDataSimulationCommand}"
+            CornerRadius="40"
+            FontSize="18"
+            HeightRequest="60"
+            HorizontalOptions="End"
+            ImageSource="{mi:Fluent Icon=Play28,
+                                    IconColor=White,
+                                    IconSize=40}"
+            IsVisible="{Binding DataSimulationRunning, Converter={StaticResource InverseBooleanConverter}}"
+            Opacity="0.8"
+            VerticalOptions="End"
+            WidthRequest="60" />
+        <Button
+            Margin="0,0,10,80"
+            Command="{Binding StopWorkspaceDataSimulationCommand}"
+            CornerRadius="40"
+            FontSize="18"
+            HeightRequest="60"
+            HorizontalOptions="End"
+            ImageSource="{mi:Fluent Icon=Stop24,
+                                    IconColor=White,
+                                    IconSize=40}"
+            IsVisible="{Binding DataSimulationRunning}"
+            Opacity="0.8"
+            VerticalOptions="End"
             WidthRequest="60" />
         <Button
             Margin="0,0,10,10"

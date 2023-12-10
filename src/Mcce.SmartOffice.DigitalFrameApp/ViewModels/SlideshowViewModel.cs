@@ -13,6 +13,7 @@ namespace Mcce.SmartOffice.DigitalFrameApp.ViewModels
         public event EventHandler<int> OnUserImageIndexUpdate;
 
         private readonly ISessionManager _sessionManager;
+        private readonly IWorkspaceDataManager _workspaceDataManager;
         private readonly IDispatcherTimer _dispatcherTimer;
 
         private string _currentImage;
@@ -20,14 +21,19 @@ namespace Mcce.SmartOffice.DigitalFrameApp.ViewModels
         [ObservableProperty]
         private ObservableCollection<string> _userImages = new ObservableCollection<string>();
 
+        [ObservableProperty]
+        private bool _dataSimulationRunning;
+
         public SlideshowViewModel(
             ISessionManager sessionManager,
+            IWorkspaceDataManager workspaceDataManager,
             IDispatcherTimer dispatcherTimer,
             INavigationService navigationService,
             IDialogService dialogService)
             : base(navigationService, dialogService)
         {
             _sessionManager = sessionManager;
+            _workspaceDataManager = workspaceDataManager;
             _dispatcherTimer = dispatcherTimer;
 
             _dispatcherTimer.Interval = TimeSpan.FromSeconds(10);
@@ -40,7 +46,7 @@ namespace Mcce.SmartOffice.DigitalFrameApp.ViewModels
 
             var userImages = _sessionManager.GetCurrentUserImages();
 
-            if(userImages.Length > 0)
+            if (userImages.Length > 0)
             {
                 foreach (var image in userImages)
                 {
@@ -81,6 +87,11 @@ namespace Mcce.SmartOffice.DigitalFrameApp.ViewModels
 
                 OnUserImageIndexUpdate?.Invoke(this, index);
             }
+
+            if(DataSimulationRunning)
+            {
+                _workspaceDataManager.SendWorkspaceData();
+            }
         }
 
         [RelayCommand]
@@ -91,6 +102,28 @@ namespace Mcce.SmartOffice.DigitalFrameApp.ViewModels
             UserImages.Clear();
 
             await NavigationService.GoToAsync(nameof(EndSessionPage));
+        }
+
+        [RelayCommand(CanExecute = nameof(CanStartWorkspaceDataSimulation))]
+        private void StartWorkspaceDataSimulation()
+        {
+            DataSimulationRunning = true;
+        }
+
+        private bool CanStartWorkspaceDataSimulation()
+        {
+            return !DataSimulationRunning;
+        }
+
+        [RelayCommand(CanExecute = nameof(CanStopWorkspaceDataSimulation))]
+        private void StopWorkspaceDataSimulation()
+        {
+            DataSimulationRunning = false;
+        }
+
+        private bool CanStopWorkspaceDataSimulation()
+        {
+            return DataSimulationRunning;
         }
     }
 }
