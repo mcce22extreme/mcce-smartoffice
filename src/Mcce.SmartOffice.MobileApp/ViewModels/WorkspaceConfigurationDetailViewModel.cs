@@ -44,8 +44,9 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             IWorkspaceConfigurationManager workspaceConfigurationManager,
             IWorkspaceManager workspaceManager,
             INavigationService navigationService,
-            IDialogService dialogService)
-            : base(navigationService, dialogService)
+            IDialogService dialogService,
+            IAuthService authService)
+            : base(navigationService, dialogService, authService)
         {
             _workspaceConfigurationManager = workspaceConfigurationManager;
             _workspaceManager = workspaceManager;
@@ -53,30 +54,33 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
 
         public override async Task Activate()
         {
-            IsBusy = true;
-
             try
             {
-                SelectedWorkspace = null;
-
-                var workspaceConfigurations = await _workspaceConfigurationManager.GetWorkspaceConfigurations();
-
-                if (string.IsNullOrEmpty(WorkspaceNumber))
+                await HandleException(async () =>
                 {
-                    var workspaces = await _workspaceManager.GetWorkspaces();
+                    IsBusy = true;
 
-                    // Only add workspaces for that no configuration exists, yet
-                    Workspaces = new ObservableCollection<WorkspaceModel>(workspaces.Where(x => !workspaceConfigurations.Any(c => c.WorkspaceNumber == x.WorkspaceNumber)));
-                }
-                else
-                {
-                    var configuration = workspaceConfigurations.FirstOrDefault(x => x.WorkspaceNumber == WorkspaceNumber);
-                    Workspaces.Add(new WorkspaceModel { WorkspaceNumber = WorkspaceNumber });
-                    SelectedWorkspace = Workspaces.FirstOrDefault();
-                    DeskHeight = configuration.DeskHeight;
-                }
+                    SelectedWorkspace = null;
 
-                IsLoaded = true;
+                    var workspaceConfigurations = await _workspaceConfigurationManager.GetWorkspaceConfigurations();
+
+                    if (string.IsNullOrEmpty(WorkspaceNumber))
+                    {
+                        var workspaces = await _workspaceManager.GetWorkspaces();
+
+                        // Only add workspaces for that no configuration exists, yet
+                        Workspaces = new ObservableCollection<WorkspaceModel>(workspaces.Where(x => !workspaceConfigurations.Any(c => c.WorkspaceNumber == x.WorkspaceNumber)));
+                    }
+                    else
+                    {
+                        var configuration = workspaceConfigurations.FirstOrDefault(x => x.WorkspaceNumber == WorkspaceNumber);
+                        Workspaces.Add(new WorkspaceModel { WorkspaceNumber = WorkspaceNumber });
+                        SelectedWorkspace = Workspaces.FirstOrDefault();
+                        DeskHeight = configuration.DeskHeight;
+                    }
+
+                    IsLoaded = true;
+                });
             }
             finally
             {
@@ -98,19 +102,17 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             {
                 try
                 {
-                    IsBusy = true;
+                    await HandleException(async () =>
+                    {
+                        IsBusy = true;
 
+                        await _workspaceConfigurationManager.SaveWorkspaceConfigurations(SelectedWorkspace.WorkspaceNumber, DeskHeight);
 
-                    await _workspaceConfigurationManager.SaveWorkspaceConfigurations(SelectedWorkspace.WorkspaceNumber, DeskHeight);
+                        HasUnsavedData = false;
 
-                    HasUnsavedData = false;
-
-                    await NavigationService.GoBackAsync();
-                }
-                catch (Exception ex)
-                {
-                    await DialogService.ShowErrorMessage(ex.Message);
-                }
+                        await NavigationService.GoBackAsync();
+                    });
+                }                
                 finally
                 {
                     IsBusy = false;

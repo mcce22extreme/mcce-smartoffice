@@ -7,15 +7,12 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
 {
     public partial class LoginViewModel : ViewModelBase
     {
-        private readonly IAuthService _authService;
-
         public LoginViewModel(
             IAuthService authService,
             INavigationService navigationService,
             IDialogService dialogService)
-            : base(navigationService, dialogService)
+            : base(navigationService, dialogService, authService)
         {
-            _authService = authService;
         }
 
         public override Task Activate()
@@ -26,7 +23,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         [RelayCommand]
         private async Task SignIn()
         {
-            if (await _authService.SignIn())
+            if (await AuthService.SignIn())
             {
                 await NavigationService.GoToAsync($"//{nameof(MainPage)}");
             }

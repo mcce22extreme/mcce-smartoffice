@@ -38,8 +38,9 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         public WorkspaceConfigurationListViewModel(
             IWorkspaceConfigurationManager workspaceConfigurationManager,
             INavigationService navigationService,
-            IDialogService dialogService)
-            : base(navigationService, dialogService)
+            IDialogService dialogService,
+            IAuthService authService)
+            : base(navigationService, dialogService, authService)
         {
             _workspaceConfigurationManager = workspaceConfigurationManager;
         }
@@ -64,16 +65,20 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         {
             if (CanLoadWorkspaceConfigurations())
             {
-                IsBusy = true;
-
                 try
                 {
-                    SelectedWorkspaceConfiguration = null;
-                    var configurations = await _workspaceConfigurationManager.GetWorkspaceConfigurations();
+                    await HandleException(async () =>
+                    {
+                        IsBusy = true;
 
-                    WorkspaceConfigurations = new ObservableCollection<WorkspaceConfigurationModel>(configurations);
+                        SelectedWorkspaceConfiguration = null;
 
-                    OnPropertyChanged(nameof(Title));
+                        var configurations = await _workspaceConfigurationManager.GetWorkspaceConfigurations();
+
+                        WorkspaceConfigurations = new ObservableCollection<WorkspaceConfigurationModel>(configurations);
+
+                        OnPropertyChanged(nameof(Title));
+                    });                   
                 }
                 finally
                 {
@@ -119,18 +124,23 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
         private async Task DeleteWorkspaceConfiguration()
         {
             if (CanDeleteWorkspaceConfiguration())
-            {
-                IsBusy = true;
+            {                
                 try
                 {
                     var result = await DialogService.ShowConfirmationDialog("Delete Configuration?", "Do you really want to delete the selected workspace configuration?");
 
                     if (result)
                     {
-                        await _workspaceConfigurationManager.DeleteBooking(SelectedWorkspaceConfiguration.WorkspaceNumber);
+                        await HandleException(async () =>
+                        {
+                            IsBusy = true;
 
-                        WorkspaceConfigurations.Remove(SelectedWorkspaceConfiguration);
-                        OnPropertyChanged(nameof(Title));
+                            await _workspaceConfigurationManager.DeleteBooking(SelectedWorkspaceConfiguration.WorkspaceNumber);
+
+                            WorkspaceConfigurations.Remove(SelectedWorkspaceConfiguration);
+
+                            OnPropertyChanged(nameof(Title));
+                        });
                     }
                 }
                 finally

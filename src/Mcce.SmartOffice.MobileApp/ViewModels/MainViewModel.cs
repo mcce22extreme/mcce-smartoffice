@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using Mcce.SmartOffice.App.Managers;
 using Mcce.SmartOffice.App.Services;
 using Mcce.SmartOffice.App.ViewModels;
 using Mcce.SmartOffice.MobileApp.Pages;
@@ -8,18 +7,14 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
-        private readonly IAuthService _authService;
-        private readonly IAccountManager _accountManager;
-
         public override string Title => "The Smart Office";
 
         public MainViewModel(
             IAuthService authService,
             INavigationService navigationService,
             IDialogService dialogService)
-            : base(navigationService, dialogService)
+            : base(navigationService, dialogService, authService)
         {
-            _authService = authService;
         }               
 
         [RelayCommand]
@@ -53,7 +48,7 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
 
             if (result)
             {
-                await _authService.SignOut();
+                await AuthService.SignOut();
 
                 await NavigationService.GoToAsync($"//{nameof(LoginPage)}");
             }

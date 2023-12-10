@@ -30,11 +30,13 @@ namespace Mcce.SmartOffice.AdminApp.ViewModels
         private readonly IWorkspaceDataManager _workspaceDataManager;
         private readonly IDispatcherTimer _updateTimer;
 
+        public override string Title => "Workspace Data";
+
         [ObservableProperty]
         private ObservableCollection<WorkspaceModel> _workspaces;
 
         [ObservableProperty]
-        private WorkspaceModel _selectedWorkspace;        
+        private WorkspaceModel _selectedWorkspace;
 
         [ObservableProperty]
         private List<WorkspaceDataModel> _workspaceDataEntries = new List<WorkspaceDataModel>();
@@ -158,8 +160,9 @@ namespace Mcce.SmartOffice.AdminApp.ViewModels
             IWorkspaceDataManager workspaceDataManager,
             IDispatcherTimer dispatcherTimer,
             INavigationService navigationService,
-            IDialogService dialogService)
-            : base(navigationService, dialogService)
+            IDialogService dialogService,
+            IAuthService authService)
+            : base(navigationService, dialogService, authService)
         {
             _workspaceManager = workspaceManager;
             _workspaceDataManager = workspaceDataManager;
@@ -252,7 +255,7 @@ namespace Mcce.SmartOffice.AdminApp.ViewModels
 
             DeleteWorkspaceDataCommand.NotifyCanExecuteChanged();
 
-            if(e.PropertyName == nameof(SelectedWorkspace))
+            if (e.PropertyName == nameof(SelectedWorkspace))
             {
                 await UpdateWorkspaceDataEntries(SelectedWorkspace);
             }
@@ -291,50 +294,53 @@ namespace Mcce.SmartOffice.AdminApp.ViewModels
         {
             try
             {
-                if (IsBusy)
+                await HandleException(async () =>
                 {
-                    return;
-                }
-
-                IsBusy = true;
-
-                if (workspace == null)
-                {
-                    ResetChartData();
-                }
-                else
-                {
-                    var startDate = new DateTime(
-                        StartDate.Year,
-                        StartDate.Month,
-                        StartDate.Day,
-                        StartTime.Hours,
-                        StartTime.Minutes,
-                        StartTime.Seconds);
-
-                    var endDate = new DateTime(
-                        EndDate.Year,
-                        EndDate.Month,
-                        EndDate.Day,
-                        EndTime.Hours,
-                        EndTime.Minutes,
-                        EndTime.Seconds);
-
-                    var workspaceDataEntries = await _workspaceDataManager.GetWorkspaceData(workspace.WorkspaceNumber, startDate, endDate);
-
-                    foreach (var entry in workspaceDataEntries)
+                    if (IsBusy)
                     {
-                        if (!WorkspaceDataEntries.Any(x => x.Id == entry.Id))
-                        {
-                            _weiValues.Add(new ObservableValue(entry.Wei));
-                            _temperatureValues.Add(new ObservableValue(entry.Temperature));
-                            _humidityValues.Add(new ObservableValue(entry.Humidity));
-                            _co2LevelValues.Add(new ObservableValue(entry.Co2Level));
-                        }
+                        return;
                     }
 
-                    WorkspaceDataEntries = new List<WorkspaceDataModel>(workspaceDataEntries);
-                }
+                    IsBusy = true;
+
+                    if (workspace == null)
+                    {
+                        ResetChartData();
+                    }
+                    else
+                    {
+                        var startDate = new DateTime(
+                                StartDate.Year,
+                                StartDate.Month,
+                                StartDate.Day,
+                                StartTime.Hours,
+                                StartTime.Minutes,
+                                StartTime.Seconds);
+
+                        var endDate = new DateTime(
+                                EndDate.Year,
+                                EndDate.Month,
+                                EndDate.Day,
+                                EndTime.Hours,
+                                EndTime.Minutes,
+                                EndTime.Seconds);
+
+                        var workspaceDataEntries = await _workspaceDataManager.GetWorkspaceData(workspace.WorkspaceNumber, startDate, endDate);
+
+                        foreach (var entry in workspaceDataEntries)
+                        {
+                            if (!WorkspaceDataEntries.Any(x => x.Id == entry.Id))
+                            {
+                                _weiValues.Add(new ObservableValue(entry.Wei));
+                                _temperatureValues.Add(new ObservableValue(entry.Temperature));
+                                _humidityValues.Add(new ObservableValue(entry.Humidity));
+                                _co2LevelValues.Add(new ObservableValue(entry.Co2Level));
+                            }
+                        }
+
+                        WorkspaceDataEntries = new List<WorkspaceDataModel>(workspaceDataEntries);
+                    }
+                });                
             }
             finally
             {
@@ -386,14 +392,17 @@ namespace Mcce.SmartOffice.AdminApp.ViewModels
             if (CanDeleteWorkspaceData())
             {
                 if (await DialogService.ShowConfirmationDialog("Delete workspace data?", "Do you realy want to delete all data of the selected workspace?"))
-                {
+                {   
                     try
                     {
-                        IsBusy = true;
+                        await HandleException(async () =>
+                        {
+                            IsBusy = true;
 
-                        await _workspaceDataManager.DeleteWorkspaceData(SelectedWorkspace.WorkspaceNumber);
+                            await _workspaceDataManager.DeleteWorkspaceData(SelectedWorkspace.WorkspaceNumber);
 
-                        ResetChartData();
+                            ResetChartData();
+                        });
                     }
                     finally
                     {

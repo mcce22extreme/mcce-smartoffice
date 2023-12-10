@@ -2,7 +2,6 @@
 using Mcce.SmartOffice.AdminApp.Models;
 using Mcce.SmartOffice.App;
 using Mcce.SmartOffice.App.Managers;
-using Mcce.SmartOffice.App.Services;
 using Newtonsoft.Json;
 
 namespace Mcce.SmartOffice.AdminApp.Managers
@@ -21,52 +20,44 @@ namespace Mcce.SmartOffice.AdminApp.Managers
         public WorkspaceManager(
             IAppConfig appConfig,
             IHttpClientFactory httpClientFactory,
-            ISecureStorage secureStorage,
-            IAuthService authService)
-            : base(appConfig, httpClientFactory, secureStorage, authService)
+            ISecureStorage secureStorage)
+            : base(appConfig, httpClientFactory, secureStorage)
         {
         }
 
-        public Task<WorkspaceModel[]> GetWorkspaces()
+        public async Task<WorkspaceModel[]> GetWorkspaces()
         {
-            return ExecuteRequest(async httpClient =>
-            {
-                var url = $"{AppConfig.BaseAddress}workspace";
+            using var httpClient = await CreateHttpClient();
 
-                var json = await httpClient.GetStringAsync(url);
+            var url = $"{AppConfig.BaseAddress}workspace";
 
-                var workspaces = JsonConvert.DeserializeObject<WorkspaceModel[]>(json);
+            var json = await httpClient.GetStringAsync(url);
 
-                return workspaces;
-            });
+            var workspaces = JsonConvert.DeserializeObject<WorkspaceModel[]>(json);
+
+            return workspaces;
         }
 
-        public Task CreateWorkspaces(WorkspaceModel model)
+        public async Task CreateWorkspaces(WorkspaceModel model)
         {
-            return ExecuteRequest(async httpClient =>
-            {
-                var url = $"{AppConfig.BaseAddress}workspace";
+            using var httpClient = await CreateHttpClient();
 
-                var response = await httpClient.PostAsJsonAsync(url, model);
+            var url = $"{AppConfig.BaseAddress}workspace";
 
-                response.EnsureSuccessStatusCode();
+            var response = await httpClient.PostAsJsonAsync(url, model);
 
-                return Task.CompletedTask;
-            });
+            response.EnsureSuccessStatusCode();
         }
 
-        public  Task DeleteWorkspaces(string workspaceNumber)
+        public async Task DeleteWorkspaces(string workspaceNumber)
         {
-            return ExecuteRequest(async httpClient =>
-            {
-                var url = $"{AppConfig.BaseAddress}workspace/{workspaceNumber}";
+            using var httpClient = await CreateHttpClient();
 
-                var response = await httpClient.DeleteAsync(url);
+            var url = $"{AppConfig.BaseAddress}workspace/{workspaceNumber}";
 
-                response.EnsureSuccessStatusCode();
+            var response = await httpClient.DeleteAsync(url);
 
-                return Task.CompletedTask;
-            });
+            response.EnsureSuccessStatusCode();
         }
     }
 }

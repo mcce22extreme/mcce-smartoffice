@@ -15,7 +15,7 @@ namespace Mcce.SmartOffice.AdminApp.ViewModels
             IAccountManager accountManager,
             INavigationService navigationService,
             IDialogService dialogService)
-            : base(navigationService, dialogService)
+            : base(navigationService, dialogService, authService)
         {
             _authService = authService;
             _accountManager = accountManager;

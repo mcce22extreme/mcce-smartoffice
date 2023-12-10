@@ -7,7 +7,6 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
 {
     public class LoadingViewModel : ViewModelBase
     {
-        private readonly IAuthService _authService;
         private readonly IAccountManager _accountManager;
 
         public LoadingViewModel(
@@ -15,9 +14,8 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             IAccountManager accountManager,
             INavigationService navigationService,
             IDialogService dialogService)
-            : base(navigationService, dialogService)
+            : base(navigationService, dialogService, authService)
         {
-            _authService = authService;
             _accountManager = accountManager;
         }
 
