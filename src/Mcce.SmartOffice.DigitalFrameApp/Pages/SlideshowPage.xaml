@@ -4,16 +4,33 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vc="clr-namespace:Mcce.SmartOffice.DigitalFrameApp.ValueConverters"
     Title="SlideshowPage">
     <ContentPage.Resources>
         <vc:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <toolkit:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
     </ContentPage.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Border
+            Grid.Row="0"
+            Margin="5,0,5,0"
+            Background="DarkGreen"
+            IsVisible="{Binding DataSimulationRunning}"
+            StrokeShape="RoundRectangle 0,0,5,5">
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="20">
+                <Label Text="{Binding WorkspaceData.Temperature, StringFormat='Temperature: {0:0.00} °C'}" />
+                <Label Text="{Binding WorkspaceData.Humidity, StringFormat='Humidity: {0:0.00} %'}" />
+                <Label Text="{Binding WorkspaceData.Co2Level, StringFormat='Co2: {0:0.00} ppm'}" />
+            </HorizontalStackLayout>
+        </Border>
         <CarouselView
             x:Name="UserImageCarousel"
-            Grid.Row="0"
-            Grid.RowSpan="3"
+            Grid.Row="1"
             EmptyView="No images to display."
             ItemsSource="{Binding UserImages}"
             ItemsUpdatingScrollMode="KeepScrollOffset"
@@ -32,11 +49,8 @@
                                 <Image
                                     Aspect="AspectFit"
                                     HorizontalOptions="Center"
-                                    VerticalOptions="Center">
-                                    <Image.Source>
-                                        <UriImageSource CacheValidity="10" Uri="{Binding .}" />
-                                    </Image.Source>
-                                </Image>
+                                    Source="{Binding Content, Mode=OneWay, Converter={StaticResource ByteArrayToImageSourceConverter}}"
+                                    VerticalOptions="Center" />
                             </StackLayout>
                         </Frame>
                     </StackLayout>
@@ -44,6 +58,7 @@
             </CarouselView.ItemTemplate>
         </CarouselView>
         <Image
+            Grid.Row="1"
             Margin="10"
             HeightRequest="60"
             HorizontalOptions="Start"
@@ -52,13 +67,14 @@
             VerticalOptions="End"
             WidthRequest="60" />
         <Button
+            Grid.Row="1"
             Margin="0,0,10,80"
             Command="{Binding StartWorkspaceDataSimulationCommand}"
             CornerRadius="40"
             FontSize="18"
             HeightRequest="60"
             HorizontalOptions="End"
-            ImageSource="{mi:Fluent Icon=Play28,
+            ImageSource="{mi:Fluent Icon=DataBarVertical20,
                                     IconColor=White,
                                     IconSize=40}"
             IsVisible="{Binding DataSimulationRunning, Converter={StaticResource InverseBooleanConverter}}"
@@ -66,13 +82,15 @@
             VerticalOptions="End"
             WidthRequest="60" />
         <Button
+            Grid.Row="1"
             Margin="0,0,10,80"
+            Background="DarkGreen"
             Command="{Binding StopWorkspaceDataSimulationCommand}"
             CornerRadius="40"
             FontSize="18"
             HeightRequest="60"
             HorizontalOptions="End"
-            ImageSource="{mi:Fluent Icon=Stop24,
+            ImageSource="{mi:Fluent Icon=DataBarVertical20,
                                     IconColor=White,
                                     IconSize=40}"
             IsVisible="{Binding DataSimulationRunning}"
@@ -80,6 +98,7 @@
             VerticalOptions="End"
             WidthRequest="60" />
         <Button
+            Grid.Row="1"
             Margin="0,0,10,10"
             Command="{Binding EndSessionCommand}"
             CornerRadius="40"

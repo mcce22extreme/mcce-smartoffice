@@ -1,12 +1,13 @@
 ﻿using Mcce.SmartOffice.App;
 using Mcce.SmartOffice.App.Managers;
 using Mcce.SmartOffice.Common.Services;
+using Mcce.SmartOffice.DigitalFrameApp.Models;
 
 namespace Mcce.SmartOffice.DigitalFrameApp.Managers
 {
     public interface IWorkspaceDataManager
     {
-        Task SendWorkspaceData();
+        Task<WorkspaceDataModel> SendWorkspaceData();
     }
 
     public class WorkspaceDataManager : ManagerBase, IWorkspaceDataManager
@@ -33,19 +34,19 @@ namespace Mcce.SmartOffice.DigitalFrameApp.Managers
             _messageService = messageService;
         }
 
-        public async Task SendWorkspaceData()
+        public async Task<WorkspaceDataModel> SendWorkspaceData()
         {
-            var temperature = Random.Next((int)DEFAULT_TEMPERATURE - 2, (int)DEFAULT_TEMPERATURE + 2) + Random.NextDouble();
-            var humidity = Random.Next((int)DEFAULT_HUMIDITY - 5, (int)DEFAULT_HUMIDITY + 5) + Random.NextDouble();
-            var co2Level = Random.Next((int)DEFAULT_CO2LEVEL - 10, (int)DEFAULT_CO2LEVEL + 15) + Random.NextDouble();
-
-            await _messageService.Publish(TOPIC_DATA_INGRESS, new
+            var model = new WorkspaceDataModel
             {
-                AppConfig.WorkspaceNumber,
-                Temperature = temperature,
-                Humidity = humidity,
-                Co2Level = co2Level,
-            });
+                WorkspaceNumber = AppConfig.WorkspaceNumber,
+                Temperature = Random.Next((int)DEFAULT_TEMPERATURE - 2, (int)DEFAULT_TEMPERATURE + 2) + Random.NextDouble(),
+                Humidity = Random.Next((int)DEFAULT_HUMIDITY - 5, (int)DEFAULT_HUMIDITY + 5) + Random.NextDouble(),
+                Co2Level = Random.Next((int)DEFAULT_CO2LEVEL - 10, (int)DEFAULT_CO2LEVEL + 15) + Random.NextDouble()
+            };
+
+            await _messageService.Publish(TOPIC_DATA_INGRESS, model);
+
+            return model;
         }
     }
 }

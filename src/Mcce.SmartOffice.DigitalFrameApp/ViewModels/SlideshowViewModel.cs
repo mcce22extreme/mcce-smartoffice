@@ -1,9 +1,11 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Mcce.SmartOffice.App.Services;
 using Mcce.SmartOffice.App.ViewModels;
 using Mcce.SmartOffice.DigitalFrameApp.Managers;
+using Mcce.SmartOffice.DigitalFrameApp.Models;
 using Mcce.SmartOffice.DigitalFrameApp.Pages;
 
 namespace Mcce.SmartOffice.DigitalFrameApp.ViewModels
@@ -16,13 +18,16 @@ namespace Mcce.SmartOffice.DigitalFrameApp.ViewModels
         private readonly IWorkspaceDataManager _workspaceDataManager;
         private readonly IDispatcherTimer _dispatcherTimer;
 
-        private string _currentImage;
+        private int _currentImageIndex = 0;
 
         [ObservableProperty]
-        private ObservableCollection<string> _userImages = new ObservableCollection<string>();
+        private ObservableCollection<UserImageModel> _userImages = new ObservableCollection<UserImageModel>();
 
         [ObservableProperty]
         private bool _dataSimulationRunning;
+
+        [ObservableProperty]
+        private WorkspaceDataModel _workspaceData;
 
         public SlideshowViewModel(
             ISessionManager sessionManager,
@@ -40,11 +45,19 @@ namespace Mcce.SmartOffice.DigitalFrameApp.ViewModels
             _dispatcherTimer.Tick += OnTimerTicker;
         }
 
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            StartWorkspaceDataSimulationCommand.NotifyCanExecuteChanged();
+            StopWorkspaceDataSimulationCommand.NotifyCanExecuteChanged();
+        }
+
         public override Task Activate()
         {
             UserImages.Clear();
 
-            var userImages = _sessionManager.GetCurrentUserImages();
+            var userImages = _sessionManager.GetUserImages();
 
             if (userImages.Length > 0)
             {
@@ -68,29 +81,25 @@ namespace Mcce.SmartOffice.DigitalFrameApp.ViewModels
             return base.Deactivate();
         }
 
-        private void OnTimerTicker(object sender, EventArgs e)
+        private async void OnTimerTicker(object sender, EventArgs e)
         {
             if (UserImages.Count > 0)
             {
-                var index = UserImages.Contains(_currentImage) ? UserImages.IndexOf(_currentImage) : 0;
-
-                if (index == UserImages.Count - 1)
+                if (_currentImageIndex >= UserImages.Count)
                 {
-                    index = 0;
+                    _currentImageIndex = 0;
                 }
                 else
                 {
-                    index += 1;
+                    _currentImageIndex += 1;
                 }
-
-                _currentImage = UserImages[index];
-
-                OnUserImageIndexUpdate?.Invoke(this, index);
+                
+                OnUserImageIndexUpdate?.Invoke(this, _currentImageIndex);
             }
 
-            if(DataSimulationRunning)
+            if (DataSimulationRunning)
             {
-                _workspaceDataManager.SendWorkspaceData();
+                WorkspaceData = await _workspaceDataManager.SendWorkspaceData();
             }
         }
 
