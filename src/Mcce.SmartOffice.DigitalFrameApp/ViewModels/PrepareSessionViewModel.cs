@@ -24,7 +24,7 @@ namespace Mcce.SmartOffice.DigitalFrameApp.ViewModels
 
         public override async Task Activate()
         {
-            FullName = _sessionManager.GetCurrentUserName();
+            FullName = _sessionManager.GetUserName();
 
             await _sessionManager.PrepareSession();
 

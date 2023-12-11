@@ -1,8 +1,10 @@
-﻿using MauiIcons.Fluent;
+﻿using CommunityToolkit.Maui;
+using MauiIcons.Fluent;
 using Mcce.SmartOffice.App;
 using Mcce.SmartOffice.DigitalFrameApp.Managers;
 using Mcce.SmartOffice.DigitalFrameApp.Pages;
 using Mcce.SmartOffice.DigitalFrameApp.ViewModels;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Mcce.SmartOffice.DigitalFrameApp
 {
@@ -16,17 +18,19 @@ namespace Mcce.SmartOffice.DigitalFrameApp
         protected override void OnCreateMauiApp(MauiAppBuilder builder)
         {
             builder.UseFluentMauiIcons();
+            builder.UseMauiCommunityToolkit();
 
             // Register app shell
             builder.Services
-                .AddSingleton<Shell, AppShell>();
+                .TryAddSingleton<Shell, AppShell>();
 
             builder.Services
                 .AddTransient(s => Application.Current.Dispatcher.CreateTimer());
 
             // Register managers
             builder.Services
-                .AddSingleton<ISessionManager, SessionManager>();
+                .AddSingleton<ISessionManager, SessionManager>()
+                .AddSingleton<IWorkspaceDataManager, WorkspaceDataManager>();
 
             // Register pages
             builder.Services

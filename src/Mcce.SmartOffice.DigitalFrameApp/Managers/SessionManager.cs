@@ -1,4 +1,6 @@
-﻿using Mcce.SmartOffice.DigitalFrameApp.Models;
+﻿using Mcce.SmartOffice.App;
+using Mcce.SmartOffice.App.Managers;
+using Mcce.SmartOffice.DigitalFrameApp.Models;
 
 namespace Mcce.SmartOffice.DigitalFrameApp.Managers
 {
@@ -6,19 +8,26 @@ namespace Mcce.SmartOffice.DigitalFrameApp.Managers
     {
         void StartSession(WorkspaceActivatedModel model);
 
-        string GetCurrentUserName();
+        string GetUserName();
 
-        string[] GetCurrentUserImages();
+        UserImageModel[] GetUserImages();
 
         Task PrepareSession();
 
         Task EndSession();
     }
 
-    public class SessionManager : ISessionManager
+    public class SessionManager : ManagerBase, ISessionManager
     {
+        private List<UserImageModel> _userImages = new List<UserImageModel>();
+
         private string _currentUserName;
-        private string[] _currentUserImages;        
+        private string[] _currentUserImages;
+
+        public SessionManager(IAppConfig appConfig, IHttpClientFactory httpClientFactory, ISecureStorage secureStorage)
+            : base(appConfig, httpClientFactory, secureStorage)
+        {
+        }
 
         public void StartSession(WorkspaceActivatedModel model)
         {
@@ -26,25 +35,42 @@ namespace Mcce.SmartOffice.DigitalFrameApp.Managers
             _currentUserImages = model.UserImages;
         }
 
-        public string GetCurrentUserName()
+        public string GetUserName()
         {
             return _currentUserName;
         }
 
-        public string[] GetCurrentUserImages()
+        public UserImageModel[] GetUserImages()
         {
-            return _currentUserImages;
+            return _userImages.ToArray();
         }
 
         public async Task PrepareSession()
         {
-            await Task.Delay(2000);
+            _userImages.Clear();
+
+            if (_currentUserImages?.Length > 0)
+            {
+                using var httpClient = await CreateHttpClient();
+
+                foreach (var imageUrl in _currentUserImages)
+                {
+                    var bytes = await httpClient.GetByteArrayAsync(imageUrl);
+
+                    _userImages.Add(new UserImageModel
+                    {
+                        ImageUrl = imageUrl,
+                        Content = bytes
+                    });
+                }
+            }
         }
 
         public async Task EndSession()
         {
             _currentUserName = null;
             _currentUserImages = null;
+            _userImages.Clear();
 
             await Task.Delay(2000);
         }
