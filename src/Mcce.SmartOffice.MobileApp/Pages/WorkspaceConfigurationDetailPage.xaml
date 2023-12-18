@@ -18,7 +18,8 @@
             <Grid Grid.Row="0" Margin="0,0,0,10">
                 <Border
                     Margin="0,8,0,0"
-                    Stroke="Black"
+                    Stroke="{AppThemeBinding Dark=White,
+                                             Light=Black}"
                     StrokeShape="RoundRectangle 5"
                     StrokeThickness="1">
                     <Grid>
@@ -43,7 +44,8 @@
                 </Border>
                 <Label
                     Margin="10,0,0,0"
-                    Background="White"
+                    Background="{AppThemeBinding Dark=#1C1C1C,
+                                                 Light=White}"
                     FontSize="12"
                     HorizontalOptions="Start"
                     Text=" Workspace "
@@ -52,7 +54,8 @@
             <Grid Grid.Row="1" Margin="0,0,0,10">
                 <Border
                     Margin="0,8,0,0"
-                    Stroke="Black"
+                    Stroke="{AppThemeBinding Dark=White,
+                                             Light=Black}"
                     StrokeShape="RoundRectangle 5"
                     StrokeThickness="1">
                     <Grid>
@@ -75,7 +78,8 @@
                 </Border>
                 <Label
                     Margin="10,0,0,0"
-                    Background="White"
+                    Background="{AppThemeBinding Dark=#1C1C1C,
+                                                 Light=White}"
                     FontSize="12"
                     HorizontalOptions="Start"
                     Text=" Desk Height (cm) "
