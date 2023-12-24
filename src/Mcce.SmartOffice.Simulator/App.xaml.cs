@@ -3,7 +3,7 @@ using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Windows;
-using Mcce.SmartOffice.Core.Services;
+using Mcce.SmartOffice.Common.Services;
 using Mcce.SmartOffice.Simulator.Managers;
 using Mcce.SmartOffice.Simulator.Services;
 using Mcce.SmartOffice.Simulator.ViewModels;

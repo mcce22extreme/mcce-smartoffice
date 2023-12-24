@@ -17,7 +17,10 @@ namespace Mcce.SmartOffice.MobileApp.Managers
 
     public class UserImageManager : ManagerBase, IUserImageManager
     {
-        public UserImageManager(IAppConfig appConfig, IHttpClientFactory httpClientFactory, ISecureStorage secureStorage)
+        public UserImageManager(
+            IAppConfig appConfig,
+            IHttpClientFactory httpClientFactory,
+            ISecureStorage secureStorage)
             : base(appConfig, httpClientFactory, secureStorage)
         {
         }
@@ -50,6 +53,8 @@ namespace Mcce.SmartOffice.MobileApp.Managers
             };
 
             var response = await httpClient.PostAsync(url, streamContent);
+
+            response.EnsureSuccessStatusCode();
         }
 
         public async Task DeleteUserImage(string imageKey)
@@ -59,6 +64,8 @@ namespace Mcce.SmartOffice.MobileApp.Managers
             var url = $"{AppConfig.BaseAddress}userimage/{imageKey}";
 
             var response = await httpClient.DeleteAsync(url);
+
+            response.EnsureSuccessStatusCode();
         }
     }
 }

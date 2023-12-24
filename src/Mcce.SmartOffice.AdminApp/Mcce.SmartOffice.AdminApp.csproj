@@ -11,7 +11,7 @@
         <Nullable>disable</Nullable>
 
         <!-- Display name -->
-        <ApplicationTitle>The Smart Office</ApplicationTitle>
+        <ApplicationTitle>Smart Office Administration</ApplicationTitle>
 
         <!-- App Identifier -->
         <ApplicationId>com.mcce22extrem.mcce.smartoffice.adminapp</ApplicationId>
@@ -22,6 +22,10 @@
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
+      <AndroidPackageFormat>apk</AndroidPackageFormat>
     </PropertyGroup>
 
     <ItemGroup>
@@ -51,6 +55,7 @@
 
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Maui" Version="7.0.0" />
+        <PackageReference Include="LiveChartsCore.SkiaSharpView.Maui" Version="2.0.0-rc2" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
@@ -69,6 +74,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <MauiXaml Update="Pages\BookingListPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="Pages\WorkspaceDataPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
       <MauiXaml Update="Pages\WorkspaceDetailPage.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>

@@ -38,8 +38,9 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             IBookingManager bookingManager,
             IWorkspaceManager workspaceManager,
             INavigationService navigationService,
-            IDialogService dialogService)
-            : base(navigationService, dialogService)
+            IDialogService dialogService,
+            IAuthService authService)
+            : base(navigationService, dialogService, authService)
         {
             _bookingManager = bookingManager;
             _workspaceManager = workspaceManager;
@@ -68,13 +69,16 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
 
             try
             {
-                SelectedWorkspace = null;
+                await HandleException(async () =>
+                {
+                    SelectedWorkspace = null;
 
-                var workspaces = await _workspaceManager.GetWorkspaces();
+                    var workspaces = await _workspaceManager.GetWorkspaces();
 
-                Workspaces = new List<WorkspaceModel>(workspaces);
+                    Workspaces = new List<WorkspaceModel>(workspaces);
 
-                IsLoaded = true;
+                    IsLoaded = true;
+                });
             }
             finally
             {
@@ -89,23 +93,22 @@ namespace Mcce.SmartOffice.MobileApp.ViewModels
             {
                 try
                 {
-                    IsBusy = true;
+                    await HandleException(async () =>
+                    {
+                        IsBusy = true;
 
-                    var startDateTime =  SelectedStartDate.Value.Date.Add(SelectedStartTime.Value);
-                    var endDateTime = SelectedEndDate.Value.Date.Add(SelectedEndTime.Value);
+                        var startDateTime =  SelectedStartDate.Value.Date.Add(SelectedStartTime.Value);
+                        var endDateTime = SelectedEndDate.Value.Date.Add(SelectedEndTime.Value);
 
-                    await _bookingManager.CreateBooking(
-                        SelectedWorkspace.WorkspaceNumber,
-                        startDateTime,
-                        endDateTime);
+                        await _bookingManager.CreateBooking(
+                            SelectedWorkspace.WorkspaceNumber,
+                            startDateTime,
+                            endDateTime);
 
-                    HasUnsavedData = false;
+                        HasUnsavedData = false;
 
-                    await NavigationService.GoToAsync($"///{nameof(MainPage)}/{nameof(BookingListPage)}");
-                }
-                catch (Exception ex)
-                {
-                    await DialogService.ShowErrorMessage(ex.Message);
+                        await NavigationService.GoToAsync($"///{nameof(MainPage)}/{nameof(BookingListPage)}");
+                    });
                 }
                 finally
                 {

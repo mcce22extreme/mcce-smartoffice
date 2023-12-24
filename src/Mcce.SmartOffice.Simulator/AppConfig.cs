@@ -1,4 +1,4 @@
-﻿using Mcce.SmartOffice.Core.Configs;
+﻿using Mcce.SmartOffice.Common.Configs;
 
 namespace Mcce.SmartOffice.Simulator
 {

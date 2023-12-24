@@ -3,6 +3,8 @@ using Mcce.SmartOffice.AdminApp.Managers;
 using Mcce.SmartOffice.AdminApp.Pages;
 using Mcce.SmartOffice.AdminApp.ViewModels;
 using Mcce.SmartOffice.App;
+using Mcce.SmartOffice.App.Managers;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 
 namespace Mcce.SmartOffice.AdminApp
 {
@@ -17,14 +19,19 @@ namespace Mcce.SmartOffice.AdminApp
         {
             builder.UseFluentMauiIcons();
 
+            builder.UseSkiaSharp(true);
+
             // Register app shell
-            builder.Services                
-                .AddSingleton<Shell, AppShell>();
+            builder.Services
+                .AddSingleton<Shell, AppShell>()
+                .AddTransient(s => Application.Current.Dispatcher.CreateTimer());
 
             // Register managers
             builder.Services
                 .AddSingleton<IAccountManager, AccountManager>()
-                .AddSingleton<IWorkspaceManager, WorkspaceManager>();
+                .AddSingleton<IWorkspaceManager, WorkspaceManager>()
+                .AddSingleton<IWorkspaceDataManager, WorkspaceDataManager>()
+                .AddSingleton<IBookingManager, BookingManager>();
 
             // Register pages
             builder.Services
@@ -32,7 +39,9 @@ namespace Mcce.SmartOffice.AdminApp
                 .AddTransient<LoginPage>()
                 .AddTransient<MainPage>()
                 .AddTransient<WorkspaceListPage>()
-                .AddTransient<WorkspaceDetailPage>();
+                .AddTransient<WorkspaceDetailPage>()
+                .AddTransient<WorkspaceDataPage>()
+                .AddTransient<BookingListPage>();
 
             // Register viewmodels
             builder.Services
@@ -40,7 +49,9 @@ namespace Mcce.SmartOffice.AdminApp
                 .AddTransient<LoginViewModel>()
                 .AddTransient<MainViewModel>()
                 .AddTransient<WorkspaceListViewModel>()
-                .AddTransient<WorkspaceDetailViewModel>();
+                .AddTransient<WorkspaceDetailViewModel>()
+                .AddTransient<WorkspaceDataViewModel>()
+                .AddTransient<BookingListViewModel>();
             ;
         }
     }

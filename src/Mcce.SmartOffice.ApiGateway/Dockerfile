@@ -3,6 +3,7 @@ WORKDIR /app
 
 COPY ["src/Mcce.SmartOffice.ApiGateway/.", "Mcce.SmartOffice.ApiGateway/"]
 COPY ["src/Mcce.SmartOffice.Core/.", "Mcce.SmartOffice.Core/"]
+COPY ["src/Mcce.SmartOffice.Common/.", "Mcce.SmartOffice.Common/"]
 
 ARG BUILD_VERSION
 ARG COMMIT_SHA

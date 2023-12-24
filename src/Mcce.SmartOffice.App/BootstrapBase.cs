@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using IdentityModel.OidcClient;
 using Mcce.SmartOffice.App.Services;
-using Microsoft.Extensions.Logging;
+using Mcce.SmartOffice.Common.Services;
 
 namespace Mcce.SmartOffice.App
 {
@@ -11,7 +11,7 @@ namespace Mcce.SmartOffice.App
 
         public BootstrapBase(IAppConfig appConfig)
         {
-            AppConfig = appConfig;    
+            AppConfig = appConfig;
         }
 
         public MauiApp CreateMauiApp()
@@ -27,21 +27,25 @@ namespace Mcce.SmartOffice.App
                   fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
               });
 
-#if DEBUG
-            builder.Logging.AddDebug();
-#endif
-
             builder.Services.AddTransient<WebAuthenticatorBrowser>();
 
-            builder.Services.AddTransient(sp => new OidcClient(new OidcClientOptions
+            if (AppConfig.AuthConfig != null)
             {
-                Authority = AppConfig.AuthEndpoint,
-                ClientId = "smartoffice",
-                Scope = "openid profile",
-                RedirectUri = AppConfig.AuthRedirectUri,
-                PostLogoutRedirectUri = AppConfig.AuthRedirectUri,
-                Browser = sp.GetRequiredService<WebAuthenticatorBrowser>()
-            }));
+                builder.Services.AddTransient(sp => new OidcClient(new OidcClientOptions
+                {
+                    Authority = AppConfig.AuthConfig.AuthEndpoint,
+                    ClientId = "smartoffice",
+                    Scope = "openid profile",
+                    RedirectUri = AppConfig.AuthConfig.AuthRedirectUri,
+                    PostLogoutRedirectUri = AppConfig.AuthConfig.AuthRedirectUri,
+                    Browser = sp.GetRequiredService<WebAuthenticatorBrowser>()
+                }));
+            }
+
+            if (AppConfig.MqttConfig != null)
+            {
+                builder.Services.AddSingleton<IMessageService>(s => new MessageService(AppConfig.MqttConfig));
+            }
 
             builder.Services.AddHttpClient();
 

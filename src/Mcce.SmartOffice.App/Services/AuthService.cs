@@ -8,6 +8,8 @@ namespace Mcce.SmartOffice.App.Services
         Task<bool> SignIn();
 
         Task SignOut();
+
+        Task<bool> RefreshAccessToken();
     }
 
     public class AuthService : IAuthService
@@ -17,7 +19,13 @@ namespace Mcce.SmartOffice.App.Services
         private readonly ISecureStorage _secureStorage;
         private readonly IDialogService _dialogService;
 
-        public AuthService(OidcClient client, IConnectivity connectivity, ISecureStorage secureStorage, IDialogService dialogService)
+        public object LoginPage { get; private set; }
+
+        public AuthService(
+            OidcClient client,
+            IConnectivity connectivity,
+            ISecureStorage secureStorage,
+            IDialogService dialogService)
         {
             _client = client;
             _connectivity = connectivity;
@@ -44,6 +52,7 @@ namespace Mcce.SmartOffice.App.Services
 
                 await _secureStorage.SetAsync(AuthConstants.IDENTITY_TOKEN, loginResult.IdentityToken);
                 await _secureStorage.SetAsync(AuthConstants.ACCESS_TOKEN, loginResult.AccessToken);
+                await _secureStorage.SetAsync(AuthConstants.REFRESH_TOKEN, loginResult.RefreshToken);
 
                 return true;
             }
@@ -60,12 +69,45 @@ namespace Mcce.SmartOffice.App.Services
 
             _secureStorage.Remove(AuthConstants.IDENTITY_TOKEN);
             _secureStorage.Remove(AuthConstants.ACCESS_TOKEN);
+            _secureStorage.Remove(AuthConstants.REFRESH_TOKEN);
 
             await _client.LogoutAsync(new LogoutRequest
             {
                 IdTokenHint = identityToken,
                 BrowserDisplayMode = DisplayMode.Hidden
             });
+        }
+
+        public async Task<bool> RefreshAccessToken()
+        {
+            try
+            {
+                if (_connectivity.NetworkAccess is not NetworkAccess.Internet)
+                {
+                    await _dialogService.ShowDialog("Internet Offline", "You don't appear to be connected to the internet!");
+                    return false;
+                }
+
+                var refreshToken =await _secureStorage.GetAsync(AuthConstants.REFRESH_TOKEN);
+
+                var refreshTokenResult = await _client.RefreshTokenAsync(refreshToken);
+
+                if (refreshTokenResult.IsError)
+                {
+                    return false;
+                }
+
+                await _secureStorage.SetAsync(AuthConstants.IDENTITY_TOKEN, refreshTokenResult.IdentityToken);
+                await _secureStorage.SetAsync(AuthConstants.ACCESS_TOKEN, refreshTokenResult.AccessToken);
+                await _secureStorage.SetAsync(AuthConstants.REFRESH_TOKEN, refreshTokenResult.RefreshToken);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await _dialogService.ShowErrorMessage(ex.ToString());
+                return false;
+            }
         }
     }
 }

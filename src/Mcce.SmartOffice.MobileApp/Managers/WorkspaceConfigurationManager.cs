@@ -17,7 +17,10 @@ namespace Mcce.SmartOffice.MobileApp.Managers
 
     public class WorkspaceConfigurationManager : ManagerBase, IWorkspaceConfigurationManager
     {
-        public WorkspaceConfigurationManager(IAppConfig appConfig, IHttpClientFactory httpClientFactory, ISecureStorage secureStorage)
+        public WorkspaceConfigurationManager(
+            IAppConfig appConfig,
+            IHttpClientFactory httpClientFactory,
+            ISecureStorage secureStorage)
             : base(appConfig, httpClientFactory, secureStorage)
         {
         }
@@ -46,6 +49,8 @@ namespace Mcce.SmartOffice.MobileApp.Managers
                 WorkspaceNumber = workspaceNumber,
                 DeskHeight = deskHeight,
             });
+
+            response.EnsureSuccessStatusCode();
         }
 
         public async Task DeleteBooking(string workspaceNumber)
@@ -54,7 +59,9 @@ namespace Mcce.SmartOffice.MobileApp.Managers
 
             var url = $"{AppConfig.BaseAddress}workspaceconfiguration/{workspaceNumber}";
 
-            await httpClient.DeleteAsync(url);
+            var response = await httpClient.DeleteAsync(url);
+
+            response.EnsureSuccessStatusCode();
         }
     }
 }

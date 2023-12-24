@@ -6,6 +6,7 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vc="clr-namespace:Mcce.SmartOffice.Simulator.ValueConverters"
     Title="The Smart Office Simulator"
     Width="800"
     Height="600"
@@ -38,6 +39,8 @@
             Executed="CommandBinding_Executed_Restore" />
     </Window.CommandBindings>
     <Window.Resources>
+        <vc:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+        <vc:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         <!--  Base style for title bar buttons  -->
         <Style x:Key="CaptionButtonStyle" TargetType="Button">
             <Setter Property="Template">
@@ -366,6 +369,7 @@
                 <ComboBox
                     Grid.Row="1"
                     Margin="5,0"
+                    IsEnabled="{Binding SimulationRunning, Converter={StaticResource InverseBooleanConverter}}"
                     ItemsSource="{Binding Workspaces}"
                     SelectedItem="{Binding SelectedWorkspace}" />
                 <Label Grid.Row="2" Content="Desk Height" />
@@ -375,6 +379,7 @@
                 <TextBlock Grid.Row="6" Text="{Binding Path=Temperature, StringFormat={}Temperature ({0:#.#} °C)}" />
                 <Slider
                     Grid.Row="7"
+                    IsEnabled="{Binding SimulationRunning, Converter={StaticResource InverseBooleanConverter}}"
                     IsSnapToTickEnabled="True"
                     Maximum="35"
                     Minimum="15"
@@ -383,6 +388,7 @@
                 <TextBlock Grid.Row="8" Text="{Binding Path=Humidity, StringFormat={}Humidity ({0:#.#} %)}" />
                 <Slider
                     Grid.Row="9"
+                    IsEnabled="{Binding SimulationRunning, Converter={StaticResource InverseBooleanConverter}}"
                     IsSnapToTickEnabled="True"
                     Maximum="70"
                     Minimum="10"
@@ -391,11 +397,24 @@
                 <TextBlock Grid.Row="10" Text="{Binding Path=Co2Level, StringFormat={}CO2 Level ({0:#.#} ppm)}" />
                 <Slider
                     Grid.Row="11"
+                    IsEnabled="{Binding SimulationRunning, Converter={StaticResource InverseBooleanConverter}}"
                     IsSnapToTickEnabled="True"
                     Maximum="1100"
                     Minimum="400"
                     TickFrequency="50"
                     Value="{Binding Co2Level}" />
+                <Button
+                    Grid.Row="12"
+                    Margin="10"
+                    Command="{Binding StartSimulationCommand}"
+                    Content="Start Simulation"
+                    Visibility="{Binding SimulationRunning, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+                <Button
+                    Grid.Row="12"
+                    Margin="10"
+                    Command="{Binding StopSimulationCommand}"
+                    Content="Stop Simulation"
+                    Visibility="{Binding SimulationRunning, Converter={StaticResource BooleanToVisibilityConverter}}" />
             </Grid>
         </Grid>
 

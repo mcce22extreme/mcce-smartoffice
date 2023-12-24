@@ -1,5 +1,5 @@
-﻿using Mcce.SmartOffice.AdminApp.Managers;
-using Mcce.SmartOffice.AdminApp.Pages;
+﻿using Mcce.SmartOffice.AdminApp.Pages;
+using Mcce.SmartOffice.App.Managers;
 using Mcce.SmartOffice.App.Services;
 using Mcce.SmartOffice.App.ViewModels;
 
@@ -15,7 +15,7 @@ namespace Mcce.SmartOffice.AdminApp.ViewModels
             IAccountManager accountManager,
             INavigationService navigationService,
             IDialogService dialogService)
-            : base(navigationService, dialogService)
+            : base(navigationService, dialogService, authService)
         {
             _authService = authService;
             _accountManager = accountManager;

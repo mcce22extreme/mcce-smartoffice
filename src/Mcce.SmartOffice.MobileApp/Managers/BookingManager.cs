@@ -20,7 +20,10 @@ namespace Mcce.SmartOffice.MobileApp.Managers
 
     public class BookingManager : ManagerBase, IBookingManager
     {
-        public BookingManager(IAppConfig appConfig, IHttpClientFactory httpClientFactory, ISecureStorage secureStorage)
+        public BookingManager(
+            IAppConfig appConfig,
+            IHttpClientFactory httpClientFactory,
+            ISecureStorage secureStorage)
             : base(appConfig, httpClientFactory, secureStorage)
         {
         }
@@ -67,7 +70,9 @@ namespace Mcce.SmartOffice.MobileApp.Managers
 
             var url = $"{AppConfig.BaseAddress}booking/{bookingNumber}/activate";
 
-            await httpClient.GetAsync(url);
+            var response = await httpClient.GetAsync(url);
+
+            response.EnsureSuccessStatusCode();
         }
 
         public async Task CancelBooking(string bookingNumber)
@@ -76,7 +81,9 @@ namespace Mcce.SmartOffice.MobileApp.Managers
 
             var url = $"{AppConfig.BaseAddress}booking/{bookingNumber}";
 
-            await httpClient.DeleteAsync(url);
+            var response =  await httpClient.DeleteAsync(url);
+
+            response.EnsureSuccessStatusCode();
         }
     }
 }

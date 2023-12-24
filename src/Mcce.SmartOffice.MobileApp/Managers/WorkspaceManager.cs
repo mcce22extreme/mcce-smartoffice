@@ -12,7 +12,10 @@ namespace Mcce.SmartOffice.MobileApp.Managers
 
     public class WorkspaceManager : ManagerBase, IWorkspaceManager
     {
-        public WorkspaceManager(IAppConfig appConfig, IHttpClientFactory httpClientFactory, ISecureStorage secureStorage)
+        public WorkspaceManager(
+            IAppConfig appConfig,
+            IHttpClientFactory httpClientFactory,
+            ISecureStorage secureStorage)
             : base(appConfig, httpClientFactory, secureStorage)
         {
         }

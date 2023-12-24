@@ -33,7 +33,7 @@
             <Image
                 Grid.Row="0"
                 Grid.ColumnSpan="3"
-                Margin="0,40,0,30"
+                Margin="0,40,0,10"
                 HeightRequest="200"
                 Source="/Resources/Images/logo512.png"
                 WidthRequest="200" />
@@ -47,7 +47,7 @@
                 Text="Administration" />
             <FlexLayout
                 Grid.Row="3"
-                Margin="0,40,0,0"
+                Margin="0,20,0,0"
                 AlignItems="Center"
                 Direction="Row"
                 HorizontalOptions="Center"
@@ -59,8 +59,18 @@
                                             IconColor=White,
                                             IconSize=50}"
                     Text="Workspaces" />
-                <Button ImageSource="{mi:Fluent Icon=CalendarLtr48, IconColor=White, IconSize=50}" Text="Bookings" />
-                <Button ImageSource="{mi:Fluent Icon=DataBarVertical32, IconColor=White, IconSize=50}" Text="Analytics" />
+                <Button
+                    Command="{Binding BookingsCommand}"
+                    ImageSource="{mi:Fluent Icon=CalendarLtr48,
+                                            IconColor=White,
+                                            IconSize=50}"
+                    Text="Bookings" />
+                <Button
+                    Command="{Binding WorkspaceDataCommand}"
+                    ImageSource="{mi:Fluent Icon=DataBarVertical32,
+                                            IconColor=White,
+                                            IconSize=50}"
+                    Text="Analytics" />
                 <Button
                     Command="{Binding SignOutCommand}"
                     ImageSource="{mi:Fluent Icon=SignOut24,

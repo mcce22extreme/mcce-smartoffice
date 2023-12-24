@@ -60,4 +60,4 @@ workspacedataentryApi:
 
 webapp:
   appName: webapp
-  image: tederer/apeni-smartoffice-web-app:0.33.0
+  image: tederer/apeni-smartoffice-web-app:0.34.0

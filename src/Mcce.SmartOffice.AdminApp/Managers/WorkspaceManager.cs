@@ -17,7 +17,10 @@ namespace Mcce.SmartOffice.AdminApp.Managers
 
     public class WorkspaceManager : ManagerBase, IWorkspaceManager
     {
-        public WorkspaceManager(IAppConfig appConfig, IHttpClientFactory httpClientFactory, ISecureStorage secureStorage)
+        public WorkspaceManager(
+            IAppConfig appConfig,
+            IHttpClientFactory httpClientFactory,
+            ISecureStorage secureStorage)
             : base(appConfig, httpClientFactory, secureStorage)
         {
         }
@@ -42,6 +45,8 @@ namespace Mcce.SmartOffice.AdminApp.Managers
             var url = $"{AppConfig.BaseAddress}workspace";
 
             var response = await httpClient.PostAsJsonAsync(url, model);
+
+            response.EnsureSuccessStatusCode();
         }
 
         public async Task DeleteWorkspaces(string workspaceNumber)
@@ -51,6 +56,8 @@ namespace Mcce.SmartOffice.AdminApp.Managers
             var url = $"{AppConfig.BaseAddress}workspace/{workspaceNumber}";
 
             var response = await httpClient.DeleteAsync(url);
+
+            response.EnsureSuccessStatusCode();
         }
     }
 }
