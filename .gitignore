@@ -372,3 +372,7 @@ src/Mcce22.SmartOffice.Simulator/Certificates/
 k8s/mosquitto/mosquitto-password.yaml
 
 .VSCodeCounter/
+
+*.hcl
+
+.terraform/.terraform/
