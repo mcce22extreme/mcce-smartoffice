@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Mcce.SmartOffice.Bookings.Managers;
-using Mcce.SmartOffice.Common.Services;
 using Mcce.SmartOffice.Core;
 using Mcce.SmartOffice.Core.Accessors;
 using Mcce.SmartOffice.Core.Configs;
 using Mcce.SmartOffice.Core.Extensions;
+using Mcce.SmartOffice.Core.Services;
 
 namespace Mcce.SmartOffice.Bookings
 {

@@ -5,8 +5,6 @@ using Mcce.SmartOffice.Bookings.Entities;
 using Mcce.SmartOffice.Bookings.Enums;
 using Mcce.SmartOffice.Bookings.Messages;
 using Mcce.SmartOffice.Bookings.Models;
-using Mcce.SmartOffice.Common.Constants;
-using Mcce.SmartOffice.Common.Services;
 using Mcce.SmartOffice.Core.Accessors;
 using Mcce.SmartOffice.Core.Constants;
 using Mcce.SmartOffice.Core.Enums;

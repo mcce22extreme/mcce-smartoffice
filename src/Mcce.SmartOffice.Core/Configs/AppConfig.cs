@@ -1,6 +1,4 @@
-﻿using Mcce.SmartOffice.Common.Configs;
-
-namespace Mcce.SmartOffice.Core.Configs
+﻿namespace Mcce.SmartOffice.Core.Configs
 {
     public interface IAppConfig
     {

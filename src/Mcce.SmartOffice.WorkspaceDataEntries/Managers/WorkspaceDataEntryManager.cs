@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Mcce.SmartOffice.Common.Constants;
-using Mcce.SmartOffice.Common.Services;
+using Mcce.SmartOffice.Core.Constants;
+using Mcce.SmartOffice.Core.Services;
 using Mcce.SmartOffice.WorkspaceDataEntries.Entities;
 using Mcce.SmartOffice.WorkspaceDataEntries.Generators;
 using Mcce.SmartOffice.WorkspaceDataEntries.Models;

@@ -24,17 +24,6 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Install Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: "microsoft"
-          java-version: "11"
-
-      - name: Install MAUI Workloads
-        run: |
-          dotnet workload install android --ignore-failed-sources
-          dotnet workload install maui --ignore-failed-sources
-
       - name: Restore dependencies
         run: dotnet restore
 
@@ -107,42 +96,7 @@ jobs:
         with:
           useConfigFile: true
           configFilePath: "gitversion.yaml"
-          updateAssemblyInfo: true
-
-      - name: Display GitVersion outputs (step output)
-        run: |
-          echo "Major: ${{ steps.gitversion.outputs.major }}"
-          echo "Minor: ${{ steps.gitversion.outputs.minor }}"
-          echo "Patch: ${{ steps.gitversion.outputs.patch }}"
-          echo "PreReleaseTag: ${{ steps.gitversion.outputs.preReleaseTag }}"
-          echo "PreReleaseTagWithDash: ${{ steps.gitversion.outputs.preReleaseTagWithDash }}"
-          echo "PreReleaseLabel: ${{ steps.gitversion.outputs.preReleaseLabel }}"
-          echo "PreReleaseNumber: ${{ steps.gitversion.outputs.preReleaseNumber }}"
-          echo "WeightedPreReleaseNumber: ${{ steps.gitversion.outputs.weightedPreReleaseNumber }}"
-          echo "BuildMetaData: ${{ steps.gitversion.outputs.buildMetaData }}"
-          echo "BuildMetaDataPadded: ${{ steps.gitversion.outputs.buildMetaDataPadded }}"
-          echo "FullBuildMetaData: ${{ steps.gitversion.outputs.fullBuildMetaData }}"
-          echo "MajorMinorPatch: ${{ steps.gitversion.outputs.majorMinorPatch }}"
-          echo "SemVer: ${{ steps.gitversion.outputs.semVer }}"
-          echo "LegacySemVer: ${{ steps.gitversion.outputs.legacySemVer }}"
-          echo "LegacySemVerPadded: ${{ steps.gitversion.outputs.legacySemVerPadded }}"
-          echo "AssemblySemVer: ${{ steps.gitversion.outputs.assemblySemVer }}"
-          echo "AssemblySemFileVer: ${{ steps.gitversion.outputs.assemblySemFileVer }}"
-          echo "FullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}"
-          echo "InformationalVersion: ${{ steps.gitversion.outputs.informationalVersion }}"
-          echo "BranchName: ${{ steps.gitversion.outputs.branchName }}"
-          echo "EscapedBranchName: ${{ steps.gitversion.outputs.escapedBranchName }}"
-          echo "Sha: ${{ steps.gitversion.outputs.sha }}"
-          echo "ShortSha: ${{ steps.gitversion.outputs.shortSha }}"
-          echo "NuGetVersionV2: ${{ steps.gitversion.outputs.nuGetVersionV2 }}"
-          echo "NuGetVersion: ${{ steps.gitversion.outputs.nuGetVersion }}"
-          echo "NuGetPreReleaseTagV2: ${{ steps.gitversion.outputs.nuGetPreReleaseTagV2 }}"
-          echo "NuGetPreReleaseTag: ${{ steps.gitversion.outputs.nuGetPreReleaseTag }}"
-          echo "VersionSourceSha: ${{ steps.gitversion.outputs.versionSourceSha }}"
-          echo "CommitsSinceVersionSource: ${{ steps.gitversion.outputs.commitsSinceVersionSource }}"
-          echo "CommitsSinceVersionSourcePadded: ${{ steps.gitversion.outputs.commitsSinceVersionSourcePadded }}"
-          echo "UncommittedChanges: ${{ steps.gitversion.outputs.uncommittedChanges }}"
-          echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
+          updateAssemblyInfo: true      
 
       - name: "Docker Login"
         uses: azure/docker-login@v1
@@ -231,64 +185,68 @@ jobs:
             BUILD_VERSION=${{ steps.gitversion.outputs.majorMinorPatch }}"
             COMMIT_SHA=${{ steps.gitversion.outputs.shortSha }}"
 
-  deploy:
-    name: "Deploy to aks"
-    needs: builddockerimages
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+    deployinfrastructure:
+      name: "Deploy infrastructure"
+      
 
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0
-        with:
-          versionSpec: "5.12.0"
+  # deploy:
+  #   name: "Deploy to aks"
+  #   needs: builddockerimages
+  #   if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout source code
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
 
-      - name: Determine Version
-        id: gitversion
-        uses: gittools/actions/gitversion/execute@v0
-        with:
-          useConfigFile: true
-          configFilePath: "gitversion.yaml"
-          updateAssemblyInfo: true
+  #     - name: Install GitVersion
+  #       uses: gittools/actions/gitversion/setup@v0
+  #       with:
+  #         versionSpec: "5.12.0"
 
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #     - name: Determine Version
+  #       id: gitversion
+  #       uses: gittools/actions/gitversion/execute@v0
+  #       with:
+  #         useConfigFile: true
+  #         configFilePath: "gitversion.yaml"
+  #         updateAssemblyInfo: true
 
-      - name: Initialize aks context
-        uses: azure/aks-set-context@v3
-        with:
-          resource-group: ${{ vars.AZURE_RESOURCEGROUP_NAME }}
-          cluster-name: ${{ vars.AZURE_CLUSTER_NAME }}
+  #     - uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Install helm
-        uses: azure/setup-helm@v3
+  #     - name: Initialize aks context
+  #       uses: azure/aks-set-context@v3
+  #       with:
+  #         resource-group: ${{ vars.AZURE_RESOURCEGROUP_NAME }}
+  #         cluster-name: ${{ vars.AZURE_CLUSTER_NAME }}
 
-      - name: Deploy nginx
-        shell: bash
-        run: |
-          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-          helm repo update
-          helm upgrade ingress-nginx ingress-nginx/ingress-nginx --install --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --set controller.replicaCount=1 --create-namespace --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-dns-label-name"="${{ vars.SMARTOFFICE_API_DNS_LABEL }}"
+  #     - name: Install helm
+  #       uses: azure/setup-helm@v3
 
-      - name: Deploy certmanager
-        shell: bash
-        run: |
-          helm repo add jetstack https://charts.jetstack.io
-          helm repo update
-          helm upgrade cert-manager jetstack/cert-manager --install --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --create-namespace --version v1.7.1 --set installCRDs=true --set nodeSelector."kubernetes\.io/os"=linux
+  #     - name: Deploy nginx
+  #       shell: bash
+  #       run: |
+  #         helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+  #         helm repo update
+  #         helm upgrade ingress-nginx ingress-nginx/ingress-nginx --install --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --set controller.replicaCount=1 --create-namespace --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-dns-label-name"="${{ vars.SMARTOFFICE_API_DNS_LABEL }}"
 
-      - name: Deploy mosquitto
-        shell: bash
-        run: |
-          helm repo add t3n https://storage.googleapis.com/t3n-helm-charts
-          helm upgrade mosquitto t3n/mosquitto --version 2.4.1 --install --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --create-namespace --set service.type=LoadBalancer --set 'authentication.passwordEntries=${{ secrets.MOSQUITTO_PASSWORD }}' --set 'service.annotations.service\.beta\.kubernetes\.io/azure-dns-label-name=${{ vars.SMARTOFFICE_MOSQUITTO_DNS_LABEL }}'
+  #     - name: Deploy certmanager
+  #       shell: bash
+  #       run: |
+  #         helm repo add jetstack https://charts.jetstack.io
+  #         helm repo update
+  #         helm upgrade cert-manager jetstack/cert-manager --install --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --create-namespace --version v1.7.1 --set installCRDs=true --set nodeSelector."kubernetes\.io/os"=linux
 
-      - name: Deploy smartoffice
-        shell: bash
-        run: |
-          helm upgrade smartoffice .helm/ --install --values .helm/values.azure.yaml --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --create-namespace --set configUrl=${{ vars.SMARTOFFICE_CONFIG_URL }} --set registryName=${{ secrets.AZURE_ACR_LOGIN_SERVER }} --set 'imageTag=${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.shortSha }}' --set 'apiGateway.dnsLabel=${{ vars.SMARTOFFICE_API_DNS_LABEL }}'
+  #     - name: Deploy mosquitto
+  #       shell: bash
+  #       run: |
+  #         helm repo add t3n https://storage.googleapis.com/t3n-helm-charts
+  #         helm upgrade mosquitto t3n/mosquitto --version 2.4.1 --install --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --create-namespace --set service.type=LoadBalancer --set 'authentication.passwordEntries=${{ secrets.MOSQUITTO_PASSWORD }}' --set 'service.annotations.service\.beta\.kubernetes\.io/azure-dns-label-name=${{ vars.SMARTOFFICE_MOSQUITTO_DNS_LABEL }}'
+
+  #     - name: Deploy smartoffice
+  #       shell: bash
+  #       run: |
+  #         helm upgrade smartoffice .helm/ --install --values .helm/values.azure.yaml --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --create-namespace --set configUrl=${{ vars.SMARTOFFICE_CONFIG_URL }} --set registryName=${{ secrets.AZURE_ACR_LOGIN_SERVER }} --set 'imageTag=${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.shortSha }}' --set 'apiGateway.dnsLabel=${{ vars.SMARTOFFICE_API_DNS_LABEL }}'
