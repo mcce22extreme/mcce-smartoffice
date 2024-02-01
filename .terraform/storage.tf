@@ -12,3 +12,10 @@ resource "azurerm_storage_share" "userimage-share" {
   quota                = 5
   depends_on           = [azurerm_storage_account.storage]
 }
+
+resource "azurerm_storage_share" "mosquitto-share" {
+  name                 = "mosquitto"
+  storage_account_name = azurerm_storage_account.storage.name
+  quota                = 5
+  depends_on           = [azurerm_storage_account.storage]
+}

@@ -50,3 +50,13 @@ variable "smartoffice_authclientid" {
   type    = string
   default = "smartoffice"
 }
+
+variable "smartoffice_baseaddress" {
+  type    = string
+  default = "http://+:80"
+}
+
+variable "smartoffice_docker_image" {
+  type    = string
+  default = "domih/mcce-smart-office-api:latest"
+}
