@@ -39,7 +39,7 @@ resource "azurerm_linux_web_app" "smartoffice-api" {
     "SMARTOFFICE_AUTHCONFIG__CLIENTID" = var.smartoffice_authclientid
     "SMARTOFFICE_BASEADDRESS"          = var.smartoffice_baseaddress
     "SMARTOFFICE_CONNECTIONSTRING"     = "Server=tcp:${azurerm_mssql_server.sqlserver.fully_qualified_domain_name},1433;Initial Catalog=${azurerm_mssql_database.database.name};Persist Security Info=False;User ID=${azurerm_mssql_server.sqlserver.administrator_login};Password=${azurerm_mssql_server.sqlserver.administrator_login_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
-    "SMARTOFFICE_FRONTENDURL"          = "${var.smartoffice_app_dns_prefix}.azurewebsites.net"
+    "SMARTOFFICE_FRONTENDURL"          = "https://${var.smartoffice_app_dns_prefix}.azurewebsites.net"
     "SMARTOFFICE_MQTTCONFIG__HOSTNAME" = azurerm_container_group.mosquittoaci.fqdn
     "SMARTOFFICE_MQTTCONFIG__PORT"     = 1883
     "SMARTOFFICE_STORAGEPATH"          = "/mnt/smartoffice/userimages"
