@@ -4,6 +4,10 @@ on: push
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
 permissions:
   pull-requests: read # allows SonarCloud to decorate PRs with analysis results
@@ -12,28 +16,27 @@ permissions:
 jobs:
   build:
     name: "Build projects"
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
-      - name: Install Java
-        uses: actions/setup-java@v4
+      - name: Setup Package Cache
+        uses: actions/cache@v3
         with:
-          distribution: "microsoft"
-          java-version: "11"
-
-      - name: Install MAUI Workloads
-        run: |
-          dotnet workload install android --ignore-failed-sources
-          dotnet workload install maui --ignore-failed-sources
+          path: ${{ github.workspace }}\.nuget\packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
       - name: Restore dependencies
         run: dotnet restore
@@ -53,21 +56,13 @@ jobs:
           reporter: dotnet-trx
           fail-on-error: true
 
-      - name: Install helm
-        uses: azure/setup-helm@v3
-
-      - name: Validate helm chart
-        shell: bash
-        run: |
-          helm lint .helm/ --values .helm/values.azure.yaml
-
   analyse:
-    name: "Analyse projects"
+    name: "Analyse source code"
     runs-on: ubuntu-latest
     needs: build
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -81,10 +76,70 @@ jobs:
             -Dsonar.projectKey=mcce22extreme_ss2023-ineni-smart-office
             -Dsonar.organization=mcce22extreme
 
-  builddockerimages:
-    name: "Build docker images"
+  validateterraform:
+    name: "Validate terraform depl"
     runs-on: ubuntu-latest
-    needs: analyse
+    needs: build
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./.terraform/
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: terraform init
+        run: terraform init -backend-config="resource_group_name=${{ vars.AZURE_RESOURCEGROUP_NAME }}" -backend-config="storage_account_name=${{ vars.AZURE_TFSTATE_STORAGEACCOUNT }}" -backend-config="container_name=${{ vars.AZURE_TFSTATE_CONTAINER }}"
+
+      - name: terraform validate
+        run: terraform validate -no-color
+
+      - name: terraform plan
+        run: terraform plan -no-color -var "azure_location=${{ vars.AZURE_LOCATION }}" -var "azure_resourcegroup=${{ vars.AZURE_RESOURCEGROUP_NAME }}" -var "smartoffice_mqtt_username=${{ secrets.SMARTOFFICE_MQTT_USERNAME}}" -var "smartoffice_mqtt_password=${{ secrets.SMARTOFFICE_MQTT_PASSWORD}}" -var "smartoffice_dbadmin_username=${{ secrets.SMARTOFFICE_DBADMIN_USERNAME}}" -var "smartoffice_dbadmin_password=${{ secrets.SMARTOFFICE_DBADMIN_PASSWORD}}"
+
+  deployinfrastructure:
+    name: "Deploy infrastructure"
+    runs-on: ubuntu-latest
+    needs: validateterraform
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./.terraform/
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: terraform init
+        run: terraform init -backend-config="resource_group_name=${{ vars.AZURE_RESOURCEGROUP_NAME }}" -backend-config="storage_account_name=${{ vars.AZURE_TFSTATE_STORAGEACCOUNT }}" -backend-config="container_name=${{ vars.AZURE_TFSTATE_CONTAINER }}"
+
+      - name: terraform apply
+        run: terraform apply -auto-approve -no-color -var "azure_location=${{ vars.AZURE_LOCATION }}" -var "azure_resourcegroup=${{ vars.AZURE_RESOURCEGROUP_NAME }}" -var "smartoffice_mqtt_username=${{ secrets.SMARTOFFICE_MQTT_USERNAME}}" -var "smartoffice_mqtt_password=${{ secrets.SMARTOFFICE_MQTT_PASSWORD}}" -var "smartoffice_dbadmin_username=${{ secrets.SMARTOFFICE_DBADMIN_USERNAME}}" -var "smartoffice_dbadmin_password=${{ secrets.SMARTOFFICE_DBADMIN_PASSWORD}}"
+
+      - name: Retrieve acr information
+        id: acrinformation
+        run: |
+          echo "ACR_NAME=$(terraform output -raw acr_name)" >> $GITHUB_OUTPUT
+          echo "ACR_LOGIN_SERVER=$(terraform output -raw acr_login_server)" >> $GITHUB_OUTPUT
+
+    outputs:
+      ACR_NAME: ${{ steps.acrinformation.outputs.ACR_NAME }}
+      ACR_LOGIN_SERVER: ${{ steps.acrinformation.outputs.ACR_LOGIN_SERVER }}
+
+  buildanddeploydockerimages:
+    name: "Build and deploy docker images"
+    runs-on: ubuntu-latest
+    needs: [analyse, deployinfrastructure]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     defaults:
       run:
@@ -92,7 +147,7 @@ jobs:
         working-directory: .
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -109,186 +164,23 @@ jobs:
           configFilePath: "gitversion.yaml"
           updateAssemblyInfo: true
 
-      - name: Display GitVersion outputs (step output)
-        run: |
-          echo "Major: ${{ steps.gitversion.outputs.major }}"
-          echo "Minor: ${{ steps.gitversion.outputs.minor }}"
-          echo "Patch: ${{ steps.gitversion.outputs.patch }}"
-          echo "PreReleaseTag: ${{ steps.gitversion.outputs.preReleaseTag }}"
-          echo "PreReleaseTagWithDash: ${{ steps.gitversion.outputs.preReleaseTagWithDash }}"
-          echo "PreReleaseLabel: ${{ steps.gitversion.outputs.preReleaseLabel }}"
-          echo "PreReleaseNumber: ${{ steps.gitversion.outputs.preReleaseNumber }}"
-          echo "WeightedPreReleaseNumber: ${{ steps.gitversion.outputs.weightedPreReleaseNumber }}"
-          echo "BuildMetaData: ${{ steps.gitversion.outputs.buildMetaData }}"
-          echo "BuildMetaDataPadded: ${{ steps.gitversion.outputs.buildMetaDataPadded }}"
-          echo "FullBuildMetaData: ${{ steps.gitversion.outputs.fullBuildMetaData }}"
-          echo "MajorMinorPatch: ${{ steps.gitversion.outputs.majorMinorPatch }}"
-          echo "SemVer: ${{ steps.gitversion.outputs.semVer }}"
-          echo "LegacySemVer: ${{ steps.gitversion.outputs.legacySemVer }}"
-          echo "LegacySemVerPadded: ${{ steps.gitversion.outputs.legacySemVerPadded }}"
-          echo "AssemblySemVer: ${{ steps.gitversion.outputs.assemblySemVer }}"
-          echo "AssemblySemFileVer: ${{ steps.gitversion.outputs.assemblySemFileVer }}"
-          echo "FullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}"
-          echo "InformationalVersion: ${{ steps.gitversion.outputs.informationalVersion }}"
-          echo "BranchName: ${{ steps.gitversion.outputs.branchName }}"
-          echo "EscapedBranchName: ${{ steps.gitversion.outputs.escapedBranchName }}"
-          echo "Sha: ${{ steps.gitversion.outputs.sha }}"
-          echo "ShortSha: ${{ steps.gitversion.outputs.shortSha }}"
-          echo "NuGetVersionV2: ${{ steps.gitversion.outputs.nuGetVersionV2 }}"
-          echo "NuGetVersion: ${{ steps.gitversion.outputs.nuGetVersion }}"
-          echo "NuGetPreReleaseTagV2: ${{ steps.gitversion.outputs.nuGetPreReleaseTagV2 }}"
-          echo "NuGetPreReleaseTag: ${{ steps.gitversion.outputs.nuGetPreReleaseTag }}"
-          echo "VersionSourceSha: ${{ steps.gitversion.outputs.versionSourceSha }}"
-          echo "CommitsSinceVersionSource: ${{ steps.gitversion.outputs.commitsSinceVersionSource }}"
-          echo "CommitsSinceVersionSourcePadded: ${{ steps.gitversion.outputs.commitsSinceVersionSourcePadded }}"
-          echo "UncommittedChanges: ${{ steps.gitversion.outputs.uncommittedChanges }}"
-          echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
-
       - name: "Docker Login"
         uses: azure/docker-login@v1
         with:
-          login-server: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}
+          login-server: ${{ needs.deployinfrastructure.outputs.ACR_LOGIN_SERVER }}
           username: ${{ secrets.AZURE_AD_CLIENT_ID }}
           password: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build apigateway docker image
+      - name: Build api docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-apigateway:${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.shortSha }},${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-apigateway:latest
-          file: src/Mcce.SmartOffice.ApiGateway/Dockerfile
+          tags: ${{ needs.deployinfrastructure.outputs.ACR_LOGIN_SERVER }}/mcce-smart-office-api:${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.shortSha }},${{ needs.deployinfrastructure.outputs.ACR_LOGIN_SERVER }}/mcce-smart-office-api:latest
+          file: src/Mcce.SmartOffice.Api/Dockerfile
           build-args: |
             BUILD_VERSION=${{ steps.gitversion.outputs.majorMinorPatch }}"
             COMMIT_SHA=${{ steps.gitversion.outputs.shortSha }}"
-
-      - name: Build account api docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-account-api:${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.shortSha }},${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-account-api:latest
-          file: src/Mcce.SmartOffice.Accounts/Dockerfile
-          build-args: |
-            BUILD_VERSION=${{ steps.gitversion.outputs.majorMinorPatch }}"
-            COMMIT_SHA=${{ steps.gitversion.outputs.shortSha }}"
-
-      - name: Build user image api docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-userimage-api:${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.shortSha }},${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-userimage-api:latest
-          file: src/Mcce.SmartOffice.UserImages/Dockerfile
-          build-args: |
-            BUILD_VERSION=${{ steps.gitversion.outputs.majorMinorPatch }}"
-            COMMIT_SHA=${{ steps.gitversion.outputs.shortSha }}"
-
-      - name: Build workspace api docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-workspace-api:${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.shortSha }},${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-workspace-api:latest
-          file: src/Mcce.SmartOffice.Workspaces/Dockerfile
-          build-args: |
-            BUILD_VERSION=${{ steps.gitversion.outputs.majorMinorPatch }}"
-            COMMIT_SHA=${{ steps.gitversion.outputs.shortSha }}"
-
-      - name: Build workspace configuration api docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-workspaceconfiguration-api:${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.shortSha }},${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-workspaceconfiguration-api:latest
-          file: src/Mcce.SmartOffice.WorkspaceConfigurations/Dockerfile
-          build-args: |
-            BUILD_VERSION=${{ steps.gitversion.outputs.majorMinorPatch }}"
-            COMMIT_SHA=${{ steps.gitversion.outputs.shortSha }}"
-
-      - name: Build workspace configuration api docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-workspacedataentry-api:${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.shortSha }},${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-workspacedataentry-api:latest
-          file: src/Mcce.SmartOffice.WorkspaceDataEntries/Dockerfile
-          build-args: |
-            BUILD_VERSION=${{ steps.gitversion.outputs.majorMinorPatch }}"
-            COMMIT_SHA=${{ steps.gitversion.outputs.shortSha }}"
-
-      - name: Build booking api docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-booking-api:${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.shortSha }},${{ secrets.AZURE_ACR_LOGIN_SERVER }}/mcce-smart-office-booking-api:latest
-          file: src/Mcce.SmartOffice.Bookings/Dockerfile
-          build-args: |
-            BUILD_VERSION=${{ steps.gitversion.outputs.majorMinorPatch }}"
-            COMMIT_SHA=${{ steps.gitversion.outputs.shortSha }}"
-
-  deploy:
-    name: "Deploy to aks"
-    needs: builddockerimages
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0
-        with:
-          versionSpec: "5.12.0"
-
-      - name: Determine Version
-        id: gitversion
-        uses: gittools/actions/gitversion/execute@v0
-        with:
-          useConfigFile: true
-          configFilePath: "gitversion.yaml"
-          updateAssemblyInfo: true
-
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Initialize aks context
-        uses: azure/aks-set-context@v3
-        with:
-          resource-group: ${{ vars.AZURE_RESOURCEGROUP_NAME }}
-          cluster-name: ${{ vars.AZURE_CLUSTER_NAME }}
-
-      - name: Install helm
-        uses: azure/setup-helm@v3
-
-      - name: Deploy nginx
-        shell: bash
-        run: |
-          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-          helm repo update
-          helm upgrade ingress-nginx ingress-nginx/ingress-nginx --install --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --set controller.replicaCount=1 --create-namespace --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-dns-label-name"="${{ vars.SMARTOFFICE_API_DNS_LABEL }}"
-
-      - name: Deploy certmanager
-        shell: bash
-        run: |
-          helm repo add jetstack https://charts.jetstack.io
-          helm repo update
-          helm upgrade cert-manager jetstack/cert-manager --install --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --create-namespace --version v1.7.1 --set installCRDs=true --set nodeSelector."kubernetes\.io/os"=linux
-
-      - name: Deploy mosquitto
-        shell: bash
-        run: |
-          helm repo add t3n https://storage.googleapis.com/t3n-helm-charts
-          helm upgrade mosquitto t3n/mosquitto --version 2.4.1 --install --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --create-namespace --set service.type=LoadBalancer --set 'authentication.passwordEntries=${{ secrets.MOSQUITTO_PASSWORD }}' --set 'service.annotations.service\.beta\.kubernetes\.io/azure-dns-label-name=${{ vars.SMARTOFFICE_MOSQUITTO_DNS_LABEL }}'
-
-      - name: Deploy smartoffice
-        shell: bash
-        run: |
-          helm upgrade smartoffice .helm/ --install --values .helm/values.azure.yaml --namespace ${{ vars.AZURE_AKS_NAMESPACE }} --create-namespace --set configUrl=${{ vars.SMARTOFFICE_CONFIG_URL }} --set registryName=${{ secrets.AZURE_ACR_LOGIN_SERVER }} --set 'imageTag=${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.shortSha }}' --set 'apiGateway.dnsLabel=${{ vars.SMARTOFFICE_API_DNS_LABEL }}'

@@ -1,0 +1,67 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{5805A17B-151A-4474-81DE-FF214703BBDB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{FE00756B-C0F7-4FBF-BB30-BB221D4A2A9C}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		docker_build_images.bat = docker_build_images.bat
+		docker_push_images.bat = docker_push_images.bat
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4232913D-260A-4371-80A9-6161F655DA96}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcce.SmartOffice.Api", "src\Mcce.SmartOffice.Api\Mcce.SmartOffice.Api.csproj", "{9D1E5F6E-DFFB-45B5-A582-E220124F7CCD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mcce.SmartOffice.Api.Tests", "src\Mcce.SmartOffice.Api.Tests\Mcce.SmartOffice.Api.Tests.csproj", "{18A18EAD-5CB3-43E7-888E-12ABC3A1EBED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9D1E5F6E-DFFB-45B5-A582-E220124F7CCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D1E5F6E-DFFB-45B5-A582-E220124F7CCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D1E5F6E-DFFB-45B5-A582-E220124F7CCD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9D1E5F6E-DFFB-45B5-A582-E220124F7CCD}.Debug|x64.Build.0 = Debug|Any CPU
+		{9D1E5F6E-DFFB-45B5-A582-E220124F7CCD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9D1E5F6E-DFFB-45B5-A582-E220124F7CCD}.Debug|x86.Build.0 = Debug|Any CPU
+		{9D1E5F6E-DFFB-45B5-A582-E220124F7CCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D1E5F6E-DFFB-45B5-A582-E220124F7CCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D1E5F6E-DFFB-45B5-A582-E220124F7CCD}.Release|x64.ActiveCfg = Release|Any CPU
+		{9D1E5F6E-DFFB-45B5-A582-E220124F7CCD}.Release|x64.Build.0 = Release|Any CPU
+		{9D1E5F6E-DFFB-45B5-A582-E220124F7CCD}.Release|x86.ActiveCfg = Release|Any CPU
+		{9D1E5F6E-DFFB-45B5-A582-E220124F7CCD}.Release|x86.Build.0 = Release|Any CPU
+		{18A18EAD-5CB3-43E7-888E-12ABC3A1EBED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18A18EAD-5CB3-43E7-888E-12ABC3A1EBED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18A18EAD-5CB3-43E7-888E-12ABC3A1EBED}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{18A18EAD-5CB3-43E7-888E-12ABC3A1EBED}.Debug|x64.Build.0 = Debug|Any CPU
+		{18A18EAD-5CB3-43E7-888E-12ABC3A1EBED}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{18A18EAD-5CB3-43E7-888E-12ABC3A1EBED}.Debug|x86.Build.0 = Debug|Any CPU
+		{18A18EAD-5CB3-43E7-888E-12ABC3A1EBED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18A18EAD-5CB3-43E7-888E-12ABC3A1EBED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18A18EAD-5CB3-43E7-888E-12ABC3A1EBED}.Release|x64.ActiveCfg = Release|Any CPU
+		{18A18EAD-5CB3-43E7-888E-12ABC3A1EBED}.Release|x64.Build.0 = Release|Any CPU
+		{18A18EAD-5CB3-43E7-888E-12ABC3A1EBED}.Release|x86.ActiveCfg = Release|Any CPU
+		{18A18EAD-5CB3-43E7-888E-12ABC3A1EBED}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9D1E5F6E-DFFB-45B5-A582-E220124F7CCD} = {5805A17B-151A-4474-81DE-FF214703BBDB}
+		{18A18EAD-5CB3-43E7-888E-12ABC3A1EBED} = {4232913D-260A-4371-80A9-6161F655DA96}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6B4406B8-0A6E-4D84-9828-BCF8BDD1781C}
+	EndGlobalSection
+EndGlobal
